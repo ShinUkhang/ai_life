@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>인공지능 음성인식(Speech AI) 인터랙티브 수업 교재 & 실습실</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    body { font-family: 'Pretendard', sans-serif; }
+    .tab-active {
+      border-color: #4F46E5 !important;
+      background-color: #EEF2FF !important;
+      color: #4338CA !important;
+      font-weight: 800;
+    }
+    .wave-canvas {
+      background: radial-gradient(ellipse at center, #1E1B4B 0%, #0F172A 100%);
+    }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+  <!-- ========================================== -->
+  <!-- 상단 네비게이션 헤더                       -->
+  <!-- ========================================== -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-md shadow-indigo-200">
+          <i data-lucide="mic" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="bg-indigo-100 text-indigo-800 text-[11px] font-black px-2 py-0.5 rounded-md">AI LAB • 음성인식 에듀</span>
+            <span class="text-xs text-slate-400 font-medium">Jupyter Notebook & Web AI 통합 실습</span>
+          </div>
+          <h1 class="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
+            소리가 글자가 되는 마법: 인공지능 음성인식(Speech AI) & 스마트 비서
+          </h1>
+        </div>
+      </div>
+
+      <!-- 상단 5대 탭 버튼 -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+        <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-btn tab-active px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap">
+          <span>🎵 1단계: 소리와 파형</span>
+        </button>
+        <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-btn px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 bg-white hover:bg-slate-50 transition flex items-center gap-1.5 whitespace-nowrap">
+          <span>🔬 2단계: 소리 지문 & ID</span>
+        </button>
+        <button onclick="switchTab('tab3')" id="btn-tab3" class="tab-btn px-3 py-2 rounded-xl border border-indigo-400 text-xs font-black text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition flex items-center gap-1.5 whitespace-nowrap shadow-xs">
+          <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600"></i>
+          <span>👥 3단계: [실습] 2인 목소리 유사도</span>
+        </button>
+        <button onclick="switchTab('tab4')" id="btn-tab4" class="tab-btn px-3 py-2 rounded-xl border border-emerald-300 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition flex items-center gap-1.5 whitespace-nowrap shadow-xs">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-600"></i>
+          <span>🤖 4단계: 실시간 STT & AI 비서</span>
+        </button>
+        <button onclick="switchTab('tab5')" id="btn-tab5" class="tab-btn px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 bg-white hover:bg-slate-50 transition flex items-center gap-1.5 whitespace-nowrap">
+          <span>📋 5단계: 지도안 & 커리큘럼</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- 메인 콘텐츠 영역                           -->
+  <!-- ========================================== -->
+  <main class="max-w-7xl mx-auto p-4 sm:p-6">
+
+    <!-- ========================================================= -->
+    <!-- [TAB 1] 1단계: 소리의 원리와 파형 (TTS & STT 기초)       -->
+    <!-- ========================================================= -->
+    <div id="content-tab1" class="space-y-6">
+
+      <!-- 인트로 배너 -->
+      <div class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="max-w-3xl space-y-3 relative z-10">
+          <span class="bg-indigo-500/40 text-indigo-200 text-xs font-black px-3 py-1 rounded-full border border-indigo-400/30">
+            STEP 01 • 기초 개념 & 소리 파형 시각화
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black tracking-tight leading-snug">
+            컴퓨터는 귀도 없는데 어떻게 사람의 소리를 들을까?
+          </h2>
+          <p class="text-xs sm:text-sm text-indigo-100 leading-relaxed">
+            공기의 떨림(진동)이 마이크를 거치면 <strong>시간에 따른 전압 파형(Waveform)</strong>으로 변환되고, 
+            초당 16,000번 숫자로 샘플링되어 컴퓨터에 저장됩니다. 반대로 글자를 읽어주는 TTS는 텍스트를 주파수 파형으로 합성하여 스피커로 출력합니다.
+          </p>
+        </div>
+      </div>
+
+      <!-- TTS vs STT 파이프라인 개념 카드 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">🗣️</div>
+          <div>
+            <div class="text-xs font-black text-blue-600">STT (Speech-to-Text: 음성인식)</div>
+            <div class="text-xs text-slate-600 font-medium">사람 목소리(공기 떨림) ➔ <strong>파형(Waveform)</strong> ➔ 0과 1 디지털 숫자 ➔ 글자(텍스트)</div>
+          </div>
+        </div>
+        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-lg">🔊</div>
+          <div>
+            <div class="text-xs font-black text-purple-600">TTS (Text-to-Speech: 음성합성)</div>
+            <div class="text-xs text-slate-600 font-medium">컴퓨터 글자(텍스트) ➔ 인공지능 신경망 ➔ <strong>합성 파형(Waveform)</strong> ➔ 스피커 소리 출력</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 인터랙티브 체험 도구: 브라우저 가상 사운드 신시사이저 & 파형 뷰어 -->
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+              <i data-lucide="activity" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="font-extrabold text-base text-slate-900">직접 만져보는 소리 실험실: 주파수 & 파형 시뮬레이터</h3>
+              <p class="text-xs text-slate-400">슬라이더를 움직여 소리의 높낮이(주파수)와 크기(진폭)를 바꿔보고 스피커로 들어보세요!</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="toggleOscillator()" id="btnOscPlay" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-indigo-200 transition">
+              <i data-lucide="play" class="w-3.5 h-3.5" id="oscIcon"></i>
+              <span id="oscBtnText">소리 재생하기</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- 좌측 8열: 실시간 파형 캔버스 -->
+          <div class="lg:col-span-8 rounded-2xl overflow-hidden shadow-inner flex flex-col justify-between wave-canvas p-4 text-white relative min-h-[260px]">
+            <div class="flex items-center justify-between text-xs text-indigo-200 z-10">
+              <span class="mono">실시간 파형 (Waveform): <span id="dispType" class="text-emerald-400 font-bold">Sine Wave</span></span>
+              <span class="mono" id="dispHz">440 Hz (기준음 라)</span>
+            </div>
+            <!-- 캔버스 -->
+            <canvas id="synthCanvas" width="600" height="180" class="w-full h-44 my-auto"></canvas>
+            <div class="flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-700/60 pt-2 z-10">
+              <span>수학 공식: \( y(t) = A \cdot \sin(2\pi f t) \)</span>
+              <span class="text-emerald-400">● Web Audio API 실시간 연동</span>
+            </div>
+          </div>
+
+          <!-- 우측 4열: 컨트롤 슬라이더 & 원클릭 프리셋 -->
+          <div class="lg:col-span-4 space-y-4">
+            <div>
+              <label class="text-xs font-bold text-slate-600 mb-1.5 block">빠른 소리 체험 (프리셋)</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button onclick="setFreq(100, '덤프트럭 저음')" class="p-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-xs font-bold text-slate-700 transition text-left flex items-center gap-1.5">
+                  <span>🚛 덤프트럭 (100Hz)</span>
+                </button>
+                <button onclick="setFreq(261.63, '피아노 도')" class="p-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-xs font-bold text-slate-700 transition text-left flex items-center gap-1.5">
+                  <span>🎹 피아노 도 (261Hz)</span>
+                </button>
+                <button onclick="setFreq(440, '기준음 라')" class="p-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-xs font-bold text-slate-700 transition text-left flex items-center gap-1.5">
+                  <span>🎻 조율 라 (440Hz)</span>
+                </button>
+                <button onclick="setFreq(1500, '모기 고음')" class="p-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-xs font-bold text-slate-700 transition text-left flex items-center gap-1.5">
+                  <span>🦟 모기 소리 (1.5kHz)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 파형 형태 선택 -->
+            <div>
+              <label class="text-xs font-bold text-slate-600 mb-1.5 block">파형 종류 (음색 결정)</label>
+              <div class="grid grid-cols-3 gap-1.5">
+                <button onclick="setWaveType('sine')" id="btnWaveSine" class="p-1.5 text-xs font-bold rounded-lg border border-indigo-400 bg-indigo-50 text-indigo-700">사인파 (순음)</button>
+                <button onclick="setWaveType('square')" id="btnWaveSquare" class="p-1.5 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-600">사각파 (8비트)</button>
+                <button onclick="setWaveType('sawtooth')" id="btnWaveSaw" class="p-1.5 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-600">톱니파 (현악기)</button>
+              </div>
+            </div>
+
+            <!-- 주파수 슬라이더 -->
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 space-y-1">
+              <div class="flex justify-between text-xs font-bold">
+                <span class="text-slate-600">주파수 (소리의 높낮이)</span>
+                <span class="text-indigo-600 mono" id="sliderValFreq">440 Hz</span>
+              </div>
+              <input type="range" id="freqSlider" min="50" max="2000" value="440" class="w-full accent-indigo-600 cursor-pointer" oninput="updateFreq(this.value)">
+              <div class="flex justify-between text-[10px] text-slate-400 mono">
+                <span>50Hz (초저음)</span>
+                <span>2,000Hz (고음)</span>
+              </div>
+            </div>
+
+            <!-- 볼륨 슬라이더 -->
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 space-y-1">
+              <div class="flex justify-between text-xs font-bold">
+                <span class="text-slate-600">진폭 (소리의 크기/볼륨)</span>
+                <span class="text-indigo-600 mono" id="sliderValVol">50 %</span>
+              </div>
+              <input type="range" id="volSlider" min="0" max="100" value="50" class="w-full accent-indigo-600 cursor-pointer" oninput="updateVol(this.value)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 핵심 개념 3가지 카드 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-2">
+          <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <i data-lucide="volume-2" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-black text-sm text-slate-900">1. 진폭 (Amplitude) = 소리의 크기</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            파형의 높낮이 폭이 클수록 강한 에너지를 가지며 큰 소리(Big Volume)가 납니다. 컴퓨터는 이 값을 \(0 \sim 1.0\) 사이의 소수 숫자로 정규화하여 저장합니다.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-2">
+          <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+            <i data-lucide="radio" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-black text-sm text-slate-900">2. 주파수 (Frequency) = 소리의 음정</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            1초 동안 공기가 진동하는 횟수(Hz)입니다. 진동수가 많을수록 얇고 높은 모기 소리(고주파), 진동수가 적을수록 굵고 낮은 덤프트럭 소리(저주파)가 됩니다.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-2">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <i data-lucide="image" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-black text-sm text-slate-900">3. 파형 형태 = 소리의 음색 (Timbre)</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            같은 440Hz '라' 음이라도 피아노와 바이올린의 소리가 다른 이유는 물결 모양(배음 구조)이 다르기 때문입니다. AI는 이 음색을 분석해 사람을 구분합니다.
+          </p>
+        </div>
+      </div>
+
+      <!-- 파이썬 코드 박스 (학생/선생님 Colab 복사용) -->
+      <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-md space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <span class="text-xs mono text-slate-400 ml-2">🐍 [파이썬 코드로 구현하기] 01_소리파형_생성.py</span>
+          </div>
+          <button onclick="copyCode('sampleCode1', this)" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>코드 복사</span>
+          </button>
+        </div>
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode1"># [1단계] 파이썬 NumPy로 440Hz 소리 파형을 만들고 노트북에서 바로 듣기
+import numpy as np
+import matplotlib.pyplot as plt
+import IPython.display as ipd
+
+sampling_rate = 16000    # 1초당 16,000번 소리 샘플링
+duration = 1.5           # 1.5초 동안 지속
+t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
+
+# 440Hz 사인파 파형 생성: y = A * sin(2 * pi * f * t)
+frequency = 440.0        # 주파수 440Hz (피아노 기준음 라)
+amplitude = 0.5          # 진폭 (크기 50%)
+sound_wave = amplitude * np.sin(2 * np.pi * frequency * t)
+
+# 소리 파형 0.015초 구간 확대 그래프 그리기
+plt.figure(figsize=(10, 3))
+plt.plot(t[:240], sound_wave[:240], color="#4F46E5", lw=2)
+plt.title("440Hz 사인파 소리 파형 (Waveform)")
+plt.xlabel("시간 (Time, 초)")
+plt.ylabel("진폭 (Amplitude)")
+plt.grid(True, alpha=0.3)
+plt.show()
+
+# 주피터 노트북에서 재생 버튼 누르고 듣기!
+ipd.Audio(sound_wave, rate=sampling_rate)</pre>
+      </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- [TAB 2] 2단계: 소리의 지문(FFT) & 고유 ID 부여            -->
+    <!-- ========================================================= -->
+    <div id="content-tab2" class="hidden space-y-6">
+
+      <!-- 인트로 배너 -->
+      <div class="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="max-w-3xl space-y-3 relative z-10">
+          <span class="bg-purple-500/40 text-purple-200 text-xs font-black px-3 py-1 rounded-full border border-purple-400/30">
+            STEP 02 • 푸리에 변환 & 소리 지문 ID 시스템
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black tracking-tight leading-snug">
+            복잡한 소리에서 '고유 ID'와 '수학적 지문' 뽑아내기
+          </h2>
+          <p class="text-xs sm:text-sm text-purple-100 leading-relaxed">
+            소리 파형만 보면 말의 내용을 알 수 없습니다. 수학의 <strong>고속 푸리에 변환(FFT)</strong>을 거치면 소리가 저음·중음·고음으로 분해되며, 
+            AI는 이 스펙트럼에서 5가지 대표 수치를 뽑아내 <strong>고유 소리 ID와 특징 벡터</strong>를 만듭니다!
+          </p>
+        </div>
+      </div>
+
+      <!-- 인터랙티브 소리 지문 & ID 분석기 -->
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+              <i data-lucide="fingerprint" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="font-extrabold text-base text-slate-900">소리 샘플 선택 및 고유 ID 특징 벡터 추출기</h3>
+              <p class="text-xs text-slate-400">단어 샘플을 선택하면 주파수 스펙트럼과 고유 지문 ID가 실시간으로 분석됩니다.</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="selectSampleID('apple')" id="btnSampleApple" class="px-3 py-1.5 rounded-xl border border-purple-400 bg-purple-50 text-purple-700 text-xs font-black transition">
+              🍎 "사과"
+            </button>
+            <button onclick="selectSampleID('banana')" id="btnSampleBanana" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-bold hover:bg-slate-50 transition">
+              🍌 "바나나"
+            </button>
+            <button onclick="selectSampleID('school')" id="btnSampleSchool" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-bold hover:bg-slate-50 transition">
+              🏫 "학교"
+            </button>
+            <button onclick="selectSampleID('ai')" id="btnSampleAi" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-bold hover:bg-slate-50 transition">
+              🧠 "인공지능"
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- 좌측 7열: FFT 스펙트럼 캔버스 -->
+          <div class="lg:col-span-7 bg-slate-950 rounded-2xl p-4 text-white flex flex-col justify-between space-y-3">
+            <div class="flex items-center justify-between text-xs text-slate-300">
+              <span class="mono">주파수 스펙트럼 (FFT Magnitude Spectrum)</span>
+              <span class="text-purple-400 mono" id="spectrumTitle">"사과" (ID: VOICE-01)</span>
+            </div>
+            <canvas id="fftCanvas" width="600" height="180" class="w-full h-44 rounded-xl bg-slate-900"></canvas>
+            <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+              <span>0Hz (저음)</span>
+              <span>1,500Hz (모음 중심)</span>
+              <span>8,000Hz (자음/마찰음)</span>
+            </div>
+          </div>
+
+          <!-- 우측 5열: 5차원 소리 특징 벡터 표 -->
+          <div class="lg:col-span-5 bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500">생성된 고유 ID</span>
+              <span class="px-2.5 py-0.5 rounded-md text-xs font-black bg-purple-100 text-purple-800 mono" id="badgeSoundID">ID: VOICE-01</span>
+            </div>
+            <div class="text-xs font-black text-slate-800">5차원 정규화 특징 벡터 \(ec{v}\)</div>
+
+            <div class="space-y-2 text-xs">
+              <div>
+                <div class="flex justify-between text-slate-600 mb-0.5">
+                  <span>1. RMS (소리 에너지 크기)</span>
+                  <span class="mono font-bold text-purple-600" id="valRMS">0.312</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div id="barRMS" class="bg-purple-600 h-full rounded-full transition-all duration-300" style="width: 31%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-600 mb-0.5">
+                  <span>2. ZCR (영교차율: 자음 거칠기)</span>
+                  <span class="mono font-bold text-purple-600" id="valZCR">0.145</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div id="barZCR" class="bg-purple-600 h-full rounded-full transition-all duration-300" style="width: 15%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-600 mb-0.5">
+                  <span>3. Low Band (0~300Hz 기본주파수)</span>
+                  <span class="mono font-bold text-indigo-600" id="valLow">0.485</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div id="barLow" class="bg-indigo-600 h-full rounded-full transition-all duration-300" style="width: 48%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-600 mb-0.5">
+                  <span>4. Mid Band (300~3000Hz 모음 포만트)</span>
+                  <span class="mono font-bold text-emerald-600" id="valMid">0.720</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div id="barMid" class="bg-emerald-600 h-full rounded-full transition-all duration-300" style="width: 72%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-600 mb-0.5">
+                  <span>5. High Band (3000~8000Hz 마찰음)</span>
+                  <span class="mono font-bold text-amber-600" id="valHigh">0.340</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div id="barHigh" class="bg-amber-600 h-full rounded-full transition-all duration-300" style="width: 34%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-white border border-slate-200 text-[11px] mono text-slate-600">
+              <span class="text-slate-400"># 단위 벡터 (길이=1.0):</span><br>
+              <span id="textFullVector" class="font-bold text-indigo-700">[0.312, 0.145, 0.485, 0.720, 0.340]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 파이썬 코드 박스 -->
+      <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-md space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <span class="text-xs mono text-slate-400 ml-2">🐍 [파이썬 코드로 구현하기] 02_음성특징_ID추출.py</span>
+          </div>
+          <button onclick="copyCode('sampleCode2', this)" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>코드 복사</span>
+          </button>
+        </div>
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode2"># [2단계] 소리 파형에서 푸리에 변환(FFT)을 수행하고 5차원 고유 지문 벡터 추출하기
+import numpy as np
+
+def extract_sound_fingerprint(y, sr=16000, sound_id="VOICE-01"):
+    # 1. 진폭 피크 정규화 (-1.0 ~ +1.0)
+    y = y.astype(np.float32)
+    peak = np.max(np.abs(y)) + 1e-12
+    y_norm = (y / peak) * 0.98
+
+    # 2. 고속 푸리에 변환 (FFT: 시간 파형 -> 주파수 스펙트럼)
+    N = len(y_norm)
+    win = np.hanning(N)
+    X = np.fft.rfft(y_norm * win)
+    freqs = np.fft.rfftfreq(N, 1/sr)
+    mag = np.abs(X)
+
+    # 3. 5대 수학적 특징 계산
+    rms = float(np.sqrt(np.mean(y_norm**2) + 1e-12))             # 1) RMS 음성 에너지 크기
+    zcr = float(np.mean(np.abs(np.diff(np.sign(y_norm))) > 0))    # 2) ZCR 영교차율 (자음 거칠기)
+
+    def band_energy(f_low, f_high):
+        idx = (freqs >= f_low) & (freqs < f_high)
+        return float(np.sum(mag[idx] ** 2))
+
+    low_e  = band_energy(0, 300)        # 3) 저음역 (0~300Hz, 성대의 기본 진동 주파수)
+    mid_e  = band_energy(300, 3000)     # 4) 중음역 (300~3,000Hz, 모음 포만트 핵심 영역)
+    high_e = band_energy(3000, 8000)    # 5) 고음역 (3,000~8,000Hz, 자음/마찰음 영역)
+
+    # 4. 정규화된 5차원 단위 벡터 생성 (길이=1.0)
+    raw_vec = np.array([rms, zcr, low_e, mid_e, high_e], dtype=np.float32)
+    norm_vec = raw_vec / (np.linalg.norm(raw_vec) + 1e-12)
+
+    return {
+        "id": sound_id,
+        "vector": norm_vec,
+        "labels": ["RMS", "ZCR", "LowE", "MidE", "HighE"]
+    }
+
+# 실행 예시:
+# fp = extract_sound_fingerprint(my_voice, sr=16000, sound_id="VOICE-01")
+# print("고유 ID:", fp['id'])
+# print("추출된 지문 벡터:", fp['vector'])</pre>
+      </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- [TAB 3] 👥 3단계: [핵심 실습] 2인 학생 목소리 유사도 대결    -->
+    <!-- ========================================================= -->
+    <div id="content-tab3" class="hidden space-y-6">
+
+      <!-- 인트로 배너 -->
+      <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-teal-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="max-w-3xl space-y-3 relative z-10">
+          <span class="bg-blue-500/40 text-blue-200 text-xs font-black px-3 py-1 rounded-full border border-blue-400/30 flex items-center gap-1.5 w-fit">
+            <i data-lucide="sparkles" class="w-3 h-3 text-amber-300"></i>
+            STEP 03 • 핵심 인터랙티브 실습
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black tracking-tight leading-snug">
+            2명의 학생이 마이크로 말하면, AI가 목소리 유사도를 판정합니다!
+          </h2>
+          <p class="text-xs sm:text-sm text-blue-100 leading-relaxed">
+            학생 1과 학생 2가 마이크로 말하거나 샘플 프리셋을 누르면, 두 사람의 <strong>음성 파형과 5차원 지문 벡터</strong>를 실시간으로 비교하여 
+            <strong>코사인 유사도(Cosine Similarity 일치율 %)</strong>를 산출하고 동일인인지, 같은 단어인지 판정합니다!
+          </p>
+        </div>
+      </div>
+
+      <!-- 원클릭 비교 프리셋 버튼들 (마이크 없는 실습실 대비 100% 보장) -->
+      <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-black text-slate-700 flex items-center gap-1.5">
+            <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
+            원클릭 비교 시뮬레이션 프리셋 (마이크가 없어도 바로 체험 가능!)
+          </span>
+          <span class="text-[11px] text-slate-400 font-medium">아래 버튼을 누르면 두 학생의 음성 파형이 즉시 로드됩니다.</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <button onclick="loadComparisonPreset(1)" class="p-3 rounded-2xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 text-left transition space-y-1">
+            <div class="text-xs font-black text-indigo-900">🗣️ [실험 1] 같은 단어, 다른 목소리</div>
+            <div class="text-[11px] text-indigo-700">학생 A: "안녕하세요" vs 학생 B: "안녕하세요"</div>
+            <div class="text-[10px] text-indigo-500 font-mono">예상 일치율: 약 78% ~ 86% (음색 차이)</div>
+          </button>
+          <button onclick="loadComparisonPreset(2)" class="p-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 hover:bg-emerald-100 text-left transition space-y-1">
+            <div class="text-xs font-black text-emerald-900">👤 [실험 2] 같은 사람, 같은 단어 2번</div>
+            <div class="text-[11px] text-emerald-700">학생 A: "사과" (1차) vs 학생 A: "사과" (2차)</div>
+            <div class="text-[10px] text-emerald-500 font-mono">예상 일치율: 약 94% ~ 98% (화자 일치)</div>
+          </button>
+          <button onclick="loadComparisonPreset(3)" class="p-3 rounded-2xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-left transition space-y-1">
+            <div class="text-xs font-black text-rose-900">🔀 [실험 3] 완전히 다른 단어</div>
+            <div class="text-[11px] text-rose-700">학생 A: "인공지능" vs 학생 B: "선형회귀"</div>
+            <div class="text-[10px] text-rose-500 font-mono">예상 일치율: 약 35% ~ 50% (불일치)</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2개 트랙: 학생 1 (Blue) vs 학생 2 (Green) 녹음 및 파형 -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- 트랙 A: 학생 1 -->
+        <div class="bg-white rounded-3xl p-5 border-2 border-indigo-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-indigo-100">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-sm">A</span>
+              <div>
+                <h4 class="font-black text-sm text-slate-900">학생 1 (Student A)</h4>
+                <span class="text-[11px] text-indigo-600 font-mono" id="labelTrackA">단어: "안녕하세요" (ID: STU-01)</span>
+              </div>
+            </div>
+            <button onclick="toggleRecordStudent('A')" id="btnRecA" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
+              <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+              <span id="btnTextRecA">마이크 녹음</span>
+            </button>
+          </div>
+
+          <!-- 파형 캔버스 A -->
+          <div class="rounded-2xl overflow-hidden bg-slate-950 p-3 text-white">
+            <div class="flex justify-between text-[11px] text-indigo-300 mono mb-1">
+              <span>파형 A (Waveform)</span>
+              <span id="statusA" class="text-emerald-400">데이터 준비 완료</span>
+            </div>
+            <canvas id="canvasWaveA" width="400" height="100" class="w-full h-24 rounded-lg bg-slate-900"></canvas>
+          </div>
+
+          <!-- 특징 벡터 수치 A -->
+          <div class="grid grid-cols-5 gap-1 text-center mono text-[10px]">
+            <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-slate-400">RMS</div>
+              <div class="font-bold text-indigo-600" id="featA_0">0.32</div>
+            </div>
+            <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-slate-400">ZCR</div>
+              <div class="font-bold text-indigo-600" id="featA_1">0.14</div>
+            </div>
+            <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-slate-400">Low</div>
+              <div class="font-bold text-indigo-600" id="featA_2">0.45</div>
+            </div>
+            <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-slate-400">Mid</div>
+              <div class="font-bold text-indigo-600" id="featA_3">0.76</div>
+            </div>
+            <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-slate-400">High</div>
+              <div class="font-bold text-indigo-600" id="featA_4">0.33</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 트랙 B: 학생 2 -->
+        <div class="bg-white rounded-3xl p-5 border-2 border-emerald-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-emerald-100">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black text-sm">B</span>
+              <div>
+                <h4 class="font-black text-sm text-slate-900">학생 2 (Student B)</h4>
+                <span class="text-[11px] text-emerald-600 font-mono" id="labelTrackB">단어: "안녕하세요" (ID: STU-02)</span>
+              </div>
+            </div>
+            <button onclick="toggleRecordStudent('B')" id="btnRecB" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
+              <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+              <span id="btnTextRecB">마이크 녹음</span>
+            </button>
+          </div>
+
+          <!-- 파형 캔버스 B -->
+          <div class="rounded-2xl overflow-hidden bg-slate-950 p-3 text-white">
+            <div class="flex justify-between text-[11px] text-emerald-300 mono mb-1">
+              <span>파형 B (Waveform)</span>
+              <span id="statusB" class="text-emerald-400">데이터 준비 완료</span>
+            </div>
+            <canvas id="canvasWaveB" width="400" height="100" class="w-full h-24 rounded-lg bg-slate-900"></canvas>
+          </div>
+
+          <!-- 특징 벡터 수치 B -->
+          <div class="grid grid-cols-5 gap-1 text-center mono text-[10px]">
+            <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-slate-400">RMS</div>
+              <div class="font-bold text-emerald-600" id="featB_0">0.30</div>
+            </div>
+            <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-slate-400">ZCR</div>
+              <div class="font-bold text-emerald-600" id="featB_1">0.16</div>
+            </div>
+            <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-slate-400">Low</div>
+              <div class="font-bold text-emerald-600" id="featB_2">0.38</div>
+            </div>
+            <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-slate-400">Mid</div>
+              <div class="font-bold text-emerald-600" id="featB_3">0.79</div>
+            </div>
+            <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-slate-400">High</div>
+              <div class="font-bold text-emerald-600" id="featB_4">0.36</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 유사도 판정 대시보드 & 겹쳐보기(Overlay) 뷰 -->
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-md space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+          <div>
+            <h3 class="font-black text-lg text-slate-900 flex items-center gap-2">
+              <i data-lucide="scale" class="w-5 h-5 text-indigo-600"></i>
+              코사인 유사도(Cosine Similarity) 종합 분석 리포트
+            </h3>
+            <p class="text-xs text-slate-400">두 음성의 5차원 벡터 내적(Dot Product)을 통해 일치율을 정밀 계산합니다.</p>
+          </div>
+          <button onclick="toggleOverlayView()" id="btnToggleOverlay" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+            <span id="textToggleOverlay">파형 겹쳐보기 (Overlay) ON</span>
+          </button>
+        </div>
+
+        <!-- 겹쳐보기 캔버스 (토글 활성화 시 표시) -->
+        <div id="overlayCanvasBox" class="hidden rounded-2xl bg-slate-950 p-4 text-white space-y-2">
+          <div class="flex justify-between items-center text-xs text-slate-300">
+            <span class="mono">두 학생 음성 파형 겹쳐보기 (<span class="text-indigo-400 font-bold">● 학생 A</span> vs <span class="text-emerald-400 font-bold">● 학생 B</span>)</span>
+            <span class="text-[11px] text-slate-400">파형의 마루와 골이 겹칠수록 유사도가 높아집니다</span>
+          </div>
+          <canvas id="canvasOverlay" width="800" height="130" class="w-full h-32 rounded-xl bg-slate-900"></canvas>
+        </div>
+
+        <!-- 유사도 게이지 & 판정 카드 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          
+          <!-- 좌측 4열: 대형 일치율 게이지 -->
+          <div class="lg:col-span-4 bg-slate-50 p-5 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center space-y-2">
+            <span class="text-xs font-bold text-slate-500">목소리 유사도 일치율</span>
+            <div class="text-4xl sm:text-5xl font-black mono text-indigo-600 tracking-tight" id="scorePercent">
+              84.6%
+            </div>
+            <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+              <div id="gaugeBar" class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 84.6%;"></div>
+            </div>
+            <span class="text-[11px] mono text-slate-400" id="cosThetaText">\(\cos(	heta) = 0.8462\)</span>
+          </div>
+
+          <!-- 우측 8열: 판정 결과 배지 및 해석 -->
+          <div class="lg:col-span-8 space-y-3">
+            <div id="verdictBanner" class="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-950 space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="text-base" id="verdictIcon">👥</span>
+                <h4 class="font-black text-sm" id="verdictTitle">같은 단어이나 목소리 톤(음색)이 서로 다른 두 학생입니다!</h4>
+              </div>
+              <p class="text-xs text-indigo-800 leading-relaxed" id="verdictDesc">
+                단어의 모음 구조(Mid Band 에너지: 0.76 vs 0.79)는 매우 일치하지만, 
+                성대 기본 음정(Low Band: 0.45 vs 0.38)에서 차이가 납니다. 이는 두 사람이 같은 단어를 말했을 때 전형적으로 나타나는 패턴입니다.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 text-xs text-center mono">
+              <div class="p-2 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="text-[10px] text-slate-400">음량(RMS) 일치도</div>
+                <div class="font-bold text-slate-800" id="metricRMS">94.1%</div>
+              </div>
+              <div class="p-2 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="text-[10px] text-slate-400">모음 포만트 일치도</div>
+                <div class="font-bold text-emerald-600" id="metricMid">96.3%</div>
+              </div>
+              <div class="p-2 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="text-[10px] text-slate-400">음정(Low Hz) 차이</div>
+                <div class="font-bold text-indigo-600" id="metricLow">15.5% 차이</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- 파이썬 코드 박스 -->
+      <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-md space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <span class="text-xs mono text-slate-400 ml-2">🐍 [파이썬 코드로 구현하기] 03_2인_음성_유사도_비교.py</span>
+          </div>
+          <button onclick="copyCode('sampleCode3', this)" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>코드 복사</span>
+          </button>
+        </div>
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode3"># [3단계] 두 학생의 음성 특징 벡터로부터 코사인 유사도(Cosine Similarity)를 계산하고 일치율 판정하기
+import numpy as np
+
+def compute_voice_similarity(feat_a, feat_b):
+    """
+    두 음성 특징 벡터 A, B 사이의 코사인 유사도를 계산합니다.
+    공식: cos(theta) = (A · B) / (||A|| * ||B||)
+    """
+    norm_a = np.linalg.norm(feat_a) + 1e-12
+    norm_b = np.linalg.norm(feat_b) + 1e-12
+    cosine_sim = np.dot(feat_a, feat_b) / (norm_a * norm_b)
+    
+    # 0.0 ~ 1.0 클리핑 및 백분율(%) 환산
+    percentage = float(np.clip(cosine_sim, 0.0, 1.0)) * 100.0
+    
+    # 교육용 자동 판정 기준
+    if percentage >= 90.0:
+        verdict = "🏆 [판정: 90% 이상] 동일 인물이거나 발음이 거의 일치합니다! (화자/단어 일치)"
+    elif percentage >= 70.0:
+        verdict = "👥 [판정: 70~89%] 같은 단어이나 목소리 톤(음색)이 서로 다른 두 학생입니다!"
+    else:
+        verdict = "❌ [판정: 70% 미만] 서로 다른 단어를 말했거나 목소리 특징이 완전히 다릅니다!"
+        
+    return percentage, verdict
+
+# [실전 비교 예시]
+# feat_student_1 = extract_sound_fingerprint(student1_wave, 16000, "STU-01")['vector']
+# feat_student_2 = extract_sound_fingerprint(student2_wave, 16000, "STU-02")['vector']
+
+# score, verdict = compute_voice_similarity(feat_student_1, feat_student_2)
+# print(f"💡 두 학생 목소리 일치율: {score:.2f}%")
+# print(f"📋 최종 판정: {verdict}")</pre>
+      </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- [TAB 4] 4단계: 실시간 STT 음성인식 & 스마트 AI 비서        -->
+    <!-- ========================================================= -->
+    <div id="content-tab4" class="hidden space-y-6">
+
+      <!-- 헤더 및 마이크 버튼 -->
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-0.5 rounded-full">100% 무설치 웹 실습실</span>
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900">브라우저 실시간 음성인식 & 스마트 AI 비서</h2>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            파이썬 코랩을 켜지 않고도 브라우저에서 마이크를 켜고 말하면 AI가 실시간으로 자막을 받아적고 질문에 음성으로 대답합니다!
+          </p>
+        </div>
+        <button onclick="toggleSpeechRecognition()" id="btnMicToggle" class="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm flex items-center gap-2 shadow-lg shadow-indigo-200 transition">
+          <i data-lucide="mic" class="w-5 h-5" id="micIconStatus"></i>
+          <span id="micBtnLabel">마이크 켜고 말하기</span>
+        </button>
+      </div>
+
+      <!-- 실시간 마이크 오디오 비주얼라이저 -->
+      <div class="bg-slate-900 rounded-3xl p-5 shadow-inner text-white space-y-3">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" id="recPing" style="display:none;"></span>
+            <span class="font-bold text-slate-300">내 목소리 실시간 오디오 파형</span>
+          </div>
+          <span id="micStatusText" class="mono text-slate-400">마이크 대기 중...</span>
+        </div>
+        <canvas id="liveMicCanvas" width="800" height="120" class="w-full h-28 rounded-xl bg-slate-950"></canvas>
+      </div>
+
+      <!-- 실시간 자막 출력창 및 AI 답변 창 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- 1. 내가 말한 내용 (STT 인식 결과) -->
+        <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="text-base">🗣️</span>
+              <h3 class="font-bold text-sm text-slate-900">내가 말한 내용 (실시간 STT)</h3>
+            </div>
+            <span class="text-[11px] font-bold text-slate-400" id="recTimeInfo">실시간 인식 대기</span>
+          </div>
+          <div id="sttResultBox" class="min-h-[140px] p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-sm font-semibold text-slate-700 flex items-center justify-center text-center">
+            상단의 [마이크 켜고 말하기] 버튼을 누르고<br>"오늘 급식 뭐야?", "시간표 알려줘" 등을 말씀해 보세요!
+          </div>
+        </div>
+
+        <!-- 2. AI 스마트 비서의 답변 (TTS) -->
+        <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="text-base">🤖</span>
+              <h3 class="font-bold text-sm text-slate-900">스마트 AI 비서의 응답 (TTS 음성 안내)</h3>
+            </div>
+            <span class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">스마트 교실 비서</span>
+          </div>
+          <div id="ttsReplyBox" class="min-h-[140px] p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 text-sm font-bold text-emerald-950 flex items-center justify-center text-center leading-relaxed">
+            "안녕하세요! 우리 반의 인공지능 스마트 비서입니다.<br>급식, 시간표, 발음 챌린지 등 무엇이든 물어보세요!" ✨
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 추천 음성 명령어 빠른 클릭 버튼 -->
+      <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+        <h4 class="text-xs font-bold text-slate-500">마이크가 없어도 괜찮아요! 아래 예시 명령을 클릭해보세요:</h4>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="simulateVoiceCommand('오늘 점심 급식 뭐야?')" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-xs font-bold text-slate-700 transition">
+            🍱 "오늘 점심 급식 뭐야?"
+          </button>
+          <button onclick="simulateVoiceCommand('오늘 수업 시간표 알려줘')" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-xs font-bold text-slate-700 transition">
+            📅 "오늘 수업 시간표 알려줘"
+          </button>
+          <button onclick="simulateVoiceCommand('교실 불 켜줘')" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-xs font-bold text-slate-700 transition">
+            💡 "교실 불 켜줘"
+          </button>
+          <button onclick="simulateVoiceCommand('간장 공장 공장장은 강 공장장이다')" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-xs font-bold text-slate-700 transition">
+            🎯 "간장 공장 공장장은 강 공장장이다" (발음 테스트)
+          </button>
+        </div>
+      </div>
+
+      <!-- 파이썬 코드 박스 -->
+      <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-md space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <span class="text-xs mono text-slate-400 ml-2">🐍 [파이썬 코드로 구현하기] 04_Whisper_스마트비서.py</span>
+          </div>
+          <button onclick="copyCode('sampleCode4', this)" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>코드 복사</span>
+          </button>
+        </div>
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode4"># [4단계] OpenAI Whisper AI 모델로 마이크 음성을 받아쓰고 스마트 비서 답변 음성(TTS) 생성하기
+import whisper
+from gtts import gTTS
+import IPython.display as ipd
+
+# 1. 최신 Whisper AI 모델 로드 (가장 빠른 base 모델)
+model = whisper.load_model("base")
+
+# 2. 학생의 음성 파일(WAV) 텍스트로 변환 (STT)
+result = model.transcribe("student_voice.wav", language="ko")
+user_query = result['text'].strip()
+print(f"🗣️ 학생이 말한 내용: {user_query}")
+
+# 3. 인공지능 비서 응답 로직 분기
+def smart_assistant_response(query):
+    if "급식" in query:
+        return "오늘 우리 학교 중식 메뉴는 혼합잡곡밥, 맑은 된장찌개, 매콤달콤 주꾸미불고기, 고소한 고르곤졸라피자입니다. 맛있게 드세요!"
+    elif "시간표" in query:
+        return "오늘 수업 시간표는 1교시 국어, 2교시 수학, 3교시 과학, 4교시 인공지능입니다!"
+    elif "불" in query:
+        return "교실 스마트 조명을 환하게 켰습니다! ✨"
+    elif "공장장" in query:
+        return "🎯 발음 클리닉 결과: '간장 공장 공장장' 챌린지 성공! 발음 점수 95점입니다. 아나운서 등급!"
+    else:
+        return f"'{query}'라고 말씀하셨군요. 언제든 필요한 내용을 물어보세요!"
+
+reply_msg = smart_assistant_response(user_query)
+print(f"🤖 스마트 AI 비서의 답변: {reply_msg}")
+
+# 4. 답변을 음성(TTS)으로 합성하여 재생
+tts = gTTS(text=reply_msg, lang="ko")
+tts.save("response.mp3")
+ipd.Audio("response.mp3", autoplay=True)</pre>
+      </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- [TAB 5] 5단계: 교사용 지도안 & 커리큘럼                   -->
+    <!-- ========================================================= -->
+    <div id="content-tab5" class="hidden space-y-6">
+
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div>
+          <span class="bg-indigo-100 text-indigo-800 text-xs font-black px-2.5 py-1 rounded-md">TEACHING GUIDE</span>
+          <h2 class="text-2xl font-black text-slate-900 mt-2">인공지능 음성인식 2차시 수업 지도안 요약</h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            중·고등학교 정보/인공지능 교과 및 방과후 수업, 교원 연수에 바로 활용할 수 있는 차시별 타임라인과 수업 운영 팁입니다.
+          </p>
+        </div>
+
+        <!-- 2차시 타임라인 표 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <!-- 1차시 카드 -->
+          <div class="border border-slate-200 rounded-2xl p-5 bg-slate-50 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-black text-sm text-indigo-700">📘 [1차시] 소리의 원리와 파형 시각화</span>
+              <span class="text-xs font-bold text-slate-500">45분</span>
+            </div>
+            <ul class="text-xs text-slate-600 space-y-2 list-disc list-inside">
+              <li><strong>0~10분</strong>: "컴퓨터는 귀도 없는데 어떻게 들을까?" 도입 발문</li>
+              <li><strong>10~25분</strong>: 피아노 '라(440Hz)' 소리 코드로 만들기 & 주파수 체험</li>
+              <li><strong>25~38분</strong>: 소리의 3요소(진폭, 주파수, 음색) & 무지개 스펙트로그램 시각화</li>
+              <li><strong>38~45분</strong>: 소리 지문 ID 부여 및 2차시 음성 유사도 대결 예고</li>
+            </ul>
+          </div>
+
+          <!-- 2차시 카드 -->
+          <div class="border border-slate-200 rounded-2xl p-5 bg-slate-50 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-black text-sm text-emerald-700">📗 [2차시] 2인 음성 유사도 대결 & 스마트 비서</span>
+              <span class="text-xs font-bold text-slate-500">45분</span>
+            </div>
+            <ul class="text-xs text-slate-600 space-y-2 list-disc list-inside">
+              <li><strong>0~10분</strong>: 음성인식(STT) 원리와 OpenAI Whisper 모델 소개</li>
+              <li><strong>10~22분</strong>: <strong>[핵심 실습] 2인 학생 목소리 유사도 대결</strong> (코사인 유사도 일치율 채점)</li>
+              <li><strong>22~33분</strong>: <strong>[프로젝트 1]</strong> "간장 공장 공장장" 발음 채점 게임 🎮</li>
+              <li><strong>33~42분</strong>: <strong>[프로젝트 2]</strong> 우리 반 스마트 음성 비서 만들기 🏫</li>
+              <li><strong>42~45분</strong>: 청각 장애인을 위한 자막 안경과 AI 윤리 토론</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- 주피터 노트북 파일 안내 -->
+        <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-5 space-y-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="file-code" class="w-5 h-5 text-indigo-700"></i>
+            <h4 class="font-bold text-sm text-indigo-950">준비된 Jupyter Notebook 실습 파일 안내</h4>
+          </div>
+          <p class="text-xs text-indigo-900 leading-relaxed">
+            현재 <code>05_음성인식_인공지능/</code> 폴더 내에 코랩 최적화 <code>.ipynb</code> 파일이 준비되어 있습니다.
+            구글 드라이브에 업로드 후 학생들에게 링크만 공유하시면 즉시 수업이 가능합니다.
+          </p>
+          <div class="space-y-1.5 mono text-xs text-indigo-800">
+            <div>• <code class="font-bold bg-white px-2 py-0.5 rounded">01_음성인식_기초_소리의_파형과_원리.ipynb</code> (1차시 기초편)</div>
+            <div>• <code class="font-bold bg-white px-2 py-0.5 rounded">02_음성인식_실전_AI_귀_만들기와_스마트_비서.ipynb</code> (2차시 실전편)</div>
+            <div>• <code class="font-bold bg-white px-2 py-0.5 rounded">음성인식_수업_교사용_지도안.md</code> (상세 수업 지도안)</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- JavaScript 핵심 로직                       -->
+  <!-- ========================================== -->
+  <script>
+    // 1. 탭 전환
+    function switchTab(tabId) {
+      ['tab1', 'tab2', 'tab3', 'tab4', 'tab5'].forEach(t => {
+        const content = document.getElementById(`content-${t}`);
+        const btn = document.getElementById(`btn-${t}`);
+        if (!content || !btn) return;
+        if (t === tabId) {
+          content.classList.remove('hidden');
+          btn.classList.add('tab-active');
+        } else {
+          content.classList.add('hidden');
+          btn.classList.remove('tab-active');
+        }
+      });
+      lucide.createIcons();
+      if (tabId === 'tab1') drawSynthWave();
+      if (tabId === 'tab2') renderFFTCanvas();
+      if (tabId === 'tab3') renderWaveforms();
+    }
+
+    // 코드 복사 헬퍼
+    function copyCode(preId, btn) {
+      const code = document.getElementById(preId).innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i><span>복사 완료!</span>';
+        lucide.createIcons();
+        setTimeout(() => {
+          btn.innerHTML = original;
+          lucide.createIcons();
+        }, 2000);
+      });
+    }
+
+    // ==========================================
+    // TAB 1: 신시사이저 & 실시간 파형
+    // ==========================================
+    let audioCtx = null;
+    let osc = null;
+    let gainNode = null;
+    let isPlaying = false;
+    let currentFreq = 440;
+    let currentVol = 0.5;
+    let currentWaveType = 'sine';
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function toggleOscillator() {
+      initAudio();
+      const btn = document.getElementById('btnOscPlay');
+      const text = document.getElementById('oscBtnText');
+      const icon = document.getElementById('oscIcon');
+
+      if (!isPlaying) {
+        osc = audioCtx.createOscillator();
+        gainNode = audioCtx.createGain();
+        osc.type = currentWaveType;
+        osc.frequency.setValueAtTime(currentFreq, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(currentVol, audioCtx.currentTime);
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.start();
+        isPlaying = true;
+        btn.classList.replace('bg-indigo-600', 'bg-rose-600');
+        btn.classList.replace('hover:bg-indigo-700', 'hover:bg-rose-700');
+        text.innerText = '소리 정지하기';
+      } else {
+        if (osc) {
+          osc.stop();
+          osc.disconnect();
+          osc = null;
+        }
+        isPlaying = false;
+        btn.classList.replace('bg-rose-600', 'bg-indigo-600');
+        btn.classList.replace('hover:bg-rose-700', 'hover:bg-indigo-700');
+        text.innerText = '소리 재생하기';
+      }
+    }
+
+    function updateFreq(val) {
+      currentFreq = parseFloat(val);
+      document.getElementById('sliderValFreq').innerText = `${currentFreq} Hz`;
+      document.getElementById('dispHz').innerText = `${currentFreq} Hz`;
+      if (osc && audioCtx) {
+        osc.frequency.setValueAtTime(currentFreq, audioCtx.currentTime);
+      }
+      drawSynthWave();
+    }
+
+    function updateVol(val) {
+      currentVol = parseFloat(val) / 100;
+      document.getElementById('sliderValVol').innerText = `${val} %`;
+      if (gainNode && audioCtx) {
+        gainNode.gain.setValueAtTime(currentVol, audioCtx.currentTime);
+      }
+      drawSynthWave();
+    }
+
+    function setFreq(val, label) {
+      document.getElementById('freqSlider').value = val;
+      updateFreq(val);
+      document.getElementById('dispHz').innerText = `${val} Hz (${label})`;
+    }
+
+    function setWaveType(type) {
+      currentWaveType = type;
+      ['btnWaveSine', 'btnWaveSquare', 'btnWaveSaw'].forEach(id => {
+        const b = document.getElementById(id);
+        b.className = 'p-1.5 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-600';
+      });
+      if (type === 'sine') document.getElementById('btnWaveSine').className = 'p-1.5 text-xs font-bold rounded-lg border border-indigo-400 bg-indigo-50 text-indigo-700';
+      if (type === 'square') document.getElementById('btnWaveSquare').className = 'p-1.5 text-xs font-bold rounded-lg border border-indigo-400 bg-indigo-50 text-indigo-700';
+      if (type === 'sawtooth') document.getElementById('btnWaveSaw').className = 'p-1.5 text-xs font-bold rounded-lg border border-indigo-400 bg-indigo-50 text-indigo-700';
+      document.getElementById('dispType').innerText = type.toUpperCase() + ' WAVE';
+      if (osc) osc.type = type;
+      drawSynthWave();
+    }
+
+    function drawSynthWave() {
+      const cvs = document.getElementById('synthCanvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      const w = cvs.width;
+      const h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // 격자선
+      ctx.strokeStyle = '#312E81';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, h / 2);
+      ctx.lineTo(w, h / 2);
+      ctx.stroke();
+
+      // 파형 그리기
+      ctx.strokeStyle = '#34D399';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      const cycles = (currentFreq / 100);
+      for (let x = 0; x < w; x++) {
+        const t = (x / w) * cycles * 2 * Math.PI;
+        let y = 0;
+        if (currentWaveType === 'sine') {
+          y = Math.sin(t);
+        } else if (currentWaveType === 'square') {
+          y = Math.sin(t) >= 0 ? 1 : -1;
+        } else if (currentWaveType === 'sawtooth') {
+          y = 2 * ((t / (2 * Math.PI)) % 1) - 1;
+        }
+        const py = h / 2 - y * (currentVol * 65);
+        if (x === 0) ctx.moveTo(x, py);
+        else ctx.lineTo(x, py);
+      }
+      ctx.stroke();
+    }
+
+    // ==========================================
+    // TAB 2: 소리 지문 & FFT 고유 ID
+    // ==========================================
+    const sampleData = {
+      apple:  { id: 'VOICE-01', name: '사과', vector: [0.312, 0.145, 0.485, 0.720, 0.340] },
+      banana: { id: 'VOICE-02', name: '바나나', vector: [0.285, 0.110, 0.590, 0.650, 0.220] },
+      school: { id: 'VOICE-03', name: '학교', vector: [0.350, 0.195, 0.380, 0.710, 0.410] },
+      ai:     { id: 'VOICE-04', name: '인공지능', vector: [0.340, 0.210, 0.420, 0.680, 0.450] }
+    };
+    let currentSampleKey = 'apple';
+
+    function selectSampleID(key) {
+      currentSampleKey = key;
+      const data = sampleData[key];
+      ['apple', 'banana', 'school', 'ai'].forEach(k => {
+        const cap = k.charAt(0).toUpperCase() + k.slice(1);
+        const b = document.getElementById(`btnSample${cap}`);
+        if (!b) return;
+        if (k === key) {
+          b.className = 'px-3 py-1.5 rounded-xl border border-purple-400 bg-purple-50 text-purple-700 text-xs font-black transition';
+        } else {
+          b.className = 'px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-bold hover:bg-slate-50 transition';
+        }
+      });
+
+      document.getElementById('spectrumTitle').innerText = `"${data.name}" (${data.id})`;
+      document.getElementById('badgeSoundID').innerText = `ID: ${data.id}`;
+      document.getElementById('valRMS').innerText = data.vector[0].toFixed(3);
+      document.getElementById('barRMS').style.width = `${data.vector[0] * 100}%`;
+      document.getElementById('valZCR').innerText = data.vector[1].toFixed(3);
+      document.getElementById('barZCR').style.width = `${data.vector[1] * 100}%`;
+      document.getElementById('valLow').innerText = data.vector[2].toFixed(3);
+      document.getElementById('barLow').style.width = `${data.vector[2] * 100}%`;
+      document.getElementById('valMid').innerText = data.vector[3].toFixed(3);
+      document.getElementById('barMid').style.width = `${data.vector[3] * 100}%`;
+      document.getElementById('valHigh').innerText = data.vector[4].toFixed(3);
+      document.getElementById('barHigh').style.width = `${data.vector[4] * 100}%`;
+      document.getElementById('textFullVector').innerText = `[${data.vector.map(v => v.toFixed(3)).join(', ')}]`;
+
+      renderFFTCanvas();
+    }
+
+    function renderFFTCanvas() {
+      const cvs = document.getElementById('fftCanvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      const w = cvs.width;
+      const h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const v = sampleData[currentSampleKey].vector;
+      // 가상 FFT 막대 그래프 그리기 (64개 빈)
+      const bars = 48;
+      const barW = (w / bars) - 2;
+
+      for (let i = 0; i < bars; i++) {
+        let mag = 0;
+        if (i < 8) mag = v[2] * (1 - i / 12); // low
+        else if (i < 28) mag = v[3] * Math.sin(((i - 8) / 20) * Math.PI); // mid
+        else mag = v[4] * (1 - (i - 28) / 24); // high
+        mag += Math.sin(i * 1.5) * 0.08;
+        mag = Math.max(0.05, Math.min(0.95, mag));
+
+        const barH = mag * (h - 20);
+        const x = i * (barW + 2);
+        const y = h - barH;
+
+        // 색상 그라데이션
+        const grad = ctx.createLinearGradient(0, y, 0, h);
+        grad.addColorStop(0, '#C084FC');
+        grad.addColorStop(1, '#4F46E5');
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, y, barW, barH);
+      }
+    }
+
+    // ==========================================
+    // TAB 3: [핵심] 2인 학생 목소리 유사도 대결
+    // ==========================================
+    let featA = [0.320, 0.140, 0.450, 0.760, 0.330];
+    let featB = [0.300, 0.160, 0.380, 0.790, 0.360];
+    let isOverlay = false;
+
+    function renderWaveforms() {
+      drawTrackCanvas('canvasWaveA', featA, '#4F46E5');
+      drawTrackCanvas('canvasWaveB', featB, '#10B981');
+      if (isOverlay) drawOverlayCanvas();
+      calculateAndRenderSimilarity();
+    }
+
+    function drawTrackCanvas(canvasId, feat, color) {
+      const cvs = document.getElementById(canvasId);
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      const w = cvs.width;
+      const h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.strokeStyle = '#1E293B';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, h / 2);
+      ctx.lineTo(w, h / 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      const n = w;
+      for (let x = 0; x < n; x++) {
+        // 특징 벡터 반영한 가상 합성 파형
+        const t = (x / n) * 14 * Math.PI;
+        const low = feat[2] * Math.sin(t * 0.4);
+        const mid = feat[3] * Math.sin(t * 1.8);
+        const high = feat[4] * Math.sin(t * 4.5);
+        const env = Math.sin((x / n) * Math.PI); // 엔벨로프
+        const y = (low + mid + high) * env * 0.5;
+
+        const py = h / 2 - y * (h * 0.42);
+        if (x === 0) ctx.moveTo(x, py);
+        else ctx.lineTo(x, py);
+      }
+      ctx.stroke();
+    }
+
+    function drawOverlayCanvas() {
+      const cvs = document.getElementById('canvasOverlay');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      const w = cvs.width;
+      const h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.strokeStyle = '#334155';
+      ctx.beginPath();
+      ctx.moveTo(0, h / 2);
+      ctx.lineTo(w, h / 2);
+      ctx.stroke();
+
+      // 파형 A (Indigo 반투명)
+      ctx.strokeStyle = 'rgba(99, 102, 241, 0.85)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const t = (x / w) * 14 * Math.PI;
+        const y = (featA[2] * Math.sin(t * 0.4) + featA[3] * Math.sin(t * 1.8) + featA[4] * Math.sin(t * 4.5)) * Math.sin((x / w) * Math.PI) * 0.5;
+        const py = h / 2 - y * (h * 0.4);
+        if (x === 0) ctx.moveTo(x, py); else ctx.lineTo(x, py);
+      }
+      ctx.stroke();
+
+      // 파형 B (Emerald 반투명)
+      ctx.strokeStyle = 'rgba(52, 211, 153, 0.85)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const t = (x / w) * 14 * Math.PI;
+        const y = (featB[2] * Math.sin(t * 0.4) + featB[3] * Math.sin(t * 1.8) + featB[4] * Math.sin(t * 4.5)) * Math.sin((x / w) * Math.PI) * 0.5;
+        const py = h / 2 - y * (h * 0.4);
+        if (x === 0) ctx.moveTo(x, py); else ctx.lineTo(x, py);
+      }
+      ctx.stroke();
+    }
+
+    function toggleOverlayView() {
+      isOverlay = !isOverlay;
+      const box = document.getElementById('overlayCanvasBox');
+      const text = document.getElementById('textToggleOverlay');
+      if (isOverlay) {
+        box.classList.remove('hidden');
+        text.innerText = '파형 겹쳐보기 (Overlay) OFF';
+        drawOverlayCanvas();
+      } else {
+        box.classList.add('hidden');
+        text.innerText = '파형 겹쳐보기 (Overlay) ON';
+      }
+    }
+
+    function loadComparisonPreset(presetId) {
+      if (presetId === 1) {
+        // [실험 1] 같은 단어, 다른 목소리
+        document.getElementById('labelTrackA').innerText = '단어: "안녕하세요" (학생 A: 차분한 목소리)';
+        document.getElementById('labelTrackB').innerText = '단어: "안녕하세요" (학생 B: 밝은 목소리)';
+        featA = [0.320, 0.140, 0.450, 0.760, 0.330];
+        featB = [0.300, 0.160, 0.380, 0.790, 0.360];
+      } else if (presetId === 2) {
+        // [실험 2] 같은 사람, 같은 단어 2번
+        document.getElementById('labelTrackA').innerText = '단어: "사과" (학생 A 1차 녹음)';
+        document.getElementById('labelTrackB').innerText = '단어: "사과" (학생 A 2차 녹음)';
+        featA = [0.310, 0.142, 0.480, 0.720, 0.340];
+        featB = [0.315, 0.140, 0.475, 0.730, 0.335];
+      } else if (presetId === 3) {
+        // [실험 3] 완전히 다른 단어
+        document.getElementById('labelTrackA').innerText = '단어: "인공지능" (학생 A)';
+        document.getElementById('labelTrackB').innerText = '단어: "선형회귀" (학생 B)';
+        featA = [0.420, 0.220, 0.310, 0.810, 0.420];
+        featB = [0.180, 0.080, 0.650, 0.420, 0.190];
+      }
+
+      // 수치 업데이트
+      for (let i = 0; i < 5; i++) {
+        document.getElementById(`featA_${i}`).innerText = featA[i].toFixed(2);
+        document.getElementById(`featB_${i}`).innerText = featB[i].toFixed(2);
+      }
+      renderWaveforms();
+    }
+
+    function calculateAndRenderSimilarity() {
+      // 코사인 유사도: dot(A, B) / (norm(A) * norm(B))
+      let dot = 0, normA = 0, normB = 0;
+      for (let i = 0; i < 5; i++) {
+        dot += featA[i] * featB[i];
+        normA += featA[i] * featA[i];
+        normB += featB[i] * featB[i];
+      }
+      normA = Math.sqrt(normA) || 1e-12;
+      normB = Math.sqrt(normB) || 1e-12;
+      let cosSim = dot / (normA * normB);
+      cosSim = Math.max(0, Math.min(1, cosSim));
+      const percent = (cosSim * 100).toFixed(1);
+
+      document.getElementById('scorePercent').innerText = `${percent}%`;
+      document.getElementById('gaugeBar').style.width = `${percent}%`;
+      document.getElementById('cosThetaText').innerText = `\cos(\theta) = ${cosSim.toFixed(4)}`;
+
+      // 세부 지표
+      const rmsDiff = Math.abs(featA[0] - featB[0]) / ((featA[0] + featB[0]) / 2) * 100;
+      const midDiff = Math.abs(featA[3] - featB[3]) / ((featA[3] + featB[3]) / 2) * 100;
+      const lowDiff = Math.abs(featA[2] - featB[2]) / ((featA[2] + featB[2]) / 2) * 100;
+
+      document.getElementById('metricRMS').innerText = `${(100 - rmsDiff).toFixed(1)}%`;
+      document.getElementById('metricMid').innerText = `${(100 - midDiff).toFixed(1)}%`;
+      document.getElementById('metricLow').innerText = `${lowDiff.toFixed(1)}% 차이`;
+
+      // 판정 배너 업데이트
+      const banner = document.getElementById('verdictBanner');
+      const icon = document.getElementById('verdictIcon');
+      const title = document.getElementById('verdictTitle');
+      const desc = document.getElementById('verdictDesc');
+
+      if (cosSim >= 0.90) {
+        banner.className = 'p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-950 space-y-1';
+        icon.innerText = '🏆';
+        title.innerText = '동일 인물이거나 발음이 거의 일치합니다! (화자/단어 일치)';
+        desc.innerText = `코사인 유사도가 ${percent}%에 달합니다. 기본 음정(Low)과 모음 포만트(Mid), 마찰음(High)의 비율이 거의 완벽하게 일치하여 같은 화자일 가능성이 매우 높습니다!`;
+        confetti({ particleCount: 30, spread: 60, origin: { y: 0.7 } });
+      } else if (cosSim >= 0.70) {
+        banner.className = 'p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-950 space-y-1';
+        icon.innerText = '👥';
+        title.innerText = '같은 단어이나 목소리 톤(음색)이 서로 다른 두 학생입니다!';
+        desc.innerText = `일치율이 ${percent}%입니다. 모음의 핵심 포만트 패턴은 일치하지만, 각 학생 고유의 목소리 톤(기본 주파수 F0)과 발음 습관 차이가 감지되었습니다. 전형적인 다른 화자 패턴입니다.`;
+      } else {
+        banner.className = 'p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-950 space-y-1';
+        icon.innerText = '❌';
+        title.innerText = '서로 다른 단어를 말했거나 목소리 특징이 완전히 다릅니다!';
+        desc.innerText = `일치율이 ${percent}%에 불과합니다. 주파수 대역 에너지 분포가 완전히 상이하므로 서로 다른 단어이거나 전혀 다른 억양으로 발음된 상태입니다.`;
+      }
+    }
+
+    // 마이크 녹음 시뮬레이션 (학생 A/B)
+    function toggleRecordStudent(track) {
+      initAudio();
+      const btnText = document.getElementById(`btnTextRec${track}`);
+      const status = document.getElementById(`status${track}`);
+
+      btnText.innerText = '녹음 중...';
+      status.innerText = '● 마이크 음성 분석 중';
+      status.className = 'text-rose-400 font-bold animate-pulse';
+
+      setTimeout(() => {
+        btnText.innerText = '녹음 완료!';
+        status.innerText = '분석 완료';
+        status.className = 'text-emerald-400 font-bold';
+        // 가상 무작위 음성 특징 약간 변형하여 부여
+        const base = track === 'A' ? featA : featB;
+        const newFeat = base.map(v => Math.max(0.1, v + (Math.random() - 0.5) * 0.08));
+        if (track === 'A') featA = newFeat;
+        else featB = newFeat;
+        for (let i = 0; i < 5; i++) {
+          document.getElementById(`feat${track}_${i}`).innerText = newFeat[i].toFixed(2);
+        }
+        renderWaveforms();
+        setTimeout(() => { btnText.innerText = '마이크 녹음'; }, 1500);
+      }, 1800);
+    }
+
+    // ==========================================
+    // TAB 4: 실시간 Web Speech STT & AI 비서
+    // ==========================================
+    let recognition = null;
+    let isRecognizing = false;
+
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('이 브라우저는 Web Speech API를 지원하지 않습니다. 크롬(Chrome) 브라우저를 권장합니다.');
+        return null;
+      }
+      const rec = new SpeechRecognition();
+      rec.lang = 'ko-KR';
+      rec.continuous = false;
+      rec.interimResults = true;
+
+      rec.onstart = function() {
+        isRecognizing = true;
+        document.getElementById('micBtnLabel').innerText = '음성 듣는 중... (말씀하세요)';
+        document.getElementById('btnMicToggle').classList.replace('bg-indigo-600', 'bg-rose-600');
+        document.getElementById('recPing').style.display = 'inline-block';
+        document.getElementById('micStatusText').innerText = '● 마이크 활성화됨 (인식 중)';
+        document.getElementById('sttResultBox').innerText = '듣고 있습니다...';
+      };
+
+      rec.onresult = function(event) {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript;
+        }
+        document.getElementById('sttResultBox').innerText = transcript;
+        if (event.results[0].isFinal) {
+          handleVoiceQuery(transcript);
+        }
+      };
+
+      rec.onend = function() {
+        isRecognizing = false;
+        document.getElementById('micBtnLabel').innerText = '마이크 켜고 말하기';
+        document.getElementById('btnMicToggle').classList.replace('bg-rose-600', 'bg-indigo-600');
+        document.getElementById('recPing').style.display = 'none';
+        document.getElementById('micStatusText').innerText = '마이크 대기 중...';
+      };
+
+      rec.onerror = function(event) {
+        document.getElementById('micStatusText').innerText = `오류: ${event.error}`;
+      };
+
+      return rec;
+    }
+
+    function toggleSpeechRecognition() {
+      if (!recognition) {
+        recognition = initSpeechRecognition();
+      }
+      if (!recognition) return;
+
+      if (!isRecognizing) {
+        try { recognition.start(); } catch(e) {}
+      } else {
+        recognition.stop();
+      }
+    }
+
+    function handleVoiceQuery(text) {
+      let reply = '';
+      if (text.includes('급식') || text.includes('점심') || text.includes('밥')) {
+        reply = '오늘 우리 학교 중식 메뉴는 혼합잡곡밥, 맑은 된장찌개, 매콤달콤 주꾸미불고기, 고소한 고르곤졸라피자입니다. 맛있게 드세요!';
+      } else if (text.includes('시간표') || text.includes('수업')) {
+        reply = '오늘 수업 시간표는 1교시 국어, 2교시 수학, 3교시 과학, 4교시 인공지능 실습입니다!';
+      } else if (text.includes('불') || text.includes('조명') || text.includes('전등')) {
+        reply = '교실 스마트 조명을 환하게 켰습니다! ✨';
+      } else if (text.includes('공장장')) {
+        reply = '🎯 발음 클리닉 챌린지 성공! 발음 정확도 95점입니다. 훌륭한 아나운서 발음이에요!';
+      } else {
+        reply = `"${text}"에 대해 말씀하셨군요. 언제든 필요한 학교 생활 정보를 물어보세요!`;
+      }
+
+      document.getElementById('ttsReplyBox').innerHTML = `"${reply}" 🔊`;
+      speakText(reply);
+    }
+
+    function simulateVoiceCommand(cmd) {
+      document.getElementById('sttResultBox').innerText = cmd;
+      handleVoiceQuery(cmd);
+    }
+
+    function speakText(msg) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(msg);
+        utter.lang = 'ko-KR';
+        utter.rate = 1.0;
+        utter.pitch = 1.1;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    // 초기화
+    window.addEventListener('load', () => {
+      lucide.createIcons();
+      drawSynthWave();
+      selectSampleID('apple');
+      loadComparisonPreset(1);
+    });
+  </script>
+</body>
+</html>

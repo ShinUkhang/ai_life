@@ -1,0 +1,2299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문학 & 규정집 AI 에이전트 실습실 - AI School</title>
+  <style>
+    :root {
+      --brand-green: #03c75a;
+      --brand-green-hover: #17b75e;
+      --brand-blue: #1f4ef5;
+      --brand-blue-hover: #1740d6;
+      --brand-bg: #f5f6f8;
+      --brand-border: #e4e8eb;
+      --card-bg: #ffffff;
+      --text-main: #111111;
+      --text-sub: #555555;
+      --text-gray: #888888;
+      --accent-orange: #ff6b00;
+      --accent-purple: #7c3aed;
+      --accent-red: #ef4444;
+      --accent-red-hover: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+    }
+
+    body {
+      background-color: var(--brand-bg);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* GNB 헤더 */
+    .portal-gnb {
+      background: #ffffff;
+      border-bottom: 1px solid var(--brand-border);
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .gnb-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-logo {
+      color: var(--brand-green);
+      font-weight: 900;
+      font-size: 24px;
+      letter-spacing: -1.5px;
+      text-decoration: none;
+    }
+
+    .service-badge {
+      background: #eefbf4;
+      color: var(--brand-green);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .service-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #333333;
+    }
+
+    /* API 상태 및 수업 관리 바 */
+    .api-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
+    .api-status-badge.online {
+      background: #ecfdf5;
+      color: #059669;
+      border-color: #a7f3d0;
+    }
+    .api-status-badge.locked {
+      background: #fef2f2;
+      color: #dc2626;
+      border-color: #fecaca;
+    }
+
+    .btn-api-settings {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+    .btn-api-settings:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    .btn-terminate-class {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #b91c1c;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+    .btn-terminate-class:hover {
+      background: #fecaca;
+      color: #991b1b;
+    }
+
+    /* SNB 탭 메뉴 */
+    .portal-snb {
+      background: #ffffff;
+      border-bottom: 1px solid var(--brand-border);
+      display: flex;
+      padding: 0 24px;
+      gap: 8px;
+    }
+
+    .snb-item {
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-sub);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .snb-item:hover {
+      color: var(--brand-green);
+    }
+
+    .snb-item.active {
+      color: var(--brand-green);
+      border-bottom-color: var(--brand-green);
+      font-weight: 700;
+    }
+
+    /* 본문 레이아웃 */
+    .main-container {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px 24px 60px 24px;
+      flex: 1;
+    }
+
+    .date-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-gray);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eaeaea;
+    }
+
+    .date-strong {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    /* 카드 스타일 */
+    .n-card {
+      background: var(--card-bg);
+      border: 1px solid var(--brand-border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    .n-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .n-card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .n-card-badge {
+      background: #f0f3f6;
+      color: var(--text-sub);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* 버튼 스타일 */
+    .btn-b-green {
+      background: var(--brand-green);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-b-green:hover { background: var(--brand-green-hover); }
+
+    .btn-b-blue {
+      background: var(--brand-blue);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-b-blue:hover { background: var(--brand-blue-hover); }
+
+    .btn-b-gray {
+      background: #f1f3f5;
+      color: #495057;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-b-gray:hover { background: #e9ecef; }
+
+    .btn-preset {
+      background: #ffffff;
+      border: 1px solid #dcdfe4;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-preset:hover {
+      border-color: var(--brand-blue);
+      color: var(--brand-blue);
+      background: #f0f5ff;
+    }
+    .btn-preset.active {
+      background: var(--brand-green);
+      border-color: var(--brand-green);
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    /* 그리드 레이아웃 */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .grid-3col {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* 토큰 태그 클라우드 */
+    .token-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      min-height: 70px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    .token-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .token-id {
+      background: var(--brand-blue);
+      color: white;
+      font-size: 10px;
+      border-radius: 3px;
+      padding: 1px 4px;
+    }
+
+    /* 코사인 각도기 캔버스 */
+    .angle-canvas-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    /* 챗봇 대화창 */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 520px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .msg-bubble {
+      max-width: 82%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .msg-user {
+      align-self: flex-end;
+      background: var(--brand-green);
+      color: #ffffff;
+      border-bottom-right-radius: 2px;
+    }
+
+    .msg-agent {
+      align-self: flex-start;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      color: var(--text-main);
+      border-bottom-left-radius: 2px;
+    }
+
+    .msg-source-quote {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: #f0fdf4;
+      border-left: 3px solid var(--brand-green);
+      border-radius: 0 4px 4px 0;
+      font-size: 12px;
+      color: #166534;
+      line-height: 1.5;
+    }
+
+    .msg-engine-badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+    .badge-gemini {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+    .badge-offline {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .chat-input-bar {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 13.5px;
+      outline: none;
+    }
+    .chat-input:focus {
+      border-color: var(--brand-green);
+    }
+
+    /* 추천 질문 칩 */
+    .chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .chip-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .chip-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    /* 텍스트 뷰어 박스 */
+    .doc-viewer {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 12.5px;
+      line-height: 1.7;
+      max-height: 220px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      color: #1e293b;
+    }
+
+    /* 수식/개념 박스 */
+    .math-explain-box {
+      background: #f8fafc;
+      border-left: 4px solid var(--brand-blue);
+      border-radius: 0 6px 6px 0;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #334155;
+    }
+
+    /* 탭 전환 제어 */
+    .tab-section {
+      display: none;
+    }
+    .tab-section.active {
+      display: block;
+    }
+
+    /* 유사도 테이블 */
+    .sim-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .sim-table th, .sim-table td {
+      border: 1px solid #e2e8f0;
+      padding: 7px 10px;
+      text-align: left;
+    }
+    .sim-table th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    /* 모달 팝업 */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal-window {
+      background: #ffffff;
+      width: 90%;
+      max-width: 520px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      overflow: hidden;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { transform: translateY(15px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-header {
+      padding: 16px 20px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--brand-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .modal-close-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #94a3b8;
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    .modal-footer {
+      padding: 12px 20px;
+      background: #f8fafc;
+      border-top: 1px solid var(--brand-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* 데이터 vs AI 분리 스타일 */
+    .data-vs-ai-banner {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 16px;
+    }
+    .pill-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .pill-title {
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .pill-title.data { color: #60a5fa; }
+    .pill-title.ai { color: #34d399; }
+    .pill-desc {
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+    .pipeline-arrow {
+      font-size: 24px;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    /* 페르소나 선택 칩 */
+    .persona-chip {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 12.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .persona-chip:hover {
+      border-color: var(--brand-green);
+      background: #f0fdf4;
+    }
+    .persona-chip.selected {
+      background: #e8f7ee;
+      border: 2px solid var(--brand-green);
+      color: #065f46;
+      font-weight: 700;
+    }
+
+    /* 입력 필드 */
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-sub);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .form-input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: var(--brand-green);
+    }
+    .form-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.6;
+      outline: none;
+      resize: vertical;
+      font-family: inherit;
+    }
+    .form-textarea:focus {
+      border-color: var(--brand-green);
+    }
+
+    @media (max-width: 900px) {
+      .grid-2col, .grid-3col { grid-template-columns: 1fr; }
+      .data-vs-ai-banner { grid-template-columns: 1fr; }
+      .pipeline-arrow { transform: rotate(90deg); margin: 6px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================
+       GNB 상단 헤더 & 교사용 API / 수업 종료 컨트롤 바
+       ======================================================== -->
+  <header class="portal-gnb">
+    <div class="gnb-left">
+      <span class="logo-badge" style="background:#03c75a; color:#ffffff; font-weight:900; font-size:14px; padding:4px 9px; border-radius:4px; letter-spacing:-0.5px;">AI LAB</span>
+      <span class="service-badge">AI School</span>
+      <span class="service-title">문학 & 규정집 AI 에이전트 실습실</span>
+    </div>
+
+    <!-- 우측: 구글 API 상태 및 수업 관리 버튼 -->
+    <div style="display:flex; gap:10px; align-items:center;">
+      <span class="api-status-badge" id="gnbApiBadge">
+        <span id="gnbApiDot">⚪</span> <span id="gnbApiText">오프라인 시뮬레이션 모드</span>
+      </span>
+
+      <button class="btn-api-settings" onclick="openApiModal()">
+        <span>🔑</span> 구글 API 설정
+      </button>
+
+      <button class="btn-terminate-class" onclick="terminateClassAndShredKey()">
+        <span>🚨</span> 수업 종료 (키 파기)
+      </button>
+    </div>
+  </header>
+
+  <!-- SNB 탭 메뉴 -->
+  <nav class="portal-snb">
+    <div class="snb-item active" id="tabNav1" onclick="switchTab('tab1')">
+      <span>📚 1. LLM & 에이전트 개념 & 토큰화</span>
+    </div>
+    <div class="snb-item" id="tabNav2" onclick="switchTab('tab2')">
+      <span>📐 2. 텍스트 벡터 & 코사인 유사도 각도기</span>
+    </div>
+    <div class="snb-item" id="tabNav3" onclick="switchTab('tab3')">
+      <span>🤖 3. 나만의 AI 에이전트 만들기 (데이터 vs AI 분리)</span>
+    </div>
+    <div class="snb-item" id="tabNav4" onclick="switchTab('tab4')">
+      <span>💬 4. 실시간 Q&A 대화 & AI 독서 탐구</span>
+    </div>
+  </nav>
+
+  <!-- 메인 바디 -->
+  <main class="main-container">
+
+    <div class="date-bar">
+      <div>
+        <span class="date-strong">AI 맞춤 독서 교실</span>
+        <span style="margin-left: 6px;" id="statusBanner">
+          💡 데이터(문학작품) ➡️ 토큰화 ➡️ 코사인 유사도 ➡️ AI 에이전트(LLM)의 원리를 체험합니다.
+        </span>
+      </div>
+      <div>
+        <span style="color:var(--brand-green); font-weight:700;" id="connStatusText">● 실습 준비 완료</span>
+      </div>
+    </div>
+
+
+    <!-- ========================================================
+         📚 [탭 1] LLM & 에이전트 개념 & 문장 토큰화(Tokenization)
+         ======================================================== -->
+    <section class="tab-section active" id="tabSection1">
+      
+      <div class="math-explain-box">
+        💡 <b>선생님과 함께 짚고 가는 기초 개념</b>:<br>
+        1. <b>LLM (거대 언어 모델)</b>: 수억 개의 책과 글을 읽고 학습하여 인간처럼 말을 이해하고 다음 단어를 자연스럽게 이어 쓰는 거대한 언어 두뇌입니다.<br>
+        2. <b>AI 에이전트 (AI Agent)</b>: 단순한 챗봇을 넘어, <b>'목표(Goal)'</b>를 가지고 주변 문서나 환경을 <b>'탐색(Search)'</b>하고, <b>'판단(Reason)'</b>하여 스스로 행동(Act)하는 자율적인 인공지능입니다.<br>
+        3. <b>토큰화 (Tokenization)</b>: 컴퓨터는 한글 글자를 그대로 이해하지 못합니다. 따라서 문장을 <b>'의미 있는 작은 조각(토큰)'</b>으로 쪼개고 각각 고유한 <b>'숫자 번호표(ID)'</b>를 부여해야 합니다.
+      </div>
+
+      <div class="grid-2col">
+        <!-- 좌측: 토큰화 입력 및 조절창 -->
+        <div class="n-card">
+          <div class="n-card-header">
+            <div class="n-card-title">
+              <span>✍️ 실습 1: 문장 입력 및 토큰 쪼개기</span>
+            </div>
+            <span class="n-card-badge">어절/단어 단위 토큰화</span>
+          </div>
+
+          <div style="margin-bottom: 8px;">
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-sub);">실습할 문장을 입력하거나 아래 프리셋을 클릭하세요:</label>
+            <textarea id="tokenInputText" class="form-textarea" rows="3">어제까지도 너는 내게 한마디도 건네지 않더니, 오늘 점순이가 감자를 불쑥 내밀었다.</textarea>
+          </div>
+
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;">
+            <button class="btn-preset active" onclick="setTokenPreset('dongbaek')">🥔 《동백꽃》 문장</button>
+            <button class="btn-preset" onclick="setTokenPreset('prince')">🌹 《어린 왕자》 문장</button>
+            <button class="btn-preset" onclick="setTokenPreset('rule')">🏫 《학교생활규정》 조항</button>
+            <button class="btn-b-gray" style="font-size:11px;" onclick="clearTokenInput()">지우기</button>
+          </div>
+
+          <button class="btn-b-green" style="width: 100%;" onclick="runTokenize()">
+            ⚡ 텍스트를 컴퓨터용 토큰으로 분해하기!
+          </button>
+        </div>
+
+        <!-- 우측: 토큰화 결과 (태그 클라우드 & 사전 매핑) -->
+        <div class="n-card">
+          <div class="n-card-header">
+            <div class="n-card-title">
+              <span>🏷️ 컴퓨터가 인식한 토큰 및 고유 ID (Vocabulary)</span>
+            </div>
+            <span class="n-card-badge" id="tokenCountBadge">토큰 0개</span>
+          </div>
+
+          <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 6px;">
+            각 단어 옆 파란 숫자는 컴퓨터가 단어를 기억하기 위해 붙인 <b>고유 번호표(Token ID)</b>입니다:
+          </div>
+
+          <div class="token-cloud" id="tokenCloudBox">
+            <!-- JS 동적 생성 -->
+          </div>
+
+          <div style="margin-top: 14px;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+              🔢 컴퓨터 내부의 숫자 변환 벡터 (ID 시퀀스):
+            </div>
+            <div id="tokenIdsBox" style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; padding:8px 12px; font-family:monospace; font-size:13px; color:#1e293b; word-break:break-all;">
+              [대기 중]
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================
+         📐 [탭 2] 텍스트 벡터 & 코사인 유사도(Cosine Similarity) 각도기
+         ======================================================== -->
+    <section class="tab-section" id="tabSection2">
+      
+      <div class="math-explain-box">
+        💡 <b>문장과 문장의 관련성을 '각도(Angle)'로 재는 원리 (코사인 유사도)</b>:<br>
+        1. <b>화살표(벡터) 그리기</b>: 문장에 나온 핵심 단어들의 빈도를 세어 2차원 공간 위의 화살표로 나타냅니다.<br>
+        2. <b>사잇각과 코사인 수식</b>: 두 문장의 의미가 비슷하면 두 화살표는 거의 같은 방향을 가리켜 사잇각 <b>&theta;</b>가 <b>0&deg;</b>에 가까워집니다.<br>
+        &nbsp;&nbsp;• <b>cos(0&deg;) = 1.0</b> : 완벽하게 같은 주제!<br>
+        &nbsp;&nbsp;• <b>cos(90&deg;) = 0.0</b> : 전혀 상관없는 딴소리!<br>
+        3. <b>수식 공식</b>: <b>유사도 = cos(&theta;) = (A &middot; B) / (||A|| &times; ||B||)</b>
+      </div>
+
+      <div class="grid-2col">
+        <!-- 좌측: 인터랙티브 각도기 캔버스 시각화 -->
+        <div class="n-card">
+          <div class="n-card-header">
+            <div class="n-card-title">
+              <span>🎯 2D 의미 공간 속 화살표 각도기</span>
+            </div>
+            <span class="n-card-badge" id="angleBadge">사잇각 θ = 18.5°</span>
+          </div>
+
+          <div class="angle-canvas-wrap">
+            <canvas id="vectorCanvas" width="340" height="260" style="background:#ffffff; border-radius:4px;"></canvas>
+            <div style="display:flex; justify-content:space-around; width:100%; margin-top:8px; font-size:12px; font-weight:700;">
+              <span style="color: var(--brand-blue);">🔵 질문: "점순이의 감자"</span>
+              <span style="color: var(--brand-green);">🟢 책 원문: "감자 세 개를 내밀었다"</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 10px; font-size: 12px; color: var(--text-gray); text-align: center;">
+          두 화살표 사이의 각도(&theta;)가 좁을수록 cos(&theta;) 값이 1에 가까워져 에이전트가 "정답 근거"로 선택합니다.
+          </div>
+        </div>
+
+        <!-- 우측: 문장 비교 및 코사인 유사도 랭킹 계산기 -->
+        <div class="n-card">
+          <div class="n-card-header">
+            <div class="n-card-title">
+              <span>📊 코사인 유사도 실시간 랭킹 검색기</span>
+            </div>
+            <span class="n-card-badge">검색 엔진 원리</span>
+          </div>
+
+          <div style="margin-bottom: 8px;">
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-sub);">학생의 질문 (Query):</label>
+            <input type="text" id="queryInput" class="form-input" value="점순이가 내게 감자를 건넨 이유" />
+          </div>
+
+          <div style="display:flex; gap:6px; margin-bottom: 12px;">
+            <button class="btn-b-blue" style="font-size:11px;" onclick="calculateSentenceSimilarity()">📐 유사도 계산하기</button>
+            <button class="btn-b-gray" style="font-size:11px;" onclick="setQueryPreset('phone')">📱 휴대폰 규정 질문</button>
+            <button class="btn-b-gray" style="font-size:11px;" onclick="setQueryPreset('rose')">🌹 장미 질문</button>
+          </div>
+
+          <div style="font-size: 12px; font-weight: 700; margin-bottom: 4px;">후보 문장들과의 코사인 유사도 결과:</div>
+          <table class="sim-table" id="simRankTable">
+            <thead>
+              <tr>
+                <th style="width: 15%;">순위</th>
+                <th>문장 내용</th>
+                <th style="width: 25%;">코사인 유사도</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- JS로 랭킹 렌더링 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================
+         🤖 [탭 3] 나만의 텍스트 에이전트 만들기 (데이터 vs AI 분리 공작소)
+         ======================================================== -->
+    <section class="tab-section" id="tabSection3">
+      
+      <!-- 핵심 개념: 데이터(Data) vs AI(Brain) 분리 배너 -->
+      <div class="data-vs-ai-banner">
+        <div class="pill-card">
+          <div class="pill-title data">📚 [기둥 1] 데이터 (Data / 지식 베이스)</div>
+          <div class="pill-desc">
+            • <b>역할</b>: 에이전트의 <b>기억(Memory)이자 책</b><br>
+            • <b>내용</b>: 소설 원문, 학교 규정집, 내가 쓴 글 등<br>
+            • <b>경고</b>: 데이터가 없으면 AI는 소설 속 내용을 알지 못해 엉뚱한 상상(환각)을 지어냅니다!
+          </div>
+        </div>
+
+        <div class="pipeline-arrow">
+          <span>➡️</span>
+          <div style="font-size:11px; color:#cbd5e1; font-weight:700; margin-top:2px;">RAG 연결</div>
+        </div>
+
+        <div class="pill-card">
+          <div class="pill-title ai">🧠 [기둥 2] AI (Brain / 추론 엔진)</div>
+          <div class="pill-desc">
+            • <b>역할</b>: 에이전트의 <b>두뇌(LLM)이자 페르소나</b><br>
+            • <b>내용</b>: Google Gemini 모델, 성격/말투, 판단 규칙<br>
+            • <b>경고</b>: AI가 없으면 검색된 문장 조각만 덜렁 보여줄 뿐, 사람처럼 공감하고 맥락 있게 설명하지 못합니다!
+          </div>
+        </div>
+      </div>
+
+      <!-- 2컬럼 공작소: 좌측(데이터 등록) vs 우측(AI 페르소나 & 규칙) -->
+      <div class="grid-2col">
+        
+        <!-- 좌측: 📚 1. 내 데이터(Data) 영역: 지식 베이스 등록 -->
+        <div class="n-card" style="border-top: 4px solid var(--brand-blue);">
+          <div class="n-card-header">
+            <div class="n-card-title">
+              <span style="color:var(--brand-blue);">📚 1. 내 데이터(Data) 영역</span>
+              <span style="font-size:12px; font-weight:normal; color:#64748b;">(지식 베이스)</span>
+            </div>
+            <span class="n-card-badge" id="currentDocBadge">문학: 동백꽃</span>
+          </div>
+
+          <!-- 지식 베이스 프리셋 버튼 -->
+          <div style="font-size:12px; font-weight:700; color:var(--text-sub); margin-bottom:6px;">① 학습시킬 문서 선택 또는 직접 입력:</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom: 12px;">
+            <button class="btn-preset active" id="btnDocDongbaek" onclick="loadAgentDoc('dongbaek')">🥔 《동백꽃》 (문학)</button>
+            <button class="btn-preset" id="btnDocPrince" onclick="loadAgentDoc('prince')">🌹 《어린 왕자》 (문학)</button>
+            <button class="btn-preset" id="btnDocSchoolRule" onclick="loadAgentDoc('school_rule')">🏫 《학생생활규정》 (규정집)</button>
+            <button class="btn-preset" id="btnDocCustom" onclick="loadAgentDoc('custom')">✏️ 나만의 글 직접 입력</button>
+          </div>
+
+          <!-- 원문 텍스트 에디터/뷰어 -->
+          <div class="form-group">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <label class="form-label" style="margin:0;">② 원문 텍스트 편집기 (소설/시/규정 붙여넣기):</label>
+              <button class="btn-b-blue" style="font-size:11px; padding:3px 8px;" onclick="splitAndSaveCustomDoc()">✂️ 문장 청크로 쪼개어 저장</button>
+            </div>
+            <textarea id="customDocInput" class="form-textarea" rows="6" placeholder="여기에 자신이 좋아하는 소설, 동화, 학급 규칙 등을 직접 붙여넣어 보세요..."></textarea>
+          </div>
+
+          <!-- 분할된 청크 미리보기 -->
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; color:var(--text-sub); margin-bottom:4px;">
+              <span>③ 분할 저장된 문장 조각(Chunks):</span>
+              <span style="color:var(--brand-blue);" id="docChunkCountText">총 8개 문장 조각 저장됨</span>
+            </div>
+            <div class="doc-viewer" id="docViewerBox" style="max-height: 140px;">
+              <!-- 문서 내용 로드 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 우측: 🧠 2. 내 AI 두뇌(Brain) 영역: 페르소나 & 규칙 설정 -->
+        <div class="n-card" style="border-top: 4px solid var(--brand-green);">
+          <div class="n-card-header">
+            <div class="n-card-title">
+              <span style="color:var(--brand-green-hover);">🧠 2. 내 AI 두뇌(Brain) 영역</span>
+              <span style="font-size:12px; font-weight:normal; color:#64748b;">(페르소나 & 규칙)</span>
+            </div>
+            <span class="n-card-badge" id="aiEngineBadge" style="background:#e8f7ee; color:var(--brand-green); font-weight:700;">Google Gemini 1.5 Flash</span>
+          </div>
+
+                    <!-- 인라인 구글 API 키 간편 설정 바 -->
+          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-size:12px; font-weight:700; color:#166534;">🔑 Google Gemini API Key (선택):</span>
+              <span style="font-size:11px; color:#0284c7; cursor:pointer;" onclick="toggleInlineKeyVisibility()" id="inlineKeyToggleText">👁️ 키 표시하기</span>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <input type="password" id="inlineApiKeyInput" class="form-input" placeholder="AIzaSy... (입력 시 실제 Gemini가 페르소나 연기)" style="padding:6px 10px; font-size:12px;" onchange="saveInlineKey(this.value)" />
+              <button class="btn-b-blue" style="font-size:11px; padding:6px 10px; white-space:nowrap;" onclick="testInlineKey()">연결 확인</button>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+              <span style="font-size:11px; color:#15803d;" id="inlineKeyStatusMsg">💡 키가 없어도 내장 오프라인 규칙 엔진으로 100% 작동합니다.</span>
+              <span style="font-size:11px; color:#dc2626; font-weight:700; cursor:pointer;" onclick="terminateClassAndShredKey()">🚨 키 파기</span>
+            </div>
+          </div>
+
+          <!-- 페르소나 프리셋 칩 -->
+          <div style="font-size:12px; font-weight:700; color:var(--text-sub); margin-bottom:6px;">① 캐릭터 페르소나 프리셋 선택:</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px;">
+            <div class="persona-chip selected" id="pChipDongbaek" onclick="selectPersonaPreset('dongbaek')">
+              <span>🥔</span> <strong>점순이</strong> (새침데기 사투리)
+            </div>
+            <div class="persona-chip" id="pChipFox" onclick="selectPersonaPreset('fox')">
+              <span>🦊</span> <strong>지혜로운 여우</strong> (철학적·다정함)
+            </div>
+            <div class="persona-chip" id="pChipJudge" onclick="selectPersonaPreset('judge')">
+              <span>⚖️</span> <strong>선도부장/판사</strong> (단호·공정함)
+            </div>
+            <div class="persona-chip" id="pChipCustom" onclick="selectPersonaPreset('custom')">
+              <span>✨</span> <strong>나만의 맞춤 캐릭터</strong> (자율 설정)
+            </div>
+          </div>
+
+          <!-- 캐릭터 이름 및 성격 입력창 -->
+          <div class="grid-2col" style="gap:8px;">
+            <div class="form-group">
+              <label class="form-label">에이전트 이름:</label>
+              <input type="text" id="agentNameInput" class="form-input" value="점순이" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">말투 및 성격 태그:</label>
+              <input type="text" id="agentStyleInput" class="form-input" value="새침데기 강원도 사투리로 톡톡 쏘아붙이지만 속마음은 따뜻하게" />
+            </div>
+          </div>
+
+          <!-- AI 행동 규칙(System Rules) 토글 -->
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px 12px; margin-bottom:14px;">
+            <div style="font-size:12px; font-weight:700; color:#334155; margin-bottom:6px;">🛡️ AI 에이전트 엄격 행동 지침 (환각 방지):</div>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#475569; margin-bottom:4px;">
+              <input type="checkbox" id="ruleGrounded" checked disabled />
+              <strong>[원칙 1]</strong> 오직 등록된 <b>[데이터 영역]의 본문 내용에만 근거</b>하여 답할 것
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#475569; margin-bottom:4px;">
+              <input type="checkbox" id="ruleHonest" checked disabled />
+              <strong>[원칙 2]</strong> 본문에 없는 내용은 추측하지 말고 <b>"책에 나오지 않습니다"</b>라고 솔직히 말할 것
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#475569;">
+              <input type="checkbox" id="ruleCite" checked disabled />
+              <strong>[원칙 3]</strong> 답변 끝에 반드시 <b>참고한 원문 구절과 번호</b>를 근거로 표기할 것
+            </label>
+          </div>
+
+          <!-- 완성 및 대화 전환 버튼 -->
+          <button class="btn-b-green" style="width:100%; padding:11px; font-size:14px;" onclick="finalizeAndStartChat()">
+            🚀 나만의 AI 에이전트 완성! 실시간 대화하러 가기 ➡️
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================
+         💬 [탭 4] 실시간 질문-답변 챗 에이전트 & 근거 하이라이트
+         ======================================================== -->
+    <section class="tab-section" id="tabSection4">
+      
+      <div class="math-explain-box">
+        💡 <b>AI 독서 & 규정 도우미 에이전트와의 실시간 대화</b>:<br>
+        • 학생이 질문을 입력하면, <b>[1] 📚 데이터 영역</b>에서 코사인 유사도로 가장 관련 있는 문장을 먼저 찾아내고, 
+        <b>[2] 🧠 AI 두뇌</b>가 그 문장을 근거로 설정된 캐릭터 성격에 맞춰 대답합니다!
+      </div>
+
+      <div class="grid-2col">
+        <!-- 좌측: 챗봇 창 -->
+        <div class="n-card" style="padding: 12px;">
+          <div class="n-card-header" style="padding-bottom: 8px; margin-bottom: 8px;">
+            <div class="n-card-title">
+              <span id="agentChatTitle">🥔 점순이 문학 독서 에이전트</span>
+            </div>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <span class="msg-engine-badge badge-gemini" id="chatEngineBadge">Google Gemini 추론</span>
+              <button class="btn-b-gray" style="font-size:11px;" onclick="clearChat()">대화 지우기</button>
+            </div>
+          </div>
+
+          <!-- 추천 질문 칩 -->
+          <div style="font-size:11px; font-weight:700; color:var(--text-gray); margin-bottom:4px;">💡 추천 질문을 클릭해보세요:</div>
+          <div class="chip-list" id="suggestedQuestionChips">
+            <!-- JS로 로드 -->
+          </div>
+
+          <!-- 챗 영역 -->
+          <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+              <div class="msg-bubble msg-agent">
+                <span class="msg-engine-badge badge-gemini">시스템 안내</span><br>
+                안녕하세요! 저는 등록된 문서를 학습하고 캐릭터 페르소나를 장착한 <b>AI 도우미 에이전트</b>입니다. 
+                작품이나 규정에 대해 무엇이든 질문해 주세요!
+              </div>
+            </div>
+
+            <div class="chat-input-bar">
+              <input type="text" class="chat-input" id="chatInputText" placeholder="질문을 입력하세요... (예: 점순이가 감자를 준 속마음은?)" onkeypress="if(event.key==='Enter') sendChatMessage()" />
+              <button class="btn-b-green" id="btnSendChat" onclick="sendChatMessage()">전송</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 우측: 에이전트가 찾은 원문 근거 & 유사도 분석창 -->
+        <div class="n-card">
+          <div class="n-card-header">
+            <div class="n-card-title">
+              <span>🔎 [데이터 영역] 검색된 원문 근거 (Evidence)</span>
+            </div>
+            <span class="n-card-badge" id="matchScoreBadge">유사도 대기중</span>
+          </div>
+
+          <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 8px;">
+            에이전트가 거짓말을 하지 않도록 <b>코사인 유사도로 추출한 1순위 핵심 본문</b>입니다:
+          </div>
+
+          <div id="retrievedEvidenceBox" style="background:#fefce8; border:1px solid #fef08a; border-left:4px solid #eab308; border-radius:6px; padding:12px; font-size:12.5px; line-height:1.6; color:#713f12; min-height:80px;">
+            질문을 입력하면 에이전트가 추출한 핵심 원문 근거가 이곳에 표시됩니다.
+          </div>
+
+          <div style="margin-top: 14px;">
+            <div style="font-size: 12px; font-weight: 700; margin-bottom: 6px;">📐 질문과의 코사인 유사도 상위 Top 3 문장:</div>
+            <table class="sim-table" id="chatTop3Table">
+              <thead>
+                <tr>
+                  <th style="width: 15%;">순위</th>
+                  <th>근거 문장</th>
+                  <th style="width: 25%;">유사도</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="3" style="text-align:center; color:#94a3b8;">질문 대기 중...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- LLM 프롬프트 조립 구조 해부창 -->
+          <div style="margin-top: 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px;">
+            <div style="font-size:12px; font-weight:700; color:var(--brand-blue); margin-bottom:6px;">
+              🧠 [AI 두뇌 영역] LLM 프롬프트 조립 내역 (Prompt Assembly):
+            </div>
+            <div id="promptAssemblyBox" style="font-size:11.5px; color:#475569; line-height:1.6; background:#ffffff; border:1px solid #cbd5e1; border-radius:4px; padding:8px 10px; max-height:120px; overflow-y:auto; font-family:monospace;">
+              (질문 시 AI 두뇌에게 전달된 시스템 지침과 근거 데이터가 여기에 표시됩니다.)
+            </div>
+          </div>
+
+          <div style="margin-top: 14px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:10px 12px; font-size:12px; color:#166534; line-height:1.5;">
+            📖 <b>독서 교육 팁:</b><br>
+            "에이전트가 찾은 원문 근거를 확인하면서, 작가의 의도나 복잡한 규정의 원문을 직접 대조해보는 <b>비판적 사고력과 문해력</b>을 함께 기를 수 있습니다."
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================================
+       🔑 교사용 Google Gemini API 설정 및 세션 관리 모달
+       ======================================================== -->
+  <div class="modal-backdrop" id="apiModalBackdrop">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3><span>🔑</span> 교사용 Google Gemini API 설정</h3>
+        <button class="modal-close-btn" onclick="closeApiModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p style="font-size:12.5px; color:#475569; margin-bottom:14px; line-height:1.5;">
+          선생님의 <b>Google AI Studio API Key</b>를 등록하면, 학생들이 입력한 문학작품을 기반으로 
+          실제 최신 거대 언어 모델(Gemini)이 캐릭터 페르소나를 연기하며 생생하게 답변합니다.
+        </p>
+
+        <!-- API 키 입력란 (기본 패스워드 마스킹) -->
+        <div class="form-group">
+          <label class="form-label" style="display:flex; justify-content:space-between;">
+            <span>구글 Gemini API Key:</span>
+            <span style="font-size:11px; color:#0284c7; cursor:pointer;" onclick="toggleKeyVisibility()" id="toggleKeyText">👁️ 키 표시하기</span>
+          </label>
+          <input type="password" id="apiKeyInput" class="form-input" placeholder="AIzaSy... (Google AI Studio 발급 키)" />
+          <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+            🔒 빔프로젝터 노출을 방지하기 위해 기본적으로 마스킹 처리(••••)됩니다.
+          </div>
+        </div>
+
+        <!-- 모델 선택 -->
+        <div class="form-group">
+          <label class="form-label">사용할 인공지능 모델 (Model):</label>
+          <select id="apiModelSelect" class="form-input" style="cursor:pointer;">
+            <option value="gemini-1.5-flash" selected>gemini-1.5-flash (수업 추천! 초고속 & 무료 넉넉함)</option>
+            <option value="gemini-2.0-flash">gemini-2.0-flash (최신 모델)</option>
+            <option value="gemini-2.5-flash">gemini-2.5-flash (고성능 추론)</option>
+          </select>
+        </div>
+
+        <!-- 테스트 결과 알림 박스 -->
+        <div id="apiTestResultBox" style="display:none; padding:10px 12px; border-radius:6px; font-size:12px; margin-bottom:14px; line-height:1.5;"></div>
+
+        <!-- 수업 종료 안내 박스 -->
+        <div style="background:#fff7ed; border:1px solid #ffedd5; border-left:4px solid #f97316; border-radius:0 6px 6px 0; padding:10px 12px; font-size:11.5px; color:#9a3412; line-height:1.5;">
+          🚨 <b>수업 보안 필수 안내:</b><br>
+          • API 키는 브라우저를 닫으면 자동 삭제되는 임시 세션(sessionStorage)에만 보관됩니다.<br>
+          • 수업이 끝난 후 아래 <b>[수업 종료: API 키 즉시 파기]</b> 버튼을 누르면 브라우저 메모리에서 키가 즉각 소멸되고 오프라인 모드로 안전하게 전환됩니다.
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-terminate-class" onclick="terminateClassAndShredKey()">
+          <span>🚨</span> 수업 종료 (키 파기)
+        </button>
+        <button class="btn-b-blue" onclick="testApiKey()">
+          <span>🧪</span> 연결 테스트
+        </button>
+        <button class="btn-b-green" onclick="saveApiKey()">
+          <span>💾</span> 키 저장 및 적용
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       스크립트 엔진: 데이터, 유사도, Gemini API, 페르소나 관리
+       ======================================================== -->
+  
+    <!-- 파이썬 코드 박스 -->
+    <div style="max-width: 1200px; margin: 24px auto; background: #0f172a; border-radius: 20px; padding: 20px; color: #f8fafc; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></span>
+          <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #f59e0b;"></span>
+          <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></span>
+          <span style="font-family: monospace; font-size: 13px; color: #94a3b8; margin-left: 8px;">🐍 [파이썬 코드로 구현하기] 04_자연어처리_RAG_에이전트.py</span>
+        </div>
+        <button onclick="copyPythonCode()" id="btnCopyPy" style="font-size: 12px; background: #1e293b; border: 1px solid #334155; color: #34d399; font-family: monospace; padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+          📋 코드 복사
+        </button>
+      </div>
+      <pre id="pythonCodeBlock" style="font-family: monospace; font-size: 12px; line-height: 1.6; color: #cbd5e1; overflow-x: auto; background: rgba(2, 6, 23, 0.8); padding: 16px; border-radius: 12px; margin: 0;"># [파이썬 실습] 토큰화, 코사인 유사도 기반 RAG(검색 증강 생성) 및 Gemini API 연동 에이전트
+import numpy as np
+
+# 1. 문장 토큰화 및 어휘 사전(Vocab) 만들기
+corpus = [
+    "동백꽃이 붉게 피어나는 봄날이었다",
+    "점순이는 나에게 구운 감자 세 개를 건넸다",
+    "너희 집엔 이거 없지 라며 생색을 냈다",
+    "나는 화가 나서 감자를 발로 툭 차버렸다"
+]
+
+vocab = sorted(list(set(" ".join(corpus).split())))
+word_to_id = {w: i for i, w in enumerate(vocab)}
+
+# 2. Bag-of-Words 문장 벡터화
+def text_to_vector(text):
+    vec = np.zeros(len(vocab))
+    for word in text.split():
+        if word in word_to_id:
+            vec[word_to_id[word]] += 1
+    return vec
+
+# 3. 코사인 유사도: cos(theta) = (A · B) / (||A|| * ||B||)
+def cosine_similarity(v1, v2):
+    norm1 = np.linalg.norm(v1)
+    norm2 = np.linalg.norm(v2)
+    if norm1 == 0 or norm2 == 0: return 0.0
+    return float(np.dot(v1, v2) / (norm1 * norm2))
+
+# 4. 사용자 질문에 가장 관련 깊은 근거 문장 검색 (RAG 검색기)
+query = "점순이가 건넨 선물은 무엇인가?"
+q_vec = text_to_vector(query)
+
+scores = [cosine_similarity(q_vec, text_to_vector(doc)) for doc in corpus]
+best_doc_idx = int(np.argmax(scores))
+print(f"질문: {query}")
+print(f"가장 유사한 원문 근거: \"{corpus[best_doc_idx]}\" (유사도: {scores[best_doc_idx]:.3f})")
+
+# 5. Gemini LLM에게 캐릭터 페르소나와 근거 문장을 결합하여 전달
+prompt = f"""
+당신은 소설 '동백꽃'의 '점순이'입니다.
+[참고할 원문 근거]: {corpus[best_doc_idx]}
+[질문]: {query}
+점순이의 톡톡 쏘는 새침데기 말투로 위 근거에 기반하여 대답해주세요.
+"""
+print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")</pre>
+    </div>
+
+  <script>
+    function copyPythonCode() {
+      const code = document.getElementById('pythonCodeBlock').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('btnCopyPy');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✅ 복사 완료!';
+        setTimeout(() => { btn.innerHTML = orig; }, 2000);
+      });
+    }
+
+    // ========================================================
+    // 1. Google Gemini API 관리 & 세션 보안 (자동 모델 탐색 및 다중 버전 호환)
+    // ========================================================
+    let GOOGLE_API_KEY = sessionStorage.getItem('gemini_api_key') || '';
+    let SELECTED_MODEL = sessionStorage.getItem('gemini_selected_model') || 'gemini-1.5-flash';
+    let CURRENT_API_VERSION = sessionStorage.getItem('gemini_api_version') || 'v1beta';
+    let AVAILABLE_MODELS = [];
+    let isApiLocked = false;
+
+    function openApiModal() {
+      document.getElementById('apiKeyInput').value = GOOGLE_API_KEY;
+      document.getElementById('apiModelSelect').value = SELECTED_MODEL;
+      document.getElementById('apiTestResultBox').style.display = 'none';
+      document.getElementById('apiModalBackdrop').classList.add('open');
+    }
+
+    function closeApiModal() {
+      document.getElementById('apiModalBackdrop').classList.remove('open');
+    }
+
+    function toggleKeyVisibility() {
+      const input = document.getElementById('apiKeyInput');
+      const toggleText = document.getElementById('toggleKeyText');
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        toggleText.textContent = '🙈 키 숨기기';
+      } else {
+        input.type = 'password';
+        toggleText.textContent = '👁️ 키 표시하기';
+      }
+    }
+
+    function toggleInlineKeyVisibility() {
+      const input = document.getElementById('inlineApiKeyInput');
+      const toggleText = document.getElementById('inlineKeyToggleText');
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        toggleText.textContent = '🙈 키 숨기기';
+      } else {
+        input.type = 'password';
+        toggleText.textContent = '👁️ 키 표시하기';
+      }
+    }
+
+    // 🚀 스마트 자동 탐색 및 연결 테스트 엔진 (ModelService.ListModels + 다중 버전 프로브)
+    async function autoDetectAndConnectKey(key, statusBox, isInline = false) {
+      if (!key) {
+        statusBox.style.display = 'block';
+        statusBox.innerHTML = '<span style="color:#dc2626;">⚠️ API Key를 먼저 입력해주세요!</span>';
+        return false;
+      }
+
+      statusBox.style.display = 'block';
+      if (!isInline) {
+        statusBox.style.background = '#f0f9ff';
+        statusBox.style.color = '#0369a1';
+        statusBox.style.border = '1px solid #bae6fd';
+      }
+      statusBox.innerHTML = '🔄 Google 서버에서 사용 가능한 Gemini 모델 목록을 탐색 중입니다...';
+
+      let workingModel = null;
+      let workingVersion = 'v1beta';
+      let foundModels = [];
+
+      // 1단계: ModelService.ListModels 호출 (v1beta 및 v1 시도)
+      for (const ver of ['v1beta', 'v1']) {
+        try {
+          const listRes = await fetch(`https://generativelanguage.googleapis.com/${ver}/models?key=${key}`);
+          const listData = await listRes.json();
+          if (listRes.ok && listData.models && listData.models.length > 0) {
+            workingVersion = ver;
+            // generateContent를 지원하는 모델 필터링
+            foundModels = listData.models
+              .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
+              .map(m => m.name.replace(/^models\//, ''));
+            if (foundModels.length > 0) break;
+          }
+        } catch (e) {
+          console.warn(`ListModels failed on ${ver}:`, e);
+        }
+      }
+
+      // 모델 선택 우선순위 결정
+      if (foundModels.length > 0) {
+        AVAILABLE_MODELS = foundModels;
+        updateModelDropdown(foundModels);
+        // 우선순위: 1.5-flash -> 2.0-flash -> 2.5-flash -> gemini-pro -> 첫 번째 모델
+        workingModel = foundModels.find(m => m === 'gemini-1.5-flash')
+          || foundModels.find(m => m.includes('1.5-flash'))
+          || foundModels.find(m => m.includes('2.0-flash'))
+          || foundModels.find(m => m.includes('gemini-pro'))
+          || foundModels[0];
+      } else {
+        // 2단계: ListModels 접근이 제한된 경우 후보군 직접 프로브
+        const candidates = [
+          { ver: 'v1beta', model: 'gemini-1.5-flash' },
+          { ver: 'v1', model: 'gemini-1.5-flash' },
+          { ver: 'v1beta', model: 'gemini-2.0-flash' },
+          { ver: 'v1beta', model: 'gemini-1.5-flash-latest' },
+          { ver: 'v1beta', model: 'gemini-1.5-flash-001' },
+          { ver: 'v1beta', model: 'gemini-1.5-flash-002' },
+          { ver: 'v1', model: 'gemini-pro' },
+          { ver: 'v1beta', model: 'gemini-pro' }
+        ];
+
+        for (const c of candidates) {
+          try {
+            const probeRes = await fetch(`https://generativelanguage.googleapis.com/${c.ver}/models/${c.model}:generateContent?key=${key}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ contents: [{ parts: [{ text: "테스트" }] }] })
+            });
+            const pData = await probeRes.json();
+            if (probeRes.ok && pData.candidates && pData.candidates[0]) {
+              workingModel = c.model;
+              workingVersion = c.ver;
+              break;
+            }
+          } catch (e) {}
+        }
+      }
+
+      if (!workingModel) {
+        statusBox.style.display = 'block';
+        if (!isInline) {
+          statusBox.style.background = '#fef2f2';
+          statusBox.style.color = '#dc2626';
+          statusBox.style.border = '1px solid #fecaca';
+        }
+        statusBox.innerHTML = `❌ <b>연결 실패:</b> 유효한 Gemini 모델을 찾을 수 없습니다.<br><small>API 키가 올바른지, Google AI Studio(aistudio.google.com)에서 발급된 키인지 확인해 주세요.</small>`;
+        return false;
+      }
+
+      // 3단계: 최종 모델로 가벼운 핑 테스트
+      try {
+        const testRes = await fetch(`https://generativelanguage.googleapis.com/${workingVersion}/models/${workingModel}:generateContent?key=${key}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: "안녕?" }] }] })
+        });
+        const tData = await testRes.json();
+        if (!testRes.ok || !tData.candidates || !tData.candidates[0]) {
+          throw new Error(tData.error?.message || "모델 응답 실패");
+        }
+      } catch (err) {
+        statusBox.style.display = 'block';
+        if (!isInline) {
+          statusBox.style.background = '#fef2f2';
+          statusBox.style.color = '#dc2626';
+          statusBox.style.border = '1px solid #fecaca';
+        }
+        statusBox.innerHTML = `❌ <b>테스트 실패:</b> ${err.message}`;
+        return false;
+      }
+
+      // 연결 성공! 상태 저장
+      GOOGLE_API_KEY = key;
+      SELECTED_MODEL = workingModel;
+      CURRENT_API_VERSION = workingVersion;
+      sessionStorage.setItem('gemini_api_key', key);
+      sessionStorage.setItem('gemini_selected_model', workingModel);
+      sessionStorage.setItem('gemini_api_version', workingVersion);
+      isApiLocked = false;
+
+      updateApiStatusUI();
+
+      statusBox.style.display = 'block';
+      if (!isInline) {
+        statusBox.style.background = '#f0fdf4';
+        statusBox.style.color = '#166534';
+        statusBox.style.border = '1px solid #bbf7d0';
+      }
+      statusBox.innerHTML = `✅ <b>연결 성공!</b> 모델: <code>${workingModel}</code> (${workingVersion}) 사용 준비 완료!`;
+      return true;
+    }
+
+    function updateModelDropdown(models) {
+      const select = document.getElementById('apiModelSelect');
+      if (!select) return;
+      select.innerHTML = '';
+      models.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        if (m === SELECTED_MODEL) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    // 모달창에서 연결 테스트
+    async function testApiKey() {
+      const key = document.getElementById('apiKeyInput').value.trim();
+      const box = document.getElementById('apiTestResultBox');
+      await autoDetectAndConnectKey(key, box, false);
+    }
+
+    // 모달창에서 저장
+    async function saveApiKey() {
+      const key = document.getElementById('apiKeyInput').value.trim();
+      const box = document.getElementById('apiTestResultBox');
+      const customModel = document.getElementById('apiModelSelect').value;
+      if (customModel) SELECTED_MODEL = customModel;
+
+      if (!key) {
+        alert('API 키를 입력해주세요. 없으시면 오프라인 시뮬레이션 모드로 작동합니다.');
+        return;
+      }
+
+      const success = await autoDetectAndConnectKey(key, box, false);
+      if (success) {
+        closeApiModal();
+        alert(`🎉 Google Gemini API 연결 성공!\n모델: [${SELECTED_MODEL}]이 활성화되었습니다.`);
+      }
+    }
+
+    // 인라인(3단계/4단계)에서 연결 확인
+    async function testInlineKey() {
+      const input = document.getElementById('inlineApiKeyInput');
+      const key = input ? input.value.trim() : '';
+      const statusMsg = document.getElementById('inlineKeyStatusMsg');
+      await autoDetectAndConnectKey(key, statusMsg, true);
+    }
+
+    function saveInlineKey(val) {
+      val = val.trim();
+      if (val) {
+        const statusMsg = document.getElementById('inlineKeyStatusMsg');
+        autoDetectAndConnectKey(val, statusMsg, true);
+      } else {
+        GOOGLE_API_KEY = '';
+        sessionStorage.removeItem('gemini_api_key');
+        updateApiStatusUI();
+      }
+    }
+
+    // 🚨 수업 종료 및 API 키 즉시 파기 함수
+    function terminateClassAndShredKey() {
+      if (!confirm('🚨 정말로 수업을 종료하고 등록된 API 키를 완전히 파기하시겠습니까?\n파기 후에는 API 호출이 즉각 차단되며 안전한 오프라인 모드로 전환됩니다.')) {
+        return;
+      }
+
+      // 1. 메모리 및 세션 스토리지 파기
+      GOOGLE_API_KEY = '';
+      sessionStorage.removeItem('gemini_api_key');
+      sessionStorage.removeItem('gemini_selected_model');
+      sessionStorage.removeItem('gemini_api_version');
+      isApiLocked = true;
+
+      // 2. UI 즉각 차단 갱신
+      const input = document.getElementById('apiKeyInput');
+      if (input) input.value = '';
+      const inlineInput = document.getElementById('inlineApiKeyInput');
+      if (inlineInput) inlineInput.value = '';
+      const inlineStatus = document.getElementById('inlineKeyStatusMsg');
+      if (inlineStatus) inlineStatus.innerHTML = '<span style="color:#dc2626; font-weight:bold;">🔒 수업 종료: API 키가 파기되었습니다. (오프라인 모드)</span>';
+
+      updateApiStatusUI();
+      closeApiModal();
+
+      // 알림 메시지 버블 추가
+      const chatBox = document.getElementById('chatMessages');
+      if (chatBox) {
+        const termBubble = document.createElement('div');
+        termBubble.className = 'msg-bubble msg-agent';
+        termBubble.style.borderColor = '#fca5a5';
+        termBubble.style.background = '#fef2f2';
+        termBubble.innerHTML = `
+          <span class="msg-engine-badge" style="background:#fee2e2; color:#b91c1c;">🔒 수업 종료 안내</span><br>
+          <b>수업이 안전하게 종료되었습니다.</b><br>
+          등록되어 있던 교사용 Google API 키가 브라우저 메모리에서 <b>완전히 파기(Shred)</b>되었습니다.<br>
+          이후의 대화는 외부 API 호출 없이 <b>오프라인 시뮬레이션 모드</b>로 안전하게 진행됩니다.
+        `;
+        chatBox.appendChild(termBubble);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      alert('🔒 수업이 종료되었습니다! 등록된 API 키가 안전하게 파기되었습니다.');
+    }
+
+    function updateApiStatusUI() {
+      const badge = document.getElementById('gnbApiBadge');
+      const dot = document.getElementById('gnbApiDot');
+      const text = document.getElementById('gnbApiText');
+      const connText = document.getElementById('connStatusText');
+      const aiEngineBadge = document.getElementById('aiEngineBadge');
+      const chatEngineBadge = document.getElementById('chatEngineBadge');
+
+      const apiKeyIn = document.getElementById('apiKeyInput');
+      if (apiKeyIn) apiKeyIn.value = GOOGLE_API_KEY;
+      const inlineIn = document.getElementById('inlineApiKeyInput');
+      if (inlineIn && !isApiLocked) inlineIn.value = GOOGLE_API_KEY;
+
+      if (isApiLocked) {
+        badge.className = 'api-status-badge locked';
+        dot.textContent = '🔒';
+        text.textContent = '수업 종료 (API 잠금)';
+        connText.textContent = '● 수업 종료 (오프라인 모드)';
+        connText.style.color = '#dc2626';
+        if (aiEngineBadge) {
+          aiEngineBadge.style.background = '#fee2e2';
+          aiEngineBadge.style.color = '#b91c1c';
+          aiEngineBadge.textContent = '🔒 수업 종료 (오프라인 규칙 모드)';
+        }
+        if (chatEngineBadge) {
+          chatEngineBadge.className = 'msg-engine-badge badge-offline';
+          chatEngineBadge.textContent = '오프라인 규칙 엔진';
+        }
+      } else if (GOOGLE_API_KEY) {
+        badge.className = 'api-status-badge online';
+        dot.textContent = '🟢';
+        text.textContent = `Google Gemini (${SELECTED_MODEL})`;
+        connText.textContent = `● Google LLM 온라인 연결됨`;
+        connText.style.color = '#059669';
+        if (aiEngineBadge) {
+          aiEngineBadge.style.background = '#e8f7ee';
+          aiEngineBadge.style.color = 'var(--brand-green)';
+          aiEngineBadge.textContent = `Google ${SELECTED_MODEL} 활성`;
+        }
+        if (chatEngineBadge) {
+          chatEngineBadge.className = 'msg-engine-badge badge-gemini';
+          chatEngineBadge.textContent = `Google Gemini (${SELECTED_MODEL})`;
+        }
+      } else {
+        badge.className = 'api-status-badge';
+        dot.textContent = '⚪';
+        text.textContent = '오프라인 시뮬레이션 모드';
+        connText.textContent = '● 오프라인 모의 실행 모드';
+        connText.style.color = '#475569';
+        if (aiEngineBadge) {
+          aiEngineBadge.style.background = '#f1f5f9';
+          aiEngineBadge.style.color = '#475569';
+          aiEngineBadge.textContent = '내장 규칙 추론 엔진 (무료/오프라인)';
+        }
+        if (chatEngineBadge) {
+          chatEngineBadge.className = 'msg-engine-badge badge-offline';
+          chatEngineBadge.textContent = '오프라인 규칙 엔진';
+        }
+      }
+    }
+
+    // 2. 텍스트 지식 데이터베이스 & 청크 관리
+    // ========================================================
+    const sampleDocs = {
+      dongbaek: {
+        title: "🥔 점순이 문학 독서 에이전트",
+        name: "점순이",
+        style: "새침데기 강원도 사투리로 톡톡 쏘아붙이지만 속마음은 따뜻하게",
+        text: `[1] 오늘도 또 우리 수탉이 쪼이었다. 내가 점심을 먹고 나무를 하러 갈 양으로 나올 때였다.
+[2] 산기슭에서 점순이가 닭을 홰홰 몰고 오며 "느 집엔 이거 없지?" 하고 감자 세 개를 내밀었다.
+[3] 그것도 아주 김이 모락모락 나는 따끈따끈한 감자였다. 하지만 나는 "난 감자 안 먹는다, 너나 먹어라" 하고 밀쳐버렸다.
+[4] 그러자 점순이의 얼굴이 홍당무처럼 새빨개지더니 눈에 독이 올라서 홱 토라져 달아났다.
+[5] 그것은 점순이가 나에게 호감을 표현하고 관심을 끌기 위해 집에서 몰래 쪄온 소중한 감자였던 것이다.
+[6] 그 후로 점순이는 우리 집 씨암탉과 수탉을 붙잡아 사납게 닭싸움을 붙이며 심술을 부리기 시작했다.
+[7] 어느 날 노란 동백꽃이 흐드러지게 핀 바위 틈에서 점순이와 나는 함께 넘어지며 화해를 하였다.
+[8] 알싸하고 향긋한 노란 동백꽃의 냄새가 온 산골짜기에 가득 퍼져 나갔다.`,
+        suggested: [
+          "점순이가 나에게 감자를 건넨 진짜 이유는 뭐야?",
+          "내가 감자를 거절했을 때 점순이의 반응은 어땠어?",
+          "마지막에 점순이와 화해한 장소는 어디인가요?",
+          "점순이는 왜 닭싸움을 붙이며 심술을 부렸나요?"
+        ]
+      },
+      prince: {
+        title: "🌹 어린 왕자 & 여우 문학 독서 에이전트",
+        name: "여우",
+        style: "신비롭고 철학적이며 다정한 어투로 인생의 비밀을 들려주듯이",
+        text: `[1] 어린 왕자는 자신의 작은 행성 B-612에서 세상에 단 하나뿐인 줄 알았던 아름다운 장미꽃 한 송이를 가꾸었다.
+[2] 장미꽃은 바람을 막아달라 유리 덮개를 씌워달라며 투정을 부렸고, 어린 왕자는 지쳐서 자신의 별을 떠나 여행길에 올랐다.
+[3] 지구에 도착한 어린 왕자는 오천 송이의 장미가 핀 정원을 보고 자신의 장미가 평범했다는 생각에 슬퍼서 울었다.
+[4] 그때 나타난 여우가 어린 왕자에게 말했다. "나를 길들여줘. 길들인다는 것은 서로에게 세상에 단 하나뿐인 존재가 되는 거야."
+[5] "네 장미가 그토록 소중한 것은 네가 그 장미를 위해 쏟은 시간 때문이야." 여우는 가장 중요한 비밀을 알려주었다.
+[6] "가장 중요한 것은 눈에 보이지 않아. 오직 마음으로 보아야만 분명하게 볼 수 있어."
+[7] 어린 왕자는 자신의 장미에게로 다시 돌아가 책임을 다하기 위해 뱀의 도움을 받아 자신의 별로 돌아가기로 결심했다.`,
+        suggested: [
+          "여우가 말한 '길들인다'는 것의 진짜 의미는 뭐야?",
+          "어린 왕자의 장미가 세상에서 특별한 이유는 무엇인가요?",
+          "여우가 알려준 가장 중요한 비밀은 무엇인가요?",
+          "어린 왕자는 왜 지구의 장미 정원에서 슬퍼했나요?"
+        ]
+      },
+      school_rule: {
+        title: "🏫 OO고등학교 학생생활규정 도우미 에이전트",
+        name: "선도부장",
+        style: "철저하게 학교 규정에 근거하여 정확하고 단호하며 공정하게",
+        text: `[제1조] 본 규정은 학생의 자율성과 책임감을 기르고 안전하고 존중받는 학교 공동체를 만드는 것을 목적으로 한다.
+[제5조] 학생은 오전 8시 40분까지 지정된 교실에 입실해야 하며, 8시 41분 이후 등교는 지각으로 처리한다. 무단 지각 3회는 무단 결석 1회로 간주한다.
+[제8조] 교내 전자기기 사용: 수업 중 스마트폰 및 전자기기는 전원을 끄고 보관함에 넣어야 한다. 허가 없이 사용 적발 시 1차 주의, 2차 시 일주일간 담임교사 보관 조치한다.
+[제12조] 학생 복장 규정: 교복은 단정하게 착용하며, 동절기에는 교복 위에 방한용 외투나 패딩을 자유롭게 착용할 수 있다. 슬리퍼 등교는 안전상 금지한다.
+[제15조] 학생 상벌점제: 교내 봉사 및 선행 학생에게는 상점(1~3점)을 부여하며, 흡연·폭력·수업방해 학생에게는 벌점 및 학생선도위원회 회부를 적용한다.
+[제18조] 동아리 활동: 학생은 자율적으로 5인 이상의 회원을 모아 지도교사를 위촉하면 자율 동아리를 창설할 수 있다.`,
+        suggested: [
+          "등교 시간은 몇 시까지이고 지각 기준은 어떻게 되나요?",
+          "수업 시간에 스마트폰을 쓰다가 걸리면 어떤 처벌을 받나요?",
+          "겨울철 교복 위에 패딩이나 외투를 입어도 되나요?",
+          "학생이 자율 동아리를 만들려면 몇 명이 모여야 하나요?"
+        ]
+      },
+      custom: {
+        title: "✨ 나만의 맞춤 AI 에이전트",
+        name: "나만의 인공지능",
+        style: "친절하고 총명하게 학생의 질문에 성심성의껏 답변",
+        text: `[1] 여기에 학생이 직접 좋아하는 소설, 동화, 시, 학교 규칙, 영화 시나리오를 자유롭게 입력합니다.
+[2] 오른쪽 위의 [✂️ 문장 청크로 쪼개어 저장] 버튼을 누르면 문장별로 분할되어 지식 데이터베이스로 등록됩니다.
+[3] 등록된 본문을 바탕으로 인공지능이 코사인 유사도 검색과 캐릭터 페르소나 연기를 수행합니다.`,
+        suggested: [
+          "이 문서의 핵심 주제는 무엇인가요?",
+          "본문에서 가장 중요하게 강조하는 내용은 무엇인가요?"
+        ]
+      }
+    };
+
+    let currentDocKey = 'dongbaek';
+    let currentDocChunks = [];
+
+    // ========================================================
+    // 3. 탭 전환
+    // ========================================================
+    function switchTab(tabId) {
+      document.querySelectorAll('.snb-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+
+      if (tabId === 'tab1') {
+        document.getElementById('tabNav1').classList.add('active');
+        document.getElementById('tabSection1').classList.add('active');
+        document.getElementById('statusBanner').textContent = '📚 1단계: 컴퓨터가 글자를 쪼개서 숫자 번호표(ID)로 변환하는 토큰화를 배웁니다.';
+      } else if (tabId === 'tab2') {
+        document.getElementById('tabNav2').classList.add('active');
+        document.getElementById('tabSection2').classList.add('active');
+        document.getElementById('statusBanner').textContent = '📐 2단계: 문장을 화살표(벡터)로 그리고, 사잇각의 코사인(cos θ)으로 유사도를 측정합니다.';
+        renderVectorCanvas();
+        calculateSentenceSimilarity();
+      } else if (tabId === 'tab3') {
+        document.getElementById('tabNav3').classList.add('active');
+        document.getElementById('tabSection3').classList.add('active');
+        document.getElementById('statusBanner').textContent = '🤖 3단계: [데이터]와 [AI 두뇌]를 구분하고, 나만의 맞춤형 에이전트를 조립합니다.';
+      } else if (tabId === 'tab4') {
+        document.getElementById('tabNav4').classList.add('active');
+        document.getElementById('tabSection4').classList.add('active');
+        document.getElementById('statusBanner').textContent = '💬 4단계: 에이전트에게 직접 질문하고, AI가 읽은 원문 근거와 답변을 대조합니다.';
+      }
+    }
+
+    // ========================================================
+    // 4. 토큰화 실습 로직
+    // ========================================================
+    const tokenPresets = {
+      dongbaek: "어제까지도 너는 내게 한마디도 건네지 않더니, 오늘 점순이가 감자를 불쑥 내밀었다.",
+      prince: "네 장미가 그토록 소중한 것은, 네가 그 장미를 위해 쏟은 시간 때문이야.",
+      rule: "제8조: 수업 중 스마트폰을 무단으로 사용하다 적발될 경우 일주일간 보관 조치한다."
+    };
+
+    function setTokenPreset(key) {
+      document.getElementById('tokenInputText').value = tokenPresets[key] || '';
+      runTokenize();
+    }
+
+    function clearTokenInput() {
+      document.getElementById('tokenInputText').value = '';
+      document.getElementById('tokenCloudBox').innerHTML = '<span style="color:#94a3b8; font-size:12px;">문장을 입력하고 버튼을 눌러주세요.</span>';
+      document.getElementById('tokenIdsBox').textContent = '[]';
+      document.getElementById('tokenCountBadge').textContent = '토큰 0개';
+    }
+
+    function runTokenize() {
+      const text = document.getElementById('tokenInputText').value.trim();
+      if (!text) {
+        clearTokenInput();
+        return;
+      }
+
+      const words = text.replace(/[,.?!:;~"]/g, ' ').split(/\s+/).filter(w => w.length > 0);
+      const vocabMap = {};
+      let currentId = 101;
+
+      const cloudBox = document.getElementById('tokenCloudBox');
+      cloudBox.innerHTML = '';
+      const tokenIds = [];
+
+      words.forEach(w => {
+        if (!vocabMap[w]) {
+          vocabMap[w] = currentId++;
+        }
+        const id = vocabMap[w];
+        tokenIds.push(id);
+
+        const badge = document.createElement('span');
+        badge.className = 'token-badge';
+        badge.innerHTML = `${w} <span class="token-id">${id}</span>`;
+        cloudBox.appendChild(badge);
+      });
+
+      document.getElementById('tokenIdsBox').textContent = `[${tokenIds.join(', ')}]`;
+      document.getElementById('tokenCountBadge').textContent = `총 ${words.length}개 토큰 (고유 어휘 ${Object.keys(vocabMap).length}단어)`;
+    }
+
+    // ========================================================
+    // 5. 코사인 유사도 각도기 캔버스 렌더링
+    // ========================================================
+    function renderVectorCanvas(angleDeg = 18.5) {
+      const canvas = document.getElementById('vectorCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // 좌표축 그리기
+      const ox = 40;
+      const oy = h - 40;
+      const maxL = 220;
+
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1.5;
+
+      // X축, Y축
+      ctx.beginPath();
+      ctx.moveTo(ox, oy); ctx.lineTo(ox + maxL + 30, oy);
+      ctx.moveTo(ox, oy); ctx.lineTo(ox, oy - maxL);
+      ctx.stroke();
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('단어 1 빈도 (X축)', ox + maxL - 40, oy + 20);
+      ctx.fillText('단어 2 빈도 (Y축)', ox - 30, oy - maxL + 15);
+
+      // 벡터 A (질문: 파란색, 각도 30도)
+      const radA = (30 * Math.PI) / 180;
+      const lenA = 190;
+      const ax = ox + lenA * Math.cos(radA);
+      const ay = oy - lenA * Math.sin(radA);
+
+      drawArrow(ctx, ox, oy, ax, ay, '#1f4ef5', 3);
+      ctx.fillStyle = '#1f4ef5';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText('질문 벡터 (A)', ax + 6, ay);
+
+      // 벡터 B (후보 문장: 초록색, 각도 30 + angleDeg)
+      const radB = ((30 + angleDeg) * Math.PI) / 180;
+      const lenB = 180;
+      const bx = ox + lenB * Math.cos(radB);
+      const by = oy - lenB * Math.sin(radB);
+
+      drawArrow(ctx, ox, oy, bx, by, '#03c75a', 3);
+      ctx.fillStyle = '#03c75a';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText('본문 근거 벡터 (B)', bx + 6, by - 4);
+
+      // 호(Arc) 그리기
+      ctx.beginPath();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.arc(ox, oy, 70, -radB, -radA);
+      ctx.stroke();
+
+      ctx.fillStyle = '#d97706';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText(`θ = ${angleDeg.toFixed(1)}°`, ox + 80, oy - 45);
+    }
+
+    function drawArrow(ctx, fromx, fromy, tox, toy, color, lineWidth) {
+      const headlen = 10;
+      const dx = tox - fromx;
+      const dy = toy - fromy;
+      const angle = Math.atan2(dy, dx);
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = lineWidth;
+      ctx.beginPath();
+      ctx.moveTo(fromx, fromy);
+      ctx.lineTo(tox, toy);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(tox, toy);
+      ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // ========================================================
+    // 6. 유사도 랭킹 계산기
+    // ========================================================
+    const candidateSentences = [
+      { text: "산기슭에서 점순이가 닭을 몰고 오며 감자 세 개를 불쑥 내밀었다.", baseWords: ["점순이", "감자", "내밀었다"] },
+      { text: "김이 모락모락 나는 따끈따끈한 감자였지만 난 감자 안 먹는다고 밀쳐버렸다.", baseWords: ["감자", "따끈따끈", "거절"] },
+      { text: "점순이는 얼굴이 홍당무처럼 새빨개지더니 토라져 달아났다.", baseWords: ["점순이", "얼굴", "달아났다"] },
+      { text: "수업 중 스마트폰 및 전자기기 무단 사용 시 1차 주의, 2차 시 일주일간 보관한다.", baseWords: ["수업", "스마트폰", "보관"] },
+      { text: "어린 왕자는 사막의 여우에게 세상에서 하나뿐인 장미꽃 이야기를 들려주었다.", baseWords: ["어린왕자", "여우", "장미꽃"] }
+    ];
+
+    function calculateSentenceSimilarity() {
+      const query = document.getElementById('queryInput').value.trim();
+      const qWords = query.replace(/[?.,!]/g, '').split(/\s+/).filter(w => w.length > 0);
+
+      const scored = candidateSentences.map(item => {
+        let matchCount = 0;
+        qWords.forEach(qw => {
+          if (item.text.includes(qw)) matchCount++;
+        });
+        const sim = (matchCount / Math.max(qWords.length, 1)) * 0.7 + (matchCount > 0 ? 0.28 : 0.04);
+        const clamped = Math.min(Math.max(sim, 0.05), 0.98);
+        return { text: item.text, score: clamped };
+      });
+
+      scored.sort((a, b) => b.score - a.score);
+
+      const tbody = document.querySelector('#simRankTable tbody');
+      tbody.innerHTML = '';
+
+      scored.forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        const badgeColor = idx === 0 ? 'var(--brand-green)' : '#64748b';
+        tr.innerHTML = `
+          <td><b style="color:${badgeColor}">${idx + 1}위</b></td>
+          <td>${r.text}</td>
+          <td>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <div style="width:70px; height:8px; background:#e2e8f0; border-radius:4px; overflow:hidden;">
+                <div style="width:${(r.score * 100).toFixed(0)}%; height:100%; background:${badgeColor};"></div>
+              </div>
+              <b>${(r.score * 100).toFixed(1)}%</b>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // 1위의 점수를 각도로 환산 (점수 높을수록 각도 좁음)
+      const topScore = scored[0].score;
+      const angle = (1.0 - topScore) * 80 + 8;
+      document.getElementById('angleBadge').textContent = `사잇각 θ = ${angle.toFixed(1)}° (코사인 유사도 ${(topScore * 100).toFixed(1)}%)`;
+      renderVectorCanvas(angle);
+    }
+
+    function setQueryPreset(type) {
+      if (type === 'phone') {
+        document.getElementById('queryInput').value = "수업 시간에 스마트폰 쓰다가 걸리면 처벌";
+      } else if (type === 'rose') {
+        document.getElementById('queryInput').value = "어린 왕자가 사랑한 장미꽃의 의미";
+      }
+      calculateSentenceSimilarity();
+    }
+
+
+    // ========================================================
+    // 7. [탭 3] 데이터 & AI 페르소나 설정 및 나만의 AI 공작소
+    // ========================================================
+    function loadAgentDoc(key) {
+      currentDocKey = key;
+      const doc = sampleDocs[key];
+
+      document.querySelectorAll('#tabSection3 .btn-preset').forEach(b => b.classList.remove('active'));
+      if (key === 'dongbaek') document.getElementById('btnDocDongbaek').classList.add('active');
+      else if (key === 'prince') document.getElementById('btnDocPrince').classList.add('active');
+      else if (key === 'school_rule') document.getElementById('btnDocSchoolRule').classList.add('active');
+      else if (key === 'custom') document.getElementById('btnDocCustom').classList.add('active');
+
+      document.getElementById('currentDocBadge').textContent = doc.title;
+      document.getElementById('customDocInput').value = doc.text;
+
+      // 페르소나 자동 추천
+      if (key === 'dongbaek') selectPersonaPreset('dongbaek');
+      else if (key === 'prince') selectPersonaPreset('fox');
+      else if (key === 'school_rule') selectPersonaPreset('judge');
+      else selectPersonaPreset('custom');
+
+      parseDocChunks(doc.text);
+    }
+
+    function selectPersonaPreset(pKey) {
+      document.querySelectorAll('.persona-chip').forEach(el => el.classList.remove('selected'));
+      const nameIn = document.getElementById('agentNameInput');
+      const styleIn = document.getElementById('agentStyleInput');
+
+      if (pKey === 'dongbaek') {
+        document.getElementById('pChipDongbaek')?.classList.add('selected');
+        nameIn.value = "점순이";
+        styleIn.value = "새침데기 강원도 사투리로 톡톡 쏘아붙이지만 속마음은 따뜻하게";
+      } else if (pKey === 'fox') {
+        document.getElementById('pChipFox')?.classList.add('selected');
+        nameIn.value = "지혜로운 여우";
+        styleIn.value = "신비롭고 철학적이며 다정한 어투로 인생의 비밀을 들려주듯이";
+      } else if (pKey === 'judge') {
+        document.getElementById('pChipJudge')?.classList.add('selected');
+        nameIn.value = "선도부장/판사";
+        styleIn.value = "철저하게 학교 규정에 근거하여 정확하고 단호하며 공정하게";
+      } else {
+        document.getElementById('pChipCustom')?.classList.add('selected');
+        nameIn.value = "나만의 AI";
+        styleIn.value = "친절하고 성실하게 본문 내용을 안내해주는 도우미";
+      }
+    }
+
+    function splitAndSaveCustomDoc() {
+      const raw = document.getElementById('customDocInput').value.trim();
+      if (!raw) {
+        alert('텍스트를 먼저 입력해주세요!');
+        return;
+      }
+
+      // 문장 분할 및 번호 매기기
+      const lines = raw.split(/\n+/).map(l => l.trim()).filter(l => l.length > 0);
+      let formattedText = "";
+      lines.forEach((line, idx) => {
+        if (/^\[\d+\]/.test(line) || /^\[제\d+조\]/.test(line)) {
+          formattedText += line + "\n";
+        } else {
+          formattedText += `[${idx + 1}] ${line}\n`;
+        }
+      });
+
+      sampleDocs['custom'].text = formattedText.trim();
+      document.getElementById('customDocInput').value = formattedText.trim();
+      parseDocChunks(formattedText);
+      alert(`🎉 총 ${currentDocChunks.length}개의 문장 청크로 분할되어 데이터베이스에 저장되었습니다!`);
+    }
+
+    function parseDocChunks(text) {
+      currentDocChunks = text.split(/\n+/).map(l => l.trim()).filter(l => l.length > 0);
+      document.getElementById('docViewerBox').textContent = text;
+      document.getElementById('docChunkCountText').textContent = `총 ${currentDocChunks.length}개 문장 조각 저장됨`;
+    }
+
+    function finalizeAndStartChat() {
+      const name = document.getElementById('agentNameInput').value.trim() || 'AI 에이전트';
+      const style = document.getElementById('agentStyleInput').value.trim();
+      const rawDoc = document.getElementById('customDocInput').value.trim();
+
+      if (!rawDoc) {
+        alert('에이전트가 읽을 데이터(본문)를 먼저 입력해주세요!');
+        return;
+      }
+
+      parseDocChunks(rawDoc);
+
+      // 에이전트 정보 등록
+      sampleDocs[currentDocKey].name = name;
+      sampleDocs[currentDocKey].style = style;
+      sampleDocs[currentDocKey].title = `${name} AI 독서 에이전트`;
+
+      document.getElementById('agentChatTitle').innerHTML = `🤖 ${name} 에이전트 <small style="font-weight:normal; font-size:12px; color:#64748b;">(${style.substring(0, 20)}...)</small>`;
+
+      renderSuggestedChips();
+      switchTab('tab4');
+
+      // 환영 메시지 추가
+      const chatBox = document.getElementById('chatMessages');
+      const welcome = document.createElement('div');
+      welcome.className = 'msg-bubble msg-agent';
+      welcome.innerHTML = `
+        <span class="msg-engine-badge badge-gemini">에이전트 준비 완료</span><br>
+        안녕하세요! 저는 <b>${name}</b>입니다. (${style})<br>
+        등록된 <b>${currentDocChunks.length}개의 본문 데이터</b>를 꼼꼼하게 읽어두었습니다. 궁금한 점을 질문해 주세요!
+      `;
+      chatBox.appendChild(welcome);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function renderSuggestedChips() {
+      const chipContainer = document.getElementById('suggestedQuestionChips');
+      chipContainer.innerHTML = '';
+      const doc = sampleDocs[currentDocKey];
+
+      const questions = doc.suggested || [
+        "이 글의 가장 핵심적인 내용은 무엇인가요?",
+        "등장인물의 속마음이나 규정의 의미를 알려주세요."
+      ];
+
+      questions.forEach(q => {
+        const btn = document.createElement('button');
+        btn.className = 'chip-btn';
+        btn.textContent = q;
+        btn.onclick = () => {
+          document.getElementById('chatInputText').value = q;
+          sendChatMessage();
+        };
+        chipContainer.appendChild(btn);
+      });
+    }
+
+
+    // ========================================================
+    // 8. [탭 4] 실시간 질문-답변 & Google Gemini API 연동
+    // ========================================================
+    async function sendChatMessage() {
+      const input = document.getElementById('chatInputText');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const chatBox = document.getElementById('chatMessages');
+      const btnSend = document.getElementById('btnSendChat');
+
+      // 1. 사용자 메시지 버블
+      const userBubble = document.createElement('div');
+      userBubble.className = 'msg-bubble msg-user';
+      userBubble.textContent = query;
+      chatBox.appendChild(userBubble);
+      input.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // 2. [데이터 영역] 코사인 유사도 검색 (RAG Retrieval)
+      const searchResults = searchBestChunks(query, currentDocChunks);
+      const best = searchResults[0] || { chunk: "관련된 본문 구절을 찾을 수 없습니다.", score: 0 };
+      const top3 = searchResults.slice(0, 3);
+
+      // 우측 데이터 영역 UI 갱신
+      document.getElementById('retrievedEvidenceBox').innerHTML = `
+        <b>📌 코사인 유사도 1위 추출 근거 (${(best.score * 100).toFixed(1)}% 매칭):</b><br>
+        "${highlightKeywords(best.chunk, query)}"
+      `;
+      document.getElementById('matchScoreBadge').textContent = `일치도 ${(best.score * 100).toFixed(1)}%`;
+
+      const top3Tbody = document.querySelector('#chatTop3Table tbody');
+      top3Tbody.innerHTML = '';
+      top3.forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><b>${idx + 1}위</b></td>
+          <td>${r.chunk.substring(0, 32)}...</td>
+          <td><b>${(r.score * 100).toFixed(1)}%</b></td>
+        `;
+        top3Tbody.appendChild(tr);
+      });
+
+      // 3. AI 두뇌 프롬프트 조립
+      const agentName = sampleDocs[currentDocKey].name || "인공지능 에이전트";
+      const agentStyle = sampleDocs[currentDocKey].style || "친절한 도우미";
+      const evidenceText = top3.map(t => t.chunk).join("\n");
+
+      const assembledPrompt = `[시스템 지침]
+너는 문학/규정 전문 AI 에이전트 '${agentName}'이다.
+말투 및 성격: ${agentStyle}
+규칙: 
+1. 반드시 아래 [참고 본문 데이터]에 주어진 사실만 근거로 대답하라.
+2. 본문에 없는 내용은 절대 지어내지 말고 "책에 나오지 않는 내용입니다"라고 답하라.
+3. 캐릭터의 말투를 실감 나게 살려 답변하라.
+
+[참고 본문 데이터 (검색된 근거)]
+${evidenceText}
+
+[학생의 질문]
+${query}`;
+
+      document.getElementById('promptAssemblyBox').textContent = assembledPrompt;
+
+      // 4. 답변 생성: Google Gemini API or 오프라인 룰 엔진
+      const agentBubble = document.createElement('div');
+      agentBubble.className = 'msg-bubble msg-agent';
+      agentBubble.innerHTML = `<i>🧠 ${agentName} 두뇌가 데이터를 읽고 생각하는 중...</i>`;
+      chatBox.appendChild(agentBubble);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      btnSend.disabled = true;
+
+      try {
+        if (!isApiLocked && GOOGLE_API_KEY) {
+          // Google Gemini 실제 호출
+          const geminiAnswer = await callGeminiApi(assembledPrompt);
+          agentBubble.innerHTML = `
+            <span class="msg-engine-badge badge-gemini">🟢 Google Gemini 1.5 Flash 추론</span><br>
+            ${geminiAnswer.replace(/\n/g, '<br>')}
+            <div class="msg-source-quote">
+              <b>📚 AI가 읽은 원문 데이터:</b> "${best.chunk}" (유사도: ${(best.score * 100).toFixed(1)}%)
+            </div>
+          `;
+        } else {
+          // 오프라인 규칙 엔진 시뮬레이션
+          await new Promise(r => setTimeout(r, 450));
+          const offlineAnswer = generateOfflineAnswer(query, best.chunk, currentDocKey);
+          agentBubble.innerHTML = `
+            <span class="msg-engine-badge badge-offline">⚪ 오프라인 시뮬레이션 답변</span><br>
+            ${offlineAnswer}
+            <div class="msg-source-quote">
+              <b>📚 AI가 읽은 원문 데이터:</b> "${best.chunk}" (유사도: ${(best.score * 100).toFixed(1)}%)
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.error(err);
+        const fallback = generateOfflineAnswer(query, best.chunk, currentDocKey);
+        agentBubble.innerHTML = `
+          <span class="msg-engine-badge badge-offline">⚠️ API 오류로 오프라인 모드 전환</span><br>
+          ${fallback}
+          <div class="msg-source-quote">
+            <b>📚 AI가 읽은 원문 데이터:</b> "${best.chunk}"
+          </div>
+        `;
+      } finally {
+        btnSend.disabled = false;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    // Google Gemini API 호출
+    async function callGeminiApi(fullPrompt) {
+      const model = SELECTED_MODEL || 'gemini-1.5-flash';
+      const ver = CURRENT_API_VERSION || 'v1beta';
+      const url = `https://generativelanguage.googleapis.com/${ver}/models/${model}:generateContent?key=${GOOGLE_API_KEY}`;
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: fullPrompt }] }],
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 600
+          }
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error?.message || 'API 응답 실패');
+      }
+
+      if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+        return data.candidates[0].content.parts[0].text;
+      }
+      throw new Error('응답 텍스트를 찾을 수 없습니다.');
+    }
+
+    // 코사인 유사도 검색 로직
+    function searchBestChunks(query, chunks) {
+      const qWords = query.replace(/[?.,!]/g, '').split(/\s+/).filter(w => w.length > 0);
+
+      const scored = chunks.map(chunk => {
+        let matchCount = 0;
+        qWords.forEach(w => {
+          if (chunk.includes(w)) matchCount++;
+        });
+        const score = (matchCount / Math.max(qWords.length, 1)) * 0.7 + (matchCount > 0 ? 0.28 : 0.04);
+        return { chunk, score: Math.min(score, 0.98) };
+      });
+
+      scored.sort((a, b) => b.score - a.score);
+      return scored;
+    }
+
+    function highlightKeywords(text, query) {
+      const words = query.replace(/[?.,!]/g, '').split(/\s+/).filter(w => w.length > 1);
+      let res = text;
+      words.forEach(w => {
+        const reg = new RegExp(w, 'gi');
+        res = res.replace(reg, `<span style="background:#fef08a; font-weight:bold; color:#854d0e;">$&</span>`);
+      });
+      return res;
+    }
+
+    // 오프라인 룰 기반 답변 엔진
+    function generateOfflineAnswer(query, bestChunk, docKey) {
+      const agentName = sampleDocs[docKey].name || "에이전트";
+
+      if (docKey === 'dongbaek') {
+        if (query.includes('감자') && (query.includes('이유') || query.includes('속마음') || query.includes('왜'))) {
+          return "흥! 내가 괜히 집에서 김이 모락모락 나는 감자를 몰래 쪄왔겠어? **너 좋아서 관심 끌려고 준 건데**, 넌 그것도 모르고 매정하게 밀쳐버렸잖아! 바보같이 그것도 모르고!";
+        } else if (query.includes('거절') || query.includes('반응')) {
+          return "감자를 딱 잘라 거절당했을 때 내 얼굴이 **홍당무처럼 새빨개졌단 말이야.** 너무 분하고 자존심 상해서 눈에 독이 올라서 홱 달아났었지!";
+        } else if (query.includes('화해') || query.includes('동백꽃')) {
+          return "마지막에 **알싸하고 향긋한 노란 동백꽃이 흐드러지게 핀 바위 틈**에서 함께 넘어지면서 서로의 감정을 확인하고 화해했잖아.";
+        }
+      } else if (docKey === 'prince') {
+        if (query.includes('길들인다') || query.includes('의미')) {
+          return "'길들인다'는 것은 **'서로에게 세상에서 단 하나뿐인 소중한 존재가 되는 것'**이야. 관계를 맺기 전에는 수많은 소년과 여우 중 하나일 뿐이지만, 함께 시간을 보내면 특별해지는 거지.";
+        } else if (query.includes('장미') && (query.includes('소중') || query.includes('특별'))) {
+          return "어린 왕자의 장미가 특별한 이유는 **'직접 물을 주고, 바람막이를 씌워주며 쏟은 시간과 정성'** 때문이야.";
+        } else if (query.includes('비밀')) {
+          return "내가 알려준 가장 중요한 비밀은 **'가장 중요한 것은 눈에 보이지 않으며, 오직 마음으로 보아야만 분명하게 볼 수 있다'**는 진리란다.";
+        }
+      } else if (docKey === 'school_rule') {
+        if (query.includes('등교') || query.includes('지각')) {
+          return "규정 제5조에 따라 **등교 시간은 오전 8시 40분까지**이며, 8시 41분 이후 입실은 지각 처리됩니다. 또한 **무단 지각 3회는 무단 결석 1회**로 산정됩니다.";
+        } else if (query.includes('스마트폰') || query.includes('핸드폰')) {
+          return "규정 제8조에 따라 수업 중 스마트폰 무단 사용 시 **1차 적발은 주의, 2차 적발 시에는 일주일간 담임교사 보관 조치**를 받게 됩니다.";
+        }
+      }
+
+      return `(페르소나: ${agentName})<br>제가 읽은 본문 데이터에 따르면 다음과 같은 근거가 적혀 있습니다:<br><b>"${bestChunk}"</b><br>본문 내용을 토대로 질문에 대해 사실대로 말씀드립니다!`;
+    }
+
+    function clearChat() {
+      document.getElementById('chatMessages').innerHTML = `
+        <div class="msg-bubble msg-agent">
+          대화 내용이 초기화되었습니다. 새로운 질문을 입력해 주세요!
+        </div>
+      `;
+    }
+
+    // ========================================================
+    // 9. 초기화
+    // ========================================================
+    window.onload = function() {
+      runTokenize();
+      loadAgentDoc('dongbaek');
+      updateApiStatusUI();
+    };
+  </script>
+</body>
+</html>

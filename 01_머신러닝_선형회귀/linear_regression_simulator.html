@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 에듀 | 선형회귀 & 인공신경망 가중치 전파 실습</title>
+  <style>
+    :root {
+      --brand-blue: #1f4ef5;
+      --brand-blue-hover: #153ec7;
+      --brand-green: #03c75a;
+      --brand-green-hover: #02b350;
+      --brand-bg: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #111111;
+      --text-sub: #444444;
+      --text-gray: #767676;
+      --border-color: #e5e8eb;
+      --border-light: #f0f2f5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "맑은 고딕", "NanumSquareNeo", "Apple SD Gothic Neo", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--brand-bg);
+      color: var(--text-main);
+      line-height: 1.4;
+    }
+
+    /* 1.  글로벌 탑 네비게이션 바 (GNB) */
+    .portal-gnb {
+      background-color: var(--brand-blue);
+      color: #ffffff;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      justify-content: space-between;
+    }
+
+    .gnb-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 19px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .header-logo-badge {
+      background: #ffffff;
+      color: var(--brand-blue);
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .gnb-service-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      padding-left: 10px;
+      border-left: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .gnb-menu {
+      display: flex;
+      gap: 14px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .gnb-menu span { cursor: pointer; }
+    .gnb-menu span:hover { color: #ffffff; font-weight: 700; }
+
+    .gnb-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-student-mode {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* 2. 서브 내비게이션 바 (SNB) */
+    .portal-snb {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      height: 40px;
+      gap: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+
+    .snb-item {
+      cursor: pointer;
+      position: relative;
+      height: 40px;
+      display: flex;
+      align-items: center;
+    }
+
+    .snb-item.active {
+      color: var(--brand-blue);
+      font-weight: 800;
+    }
+
+    .snb-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--brand-blue);
+    }
+
+    /* 메인 컨테이너 */
+    .main-container {
+      max-width: 1400px;
+      margin: 12px auto;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* 날짜 및 상단 요약 바 */
+    .date-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-gray);
+      padding: 0 4px;
+    }
+
+    .date-strong {
+      font-weight: 800;
+      color: var(--text-main);
+      font-size: 14px;
+    }
+
+    /* ========================================================
+       ✨ 핵심 레이아웃: 좌/우 2열 대시보드
+       - 좌측: 평면좌표 & 경사하강법 & 2차곡선 (위로 쑥 올라옴!)
+       - 우측: 뉴런 노드 순전파 캔버스 & 1~4단계 조절 패널 (우측 배치)
+       ======================================================== */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 530px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .col-left, .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /*  카드 공통 */
+    .n-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .n-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 8px;
+    }
+
+    .n-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /*  버튼 스타일 */
+    .btn-b-subscribe {
+      border: 1px solid var(--brand-blue);
+      background: #ffffff;
+      color: var(--brand-blue);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.15s ease;
+    }
+    .btn-b-subscribe:hover { background: #eff4ff; }
+    .btn-b-subscribe.active {
+      background: var(--brand-blue);
+      color: #ffffff;
+    }
+
+    .btn-b-green {
+      background: var(--brand-green);
+      color: #ffffff;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-b-green:hover { background: var(--brand-green-hover); }
+
+    .btn-b-blue {
+      background: var(--brand-blue);
+      color: #ffffff;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-b-blue:hover { background: var(--brand-blue-hover); }
+
+    .btn-b-gray {
+      background: #f1f3f5;
+      color: var(--text-sub);
+      border: 1px solid var(--border-color);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-b-gray:hover { background: #e9ecef; }
+
+    .btn-b-danger {
+      background: #fff0f0;
+      color: #e03131;
+      border: 1px solid #ffc9c9;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-b-danger:hover { background: #ffe3e3; }
+
+    /* 좌측: 평면좌표 캔버스 */
+    .plot-canvas-wrap {
+      width: 100%;
+      height: 250px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      cursor: crosshair;
+    }
+    #plotCanvas { display: block; width: 100%; height: 100%; }
+
+    /* 데이터 목록 표 */
+    .data-scroll {
+      max-height: 100px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--text-sub);
+      font-weight: 600;
+      padding: 5px;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    td {
+      padding: 4px 5px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    input[type="number"] {
+      padding: 3px 5px;
+      border: 1px solid var(--border-color);
+      border-radius: 3px;
+      font-size: 12px;
+    }
+
+    /* 좌측: 경사하강법 파라미터 박스 */
+    .param-box {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      background: #f8fafc;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-light);
+    }
+
+    .param-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .param-item label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-sub);
+    }
+
+    .param-item input {
+      width: 100%;
+      text-align: left;
+      padding: 3px 5px;
+    }
+
+    /* 2차 함수 손실 곡선 캔버스 */
+    .loss-curve-wrap {
+      width: 100%;
+      height: 165px;
+      background: #ffffff;
+      border: 1px solid var(--brand-blue);
+      border-radius: 6px;
+      position: relative;
+      display: none;
+    }
+    .loss-curve-wrap.show { display: block; }
+    #lossCurveCanvas { display: block; width: 100%; height: 100%; }
+
+    /* 에포크 수렴 결과 테이블 */
+    .epoch-scroll {
+      max-height: 180px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+    }
+
+    .mono {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Mono", Monaco, Consolas, monospace;
+    }
+
+    .loss-red {
+      color: #d63301;
+      font-weight: 700;
+    }
+
+    /* ========================================================
+       우측: 뉴런 캔버스 및 1~4단계 조절 카드
+       ======================================================== */
+    .neuron-canvas-wrap {
+      width: 100%;
+      height: 200px;
+      background: #fafbfc;
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      position: relative;
+    }
+    #neuronCanvas { display: block; width: 100%; height: 100%; }
+
+    /* 4단계 실시간 인터랙티브 조절 그리드 (2x2 시원한 배치) */
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .step-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .step-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .step-badge {
+      background: var(--brand-blue);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .step-card-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-sub);
+    }
+
+    .step-ctrl-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .step-ctrl-row label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .step-ctrl-row input[type="number"] {
+      width: 85px;
+      padding: 3px 6px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin: 4px 0 2px 0;
+      accent-color: var(--brand-blue);
+      cursor: pointer;
+    }
+
+    .step-calc-text {
+      font-size: 12px;
+      font-weight: 700;
+      font-family: monospace;
+      color: var(--text-main);
+      padding: 3px 6px;
+      background: #f8fafc;
+      border-radius: 4px;
+      border: 1px solid var(--border-light);
+    }
+
+    .step-result-badge {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--brand-green);
+      font-family: monospace;
+      margin-top: 4px;
+      background: #edfcf2;
+      border: 1px solid #bbf2d0;
+      border-radius: 6px;
+      padding: 8px 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1.  GNB 헤더 -->
+  <header class="portal-gnb">
+    <div class="gnb-left">
+      <a href="#" class="header-logo">
+        <span class="logo-badge" style="background:#ffffff; color:#1f4ef5; font-weight:900; font-size:14px; padding:2px 7px; border-radius:4px; margin-right:4px;">AI</span> 실습실
+      </a>
+      <span class="gnb-service-title">인공지능 선형회귀 & 가중치 전파</span>
+      <nav class="gnb-menu">
+        <span>머신러닝 기초</span>
+        <span>경사하강법 2차곡선</span>
+        <span>신경망 순전파</span>
+        <span>구글 코랩 연동</span>
+      </nav>
+    </div>
+    <div class="gnb-right">
+      <button class="btn-student-mode">학생 인터랙티브 모드</button>
+    </div>
+  </header>
+
+  <!-- 2.  서브 내비게이션 바 (SNB) -->
+  <nav class="portal-snb">
+    <div class="snb-item active">단일 뉴런 파라미터 조절</div>
+    <div class="snb-item">10개 점 데이터셋</div>
+    <div class="snb-item">2차함수 경사하강법 곡선</div>
+    <div class="snb-item">에포크 랭킹 표</div>
+    <div class="snb-item">코랩(Colab) 코드</div>
+  </nav>
+
+  <!-- 메인 컨테이너 -->
+  <main class="main-container">
+
+    <!-- 날짜 정보 및 상태 요약 바 -->
+    <div class="date-bar">
+      <div>
+        <span class="date-strong">09.26(토)</span>
+        <span style="margin-left: 6px;">인공지능 단일 뉴런 가중치 곱 & 편향 계산 실습</span>
+      </div>
+      <div>
+        <span>현재 수식: <b id="headEqText" style="color:var(--brand-blue);">y = 1.9231x + 0.6331</b></span>
+        <span style="margin: 0 6px;">|</span>
+        <span>손실(MSE): <b id="headLossText" style="color:#d63301;">0.0000</b></span>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         ✨ 재배치된 대시보드 레이아웃:
+         - [좌측 컬럼]: 10개 점 평면좌표 & 경사하강법 제어 (위로 올라옴!)
+         - [우측 컬럼]: 동그란 노드 시각화 & 1~4단계 조절 패널 (우측으로 배치!)
+         ======================================================== -->
+    <div class="dashboard-layout">
+
+      <!-- ====================================================
+           [좌측 컬럼] 데이터셋 및 학습 제어 (위로 올려서 한눈에 보이게 됨)
+           ==================================================== -->
+      <div class="col-left">
+
+        <!-- 카드 1: 평면좌표 데이터 점 (10개) -->
+        <section class="n-card">
+          <div class="n-card-header">
+            <div class="n-card-title">
+              <span>📍 평면좌표 데이터 점 (<span id="pointCountText">0</span>/10개)</span>
+            </div>
+            <button class="btn-b-subscribe" onclick="loadSampleData()">+ 10개 점 자동채우기</button>
+          </div>
+
+          <div class="plot-canvas-wrap">
+            <canvas id="plotCanvas" width="490" height="250"></canvas>
+          </div>
+          <div style="font-size: 11px; color: var(--text-gray); text-align: center;">
+            💡 캔버스를 클릭하면 점이 추가됩니다. (우측 슬라이더 조절 시 회귀선이 실시간 연동)
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--text-main);">데이터 목록 (수정 가능)</span>
+            <div style="display: flex; gap: 5px;">
+              <button class="btn-b-gray" onclick="exportToCSV()">📥 CSV 다운로드</button>
+              <button class="btn-b-danger" onclick="clearPoints()">🗑️ 초기화</button>
+            </div>
+          </div>
+
+          <!-- 점 목록 표 -->
+          <div class="data-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>입력 X</th>
+                  <th>출력 Y</th>
+                  <th>삭제</th>
+                </tr>
+              </thead>
+              <tbody id="dataTableBody">
+                <!-- JS 동적 생성 -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 카드 2: 경사하강법 파라미터 & 2차 함수 손실 곡선 & 에포크 랭킹 표 -->
+        <section class="n-card">
+          <div class="n-card-header">
+            <div class="n-card-title">
+              <span>⚙️ 경사하강법 제어 & 2차 곡선</span>
+            </div>
+            <button class="btn-b-subscribe active" id="btnToggleLossCurve" onclick="toggleLossCurve()">
+              📊 2차함수 손실곡선 (열기/닫기)
+            </button>
+          </div>
+
+          <!-- 파라미터 입력창 -->
+          <div class="param-box">
+            <div class="param-item">
+              <label>학습률 (α)</label>
+              <input type="number" id="lrInput" value="0.01" step="0.001">
+            </div>
+            <div class="param-item">
+              <label>에포크 수</label>
+              <input type="number" id="epochInput" value="100" step="10">
+            </div>
+            <div class="param-item">
+              <label>초기 W</label>
+              <input type="number" id="initW" value="0.0" step="0.1">
+            </div>
+            <div class="param-item">
+              <label>초기 b</label>
+              <input type="number" id="initB" value="0.0" step="0.1">
+            </div>
+          </div>
+
+          <!-- 2차 함수 손실 곡선 (Loss Curve) 캔버스 -->
+          <div class="loss-curve-wrap show" id="lossCurveBox">
+            <canvas id="lossCurveCanvas" width="490" height="165"></canvas>
+          </div>
+
+          <!-- 학습 실행 버튼 -->
+          <div style="display: flex; gap: 6px;">
+            <button class="btn-b-green" id="btnTrainAnim" onclick="startTraining(true)">▶️ 실시간 학습 (공 굴리기 & 표)</button>
+            <button class="btn-b-blue" id="btnTrainFast" onclick="startTraining(false)">⚡ 고속 학습</button>
+            <button class="btn-b-gray" id="btnStop" onclick="stopTraining()" disabled>⏸️ 일시 정지</button>
+          </div>
+
+          <!-- 에포크 수렴 테이블 -->
+          <div style="font-size: 12px; font-weight: 700; color: var(--text-main); margin-top: 2px;">
+            에포크별 수렴 랭킹 표 (손실 감소 & 가중치 곱)
+          </div>
+          <div class="epoch-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Epoch</th>
+                  <th>가중치 W</th>
+                  <th>편향 b</th>
+                  <th>손실(MSE)</th>
+                  <th>가중치곱(x*W)</th>
+                  <th style="background:#e8f4fc; color:var(--brand-blue);">출력 Ŷ</th>
+                </tr>
+              </thead>
+              <tbody id="epochTableBody">
+                <tr>
+                  <td colspan="6" style="color: var(--text-gray); padding: 18px;">'실시간 학습' 버튼을 누르면 2차 곡선에서 공이 내려가며 표가 기록됩니다.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+
+      <!-- ====================================================
+           [우측 컬럼] 뉴런 노드 시각화 & 1~4단계 조절 패널 (우측 배치로 큼직하고 시원하게 보임!)
+           ==================================================== -->
+      <div class="col-right">
+
+        <!-- 카드 3: 동그란 노드 순전파 시각화 캔버스 -->
+        <section class="n-card">
+          <div class="n-card-header">
+            <div class="n-card-title">
+              <span>🧠 단일 뉴런 순전파: 동그란 노드를 통한 가중치(W) 곱 전달</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button class="btn-b-subscribe" onclick="triggerPulseAnimation()">+ 신호 재생</button>
+              <label style="font-size: 11px; color: var(--text-gray); display:flex; align-items:center; gap:3px; cursor:pointer;">
+                <input type="checkbox" id="autoFlowCheck" checked> 연속 전달
+              </label>
+            </div>
+          </div>
+
+          <div class="neuron-canvas-wrap" id="neuronWrap">
+            <canvas id="neuronCanvas" width="750" height="200"></canvas>
+          </div>
+        </section>
+
+        <!-- 카드 4: 1단계 ~ 4단계 실시간 인터랙티브 조절 패널 (2x2 시원한 배치) -->
+        <section class="n-card">
+          <div class="n-card-header">
+            <div class="n-card-title">
+              <span>🎛️ 1~4단계 실시간 파라미터 조절 (임의 조절 시 노드에 즉시 반영)</span>
+            </div>
+            <span style="font-size: 11px; color: var(--text-gray);">슬라이더 드래그 시 0.001초 동기화</span>
+          </div>
+
+          <div class="step-grid">
+
+            <!-- 1단계: 입력 노드 (X) -->
+            <div class="step-card">
+              <div class="step-card-header">
+                <span class="step-badge">1단계</span>
+                <span class="step-card-title">입력 노드 (X)</span>
+              </div>
+              <div class="step-ctrl-row">
+                <label>x =</label>
+                <input type="number" id="ctrlX" value="5.5000" step="0.1" min="0" max="12" oninput="onParamChange('x', this.value)">
+                <span style="font-size: 11px; color: var(--text-gray);">입력값</span>
+              </div>
+              <input type="range" id="sliderX" min="0" max="12" step="0.1" value="5.5" oninput="onParamChange('x', this.value)">
+              <div class="step-calc-text" id="step1Val" style="color:var(--brand-blue);">x = 5.5000</div>
+            </div>
+
+            <!-- 2단계: 가중치 곱 (x × W) -->
+            <div class="step-card">
+              <div class="step-card-header">
+                <span class="step-badge" style="background:#f59e0b;">2단계</span>
+                <span class="step-card-title">가중치 곱 (x × W)</span>
+              </div>
+              <div class="step-ctrl-row">
+                <label>W =</label>
+                <input type="number" id="ctrlW" value="1.9231" step="0.01" min="-2" max="5" oninput="onParamChange('W', this.value)">
+                <span style="font-size: 11px; color: var(--text-gray);">기울기(W)</span>
+              </div>
+              <input type="range" id="sliderW" min="-2" max="5" step="0.01" value="1.9231" oninput="onParamChange('W', this.value)">
+              <div class="step-calc-text" id="step2Val" style="color:#b45309;">5.50 × 1.9231 = 10.5769</div>
+            </div>
+
+            <!-- 3단계: 편향 더하기 (+ b) -->
+            <div class="step-card">
+              <div class="step-card-header">
+                <span class="step-badge" style="background:#ec4899;">3단계</span>
+                <span class="step-card-title">편향 더하기 (+ b)</span>
+              </div>
+              <div class="step-ctrl-row">
+                <label>b =</label>
+                <input type="number" id="ctrlB" value="0.6331" step="0.01" min="-5" max="5" oninput="onParamChange('b', this.value)">
+                <span style="font-size: 11px; color: var(--text-gray);">y절편(b)</span>
+              </div>
+              <input type="range" id="sliderB" min="-5" max="5" step="0.01" value="0.6331" oninput="onParamChange('b', this.value)">
+              <div class="step-calc-text" id="step3Val" style="color:#be185d;">+ 0.6331</div>
+            </div>
+
+            <!-- 4단계: 출력 노드 (Ŷ) -->
+            <div class="step-card" style="border-left: 3px solid var(--brand-green);">
+              <div class="step-card-header">
+                <span class="step-badge" style="background:var(--brand-green);">4단계</span>
+                <span class="step-card-title">출력 노드 (Ŷ)</span>
+              </div>
+              <div style="font-size: 11px; color: #0d6832; margin-top: 1px;">
+                (x × W) + b 순전파 최종 계산 결과
+              </div>
+              <div class="step-result-badge" id="step4Val">
+                Ŷ = 11.2099
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+
+
+    <!-- 파이썬 코드 박스 -->
+    <div style="margin-top: 24px; background: #0f172a; border-radius: 20px; padding: 20px; color: #f8fafc; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></span>
+          <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #f59e0b;"></span>
+          <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></span>
+          <span style="font-family: monospace; font-size: 13px; color: #94a3b8; margin-left: 8px;">🐍 [파이썬 코드로 구현하기] 01_선형회귀_전파_및_학습.py</span>
+        </div>
+        <button onclick="copyPythonCode()" id="btnCopyPy" style="font-size: 12px; background: #1e293b; border: 1px solid #334155; color: #34d399; font-family: monospace; padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+          📋 코드 복사
+        </button>
+      </div>
+      <pre id="pythonCodeBlock" style="font-family: monospace; font-size: 12px; line-height: 1.6; color: #cbd5e1; overflow-x: auto; background: rgba(2, 6, 23, 0.8); padding: 16px; border-radius: 12px; margin: 0;"># [파이썬 실습] 4단계 노드 전파 및 경사하강법으로 최적 가중치(W)와 편향(b) 학습하기
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. 10개의 샘플 데이터 준비 (X: 공부 시간, Y: 시험 점수)
+X = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
+Y = np.array([2.1, 3.8, 6.2, 7.9, 10.2, 12.1, 13.9, 16.2, 18.0, 20.3])
+
+# 2. 초기 가중치(W)와 편향(b) 설정
+W = 0.5
+b = 0.5
+learning_rate = 0.01
+epochs = 100
+
+# 3. 경사하강법 훈련 반복문
+for epoch in range(1, epochs + 1):
+    # [1~4단계 순전파] 출력 예측값 Y_pred = X * W + b
+    Y_pred = X * W + b
+    
+    # 손실 함수 (MSE 오차)
+    loss = np.mean((Y - Y_pred) ** 2)
+    
+    # 기울기 계산 (미분)
+    w_gradient = -2 * np.mean(X * (Y - Y_pred))
+    b_gradient = -2 * np.mean(Y - Y_pred)
+    
+    # 가중치와 편향 업데이트 (경사하강)
+    W -= learning_rate * w_gradient
+    b -= learning_rate * b_gradient
+    
+    if epoch % 20 == 0:
+        print(f"Epoch {epoch:3d} | W: {W:.4f} | b: {b:.4f} | MSE Loss: {loss:.4f}")
+
+# 4. 최종 결과 출력 및 수식 완성
+print(f"\n최종 회귀식: y = {W:.4f} * x + {b:.4f}")
+
+# 5. 시각화 (산점도와 회귀선)
+plt.figure(figsize=(8, 4))
+plt.scatter(X, Y, color='#1f4ef5', label='실제 데이터 (x, y)')
+plt.plot(X, W * X + b, color='#03c75a', lw=2.5, label=f'예측선: y={W:.2f}x+{b:.2f}')
+plt.xlabel('x (입력 노드)'); plt.ylabel('y (출력 노드)')
+plt.title('선형회귀 가중치 전파 학습 결과')
+plt.legend(); plt.grid(True, alpha=0.3); plt.show()</pre>
+    </div>
+
+  </main>
+
+  <script>
+    function copyPythonCode() {
+      const code = document.getElementById('pythonCodeBlock').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('btnCopyPy');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✅ 복사 완료!';
+        setTimeout(() => { btn.innerHTML = orig; }, 2000);
+      });
+    }
+
+    // ========================================================
+    // 1. 상태 변수 및 초기화
+    // ========================================================
+    let points = [];
+    let W = 1.9231;
+    let b = 0.6331;
+    let studentX = 5.5000;
+    let isTraining = false;
+    let trainTimer = null;
+
+    // 2D 캔버스
+    const plotCanvas = document.getElementById('plotCanvas');
+    const plotCtx = plotCanvas.getContext('2d');
+    const xMin = 0, xMax = 12;
+    const yMin = 0, yMax = 25;
+    const plotPad = 28;
+
+    // 뉴런 캔버스
+    const neuronCanvas = document.getElementById('neuronCanvas');
+    const nCtx = neuronCanvas.getContext('2d');
+    let pulses = [];
+    let lastPulseTime = 0;
+
+    // 2차 함수 손실 곡선 캔버스
+    const lossCurveCanvas = document.getElementById('lossCurveCanvas');
+    const lossCtx = lossCurveCanvas.getContext('2d');
+    let epochHistory = [];
+
+    // ========================================================
+    // 2. 평면좌표계 변환 및 산점도/회귀선 그리기
+    // ========================================================
+    function toCanvasX(x) {
+      return plotPad + ((x - xMin) / (xMax - xMin)) * (plotCanvas.width - 2 * plotPad);
+    }
+    function toCanvasY(y) {
+      return plotCanvas.height - plotPad - ((y - yMin) / (yMax - yMin)) * (plotCanvas.height - 2 * plotPad);
+    }
+    function toMathX(cx) {
+      return xMin + ((cx - plotPad) / (plotCanvas.width - 2 * plotPad)) * (xMax - xMin);
+    }
+    function toMathY(cy) {
+      return yMin + ((plotCanvas.height - plotPad - cy) / (plotCanvas.height - 2 * plotPad)) * (yMax - yMin);
+    }
+
+    function drawPlot() {
+      const pw = plotCanvas.width;
+      const ph = plotCanvas.height;
+      plotCtx.clearRect(0, 0, pw, ph);
+
+      // 격자선
+      plotCtx.strokeStyle = '#f0f2f5';
+      plotCtx.lineWidth = 1;
+      plotCtx.fillStyle = '#767676';
+      plotCtx.font = '10px -apple-system, sans-serif';
+      plotCtx.textAlign = 'center';
+
+      for (let x = xMin; x <= xMax; x += 2) {
+        const cx = toCanvasX(x);
+        plotCtx.beginPath();
+        plotCtx.moveTo(cx, plotPad);
+        plotCtx.lineTo(cx, ph - plotPad);
+        plotCtx.stroke();
+        plotCtx.fillText(x, cx, ph - plotPad + 13);
+      }
+
+      plotCtx.textAlign = 'right';
+      for (let y = yMin; y <= yMax; y += 5) {
+        const cy = toCanvasY(y);
+        plotCtx.beginPath();
+        plotCtx.moveTo(plotPad, cy);
+        plotCtx.lineTo(pw - plotPad, cy);
+        plotCtx.stroke();
+        plotCtx.fillText(y, plotPad - 5, cy + 4);
+      }
+
+      // 축 선
+      plotCtx.strokeStyle = '#ced4da';
+      plotCtx.lineWidth = 1.5;
+      plotCtx.beginPath();
+      plotCtx.moveTo(plotPad, ph - plotPad);
+      plotCtx.lineTo(pw - plotPad, ph - plotPad);
+      plotCtx.moveTo(plotPad, plotPad);
+      plotCtx.lineTo(plotPad, ph - plotPad);
+      plotCtx.stroke();
+
+      // 축 라벨
+      plotCtx.fillStyle = '#495057';
+      plotCtx.font = 'bold 11px sans-serif';
+      plotCtx.fillText('X', pw - plotPad, ph - plotPad - 5);
+      plotCtx.save();
+      plotCtx.translate(plotPad + 10, plotPad + 8);
+      plotCtx.rotate(-Math.PI / 2);
+      plotCtx.fillText('Y', 0, 0);
+      plotCtx.restore();
+
+      // 회귀선 (테크 블루 #1f4ef5)
+      const y1 = W * xMin + b;
+      const y2 = W * xMax + b;
+      plotCtx.strokeStyle = '#1f4ef5';
+      plotCtx.lineWidth = 2.5;
+      plotCtx.beginPath();
+      plotCtx.moveTo(toCanvasX(xMin), toCanvasY(y1));
+      plotCtx.lineTo(toCanvasX(xMax), toCanvasY(y2));
+      plotCtx.stroke();
+
+      // 학생 현재 테스트 입력값 표시 (주황색 점선 & 점)
+      const curStudentY = W * studentX + b;
+      if (studentX >= xMin && studentX <= xMax) {
+        const sx = toCanvasX(studentX);
+        const sy = toCanvasY(curStudentY);
+        plotCtx.strokeStyle = '#ff922b';
+        plotCtx.setLineDash([3, 3]);
+        plotCtx.beginPath();
+        plotCtx.moveTo(sx, ph - plotPad);
+        plotCtx.lineTo(sx, sy);
+        plotCtx.lineTo(plotPad, sy);
+        plotCtx.stroke();
+        plotCtx.setLineDash([]);
+
+        plotCtx.fillStyle = '#ff6b6b';
+        plotCtx.beginPath();
+        plotCtx.arc(sx, sy, 6, 0, Math.PI * 2);
+        plotCtx.fill();
+        plotCtx.strokeStyle = '#ffffff';
+        plotCtx.lineWidth = 1.5;
+        plotCtx.stroke();
+      }
+
+      // 10개 데이터 점 (에메랄드 그린 #03c75a)
+      points.forEach((p, idx) => {
+        const cx = toCanvasX(p.x);
+        const cy = toCanvasY(p.y);
+        plotCtx.fillStyle = '#03c75a';
+        plotCtx.beginPath();
+        plotCtx.arc(cx, cy, 5.5, 0, Math.PI * 2);
+        plotCtx.fill();
+        plotCtx.strokeStyle = '#ffffff';
+        plotCtx.lineWidth = 1.5;
+        plotCtx.stroke();
+
+        plotCtx.fillStyle = '#0f5132';
+        plotCtx.font = 'bold 9px sans-serif';
+        plotCtx.fillText(`${idx + 1}`, cx + 7, cy - 5);
+      });
+    }
+
+    // 마우스 클릭으로 점 추가
+    plotCanvas.addEventListener('click', (e) => {
+      if (points.length >= 10) {
+        alert('최대 10개의 점까지만 입력할 수 있습니다.');
+        return;
+      }
+      const rect = plotCanvas.getBoundingClientRect();
+      const scaleX = plotCanvas.width / rect.width;
+      const scaleY = plotCanvas.height / rect.height;
+      const clickX = (e.clientX - rect.left) * scaleX;
+      const clickY = (e.clientY - rect.top) * scaleY;
+
+      let mx = toMathX(clickX);
+      let my = toMathY(clickY);
+      mx = Math.max(xMin, Math.min(xMax, mx));
+      my = Math.max(yMin, Math.min(yMax, my));
+      points.push({ x: parseFloat(mx.toFixed(2)), y: parseFloat(my.toFixed(2)) });
+
+      renderPointsTable();
+      drawPlot();
+      drawLossCurve();
+      updateAllUI();
+    });
+
+    function renderPointsTable() {
+      const tbody = document.getElementById('dataTableBody');
+      tbody.innerHTML = '';
+      points.forEach((p, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><b>${idx + 1}</b></td>
+          <td><input type="number" step="0.1" value="${p.x}" onchange="updatePoint(${idx}, 'x', this.value)"></td>
+          <td><input type="number" step="0.1" value="${p.y}" onchange="updatePoint(${idx}, 'y', this.value)"></td>
+          <td><button class="btn-b-danger" style="padding: 1px 4px; font-size: 11px;" onclick="deletePoint(${idx})">삭제</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      document.getElementById('pointCountText').textContent = points.length;
+    }
+
+    function updatePoint(idx, field, val) {
+      points[idx][field] = parseFloat(val) || 0;
+      drawPlot();
+      drawLossCurve();
+      updateAllUI();
+    }
+
+    function deletePoint(idx) {
+      points.splice(idx, 1);
+      renderPointsTable();
+      drawPlot();
+      drawLossCurve();
+      updateAllUI();
+    }
+
+    function clearPoints() {
+      points = [];
+      epochHistory = [];
+      renderPointsTable();
+      drawPlot();
+      drawLossCurve();
+      updateAllUI();
+      document.getElementById('epochTableBody').innerHTML = `
+        <tr><td colspan="6" style="color: var(--text-gray); padding: 18px;">점 데이터가 초기화되었습니다.</td></tr>
+      `;
+    }
+
+    function loadSampleData() {
+      points = [
+        { x: 1.0, y: 2.1 },
+        { x: 2.0, y: 3.8 },
+        { x: 3.0, y: 6.2 },
+        { x: 4.0, y: 7.9 },
+        { x: 5.0, y: 10.2 },
+        { x: 6.0, y: 12.1 },
+        { x: 7.0, y: 13.9 },
+        { x: 8.0, y: 16.2 },
+        { x: 9.0, y: 18.0 },
+        { x: 10.0, y: 20.3 }
+      ];
+      epochHistory = [];
+      renderPointsTable();
+      drawPlot();
+      drawLossCurve();
+      updateAllUI();
+    }
+
+    // ========================================================
+    // 3. 파라미터(x, W, b) 실시간 조절 함수
+    // ========================================================
+    function onParamChange(type, value) {
+      const val = parseFloat(value) || 0;
+      if (type === 'x') {
+        studentX = val;
+        document.getElementById('ctrlX').value = studentX.toFixed(4);
+        document.getElementById('sliderX').value = studentX;
+      } else if (type === 'W') {
+        W = val;
+        document.getElementById('ctrlW').value = W.toFixed(4);
+        document.getElementById('sliderW').value = W;
+      } else if (type === 'b') {
+        b = val;
+        document.getElementById('ctrlB').value = b.toFixed(4);
+        document.getElementById('sliderB').value = b;
+      }
+
+      updateAllUI();
+      drawPlot();
+      drawLossCurve();
+      triggerPulseAnimation();
+    }
+
+    function calculateLoss(weight = W, bias = b) {
+      if (points.length === 0) return 0;
+      let totalErr = 0;
+      for (let p of points) {
+        const pred = weight * p.x + bias;
+        totalErr += Math.pow(pred - p.y, 2);
+      }
+      return totalErr / points.length;
+    }
+
+    function updateAllUI() {
+      const multVal = studentX * W;
+      const predY = multVal + b;
+      const curLoss = calculateLoss();
+
+      // 상단 헤더
+      const sign = b >= 0 ? '+' : '-';
+      document.getElementById('headEqText').textContent = `y = ${W.toFixed(4)}x ${sign} ${Math.abs(b).toFixed(4)}`;
+      document.getElementById('headLossText').textContent = curLoss.toFixed(4);
+
+      // 4단계 브리핑 카드 수치 즉시 갱신
+      document.getElementById('step1Val').textContent = `x = ${studentX.toFixed(4)}`;
+      document.getElementById('step2Val').textContent = `${studentX.toFixed(2)} × ${W.toFixed(4)} = ${multVal.toFixed(4)}`;
+      document.getElementById('step3Val').textContent = `${b >= 0 ? '+ ' : '- '}${Math.abs(b).toFixed(4)}`;
+      document.getElementById('step4Val').textContent = `Ŷ = ${predY.toFixed(4)}`;
+    }
+
+    // ========================================================
+    // 4. 동그란 노드 신경망 & 가중치 곱 전파 캔버스 렌더링
+    // ========================================================
+    function resizeCanvases() {
+      const wrap = document.getElementById('neuronWrap');
+      if (wrap) {
+        neuronCanvas.width = wrap.clientWidth || 750;
+        neuronCanvas.height = 200;
+      }
+      const pwrap = document.querySelector('.plot-canvas-wrap');
+      if (pwrap) {
+        plotCanvas.width = pwrap.clientWidth || 490;
+        plotCanvas.height = 250;
+      }
+      const lwrap = document.getElementById('lossCurveBox');
+      if (lwrap) {
+        lossCurveCanvas.width = lwrap.clientWidth || 490;
+        lossCurveCanvas.height = 165;
+      }
+      drawPlot();
+      drawLossCurve();
+    }
+    window.addEventListener('resize', resizeCanvases);
+
+    function triggerPulseAnimation() {
+      pulses.push({ progress: 0, speed: 0.024, stage: 1 });
+    }
+
+    function drawNeuronNetwork() {
+      const nw = neuronCanvas.width;
+      const nh = neuronCanvas.height;
+      nCtx.clearRect(0, 0, nw, nh);
+
+      const multVal = studentX * W;
+      const predY = multVal + b;
+
+      // 노드 위치 (우측 패널 비율에 맞게 최적화)
+      const xInputX = nw * 0.12, xInputY = nh * 0.32;
+      const bInputX = nw * 0.12, bInputY = nh * 0.72;
+      const sumNodeX = nw * 0.52, sumNodeY = nh * 0.50;
+      const outNodeX = nw * 0.88, outNodeY = nh * 0.50;
+
+      // (1) 연결선 그리기
+      nCtx.beginPath();
+      nCtx.moveTo(xInputX, xInputY);
+      nCtx.lineTo(sumNodeX, sumNodeY);
+      nCtx.strokeStyle = '#cce0ff';
+      nCtx.lineWidth = 4;
+      nCtx.stroke();
+
+      nCtx.beginPath();
+      nCtx.moveTo(bInputX, bInputY);
+      nCtx.lineTo(sumNodeX, sumNodeY);
+      nCtx.strokeStyle = '#fce7f3';
+      nCtx.lineWidth = 3;
+      nCtx.stroke();
+
+      nCtx.beginPath();
+      nCtx.moveTo(sumNodeX, sumNodeY);
+      nCtx.lineTo(outNodeX, outNodeY);
+      nCtx.strokeStyle = '#d1fae5';
+      nCtx.lineWidth = 4;
+      nCtx.stroke();
+
+      // (2) 가중치 곱 안내 배지
+      const mid1X = (xInputX + sumNodeX) / 2;
+      const mid1Y = (xInputY + sumNodeY) / 2 - 10;
+
+      nCtx.save();
+      nCtx.fillStyle = '#ffffff';
+      nCtx.strokeStyle = '#1f4ef5';
+      nCtx.lineWidth = 1.5;
+      nCtx.beginPath();
+      nCtx.roundRect(mid1X - 95, mid1Y - 21, 190, 42, 6);
+      nCtx.fill();
+      nCtx.stroke();
+
+      nCtx.fillStyle = '#1f4ef5';
+      nCtx.font = 'bold 11px sans-serif';
+      nCtx.textAlign = 'center';
+      nCtx.fillText(`✖ 가중치 곱 (× W = ${W.toFixed(4)})`, mid1X, mid1Y - 5);
+      nCtx.fillStyle = '#111111';
+      nCtx.font = 'bold 12px monospace';
+      nCtx.fillText(`${studentX.toFixed(2)} × ${W.toFixed(4)} = ${multVal.toFixed(4)}`, mid1X, mid1Y + 11);
+      nCtx.restore();
+
+      // 편향 덧셈 배지
+      const mid2X = (bInputX + sumNodeX) / 2;
+      const mid2Y = (bInputY + sumNodeY) / 2 + 10;
+
+      nCtx.save();
+      nCtx.fillStyle = '#ffffff';
+      nCtx.strokeStyle = '#ec4899';
+      nCtx.lineWidth = 1.2;
+      nCtx.beginPath();
+      nCtx.roundRect(mid2X - 65, mid2Y - 16, 130, 32, 6);
+      nCtx.fill();
+      nCtx.stroke();
+
+      nCtx.fillStyle = '#be185d';
+      nCtx.font = 'bold 10px sans-serif';
+      nCtx.textAlign = 'center';
+      nCtx.fillText(`➕ 편향 더하기 (+ b)`, mid2X, mid2Y - 2);
+      nCtx.fillStyle = '#333333';
+      nCtx.font = 'bold 11px monospace';
+      nCtx.fillText(`${b >= 0 ? '+' : ''}${b.toFixed(4)}`, mid2X, mid2Y + 10);
+      nCtx.restore();
+
+      // (3) 신호 펄스 입자 애니메이션
+      for (let i = pulses.length - 1; i >= 0; i--) {
+        const p = pulses[i];
+        p.progress += p.speed;
+
+        if (p.stage === 1) {
+          const px = xInputX + (sumNodeX - xInputX) * p.progress;
+          const py = xInputY + (sumNodeY - xInputY) * p.progress;
+          nCtx.beginPath();
+          nCtx.arc(px, py, 7, 0, Math.PI * 2);
+          nCtx.fillStyle = '#1f4ef5';
+          nCtx.fill();
+
+          const bx = bInputX + (sumNodeX - bInputX) * p.progress;
+          const by = bInputY + (sumNodeY - bInputY) * p.progress;
+          nCtx.beginPath();
+          nCtx.arc(bx, by, 6, 0, Math.PI * 2);
+          nCtx.fillStyle = '#ec4899';
+          nCtx.fill();
+
+          if (p.progress >= 1) {
+            p.stage = 2;
+            p.progress = 0;
+          }
+        } else if (p.stage === 2) {
+          const px = sumNodeX + (outNodeX - sumNodeX) * p.progress;
+          const py = sumNodeY + (outNodeY - sumNodeY) * p.progress;
+          nCtx.beginPath();
+          nCtx.arc(px, py, 9, 0, Math.PI * 2);
+          nCtx.fillStyle = '#03c75a';
+          nCtx.fill();
+
+          if (p.progress >= 1) {
+            pulses.splice(i, 1);
+          }
+        }
+      }
+
+      // (4) 동그란 원형 노드 (실시간 수치 즉각 반영)
+      drawGraphNode(xInputX, xInputY, 32, '#1f4ef5', '#ffffff', '입력 X', studentX.toFixed(2));
+      drawGraphNode(bInputX, bInputY, 28, '#ec4899', '#ffffff', '편향 (b)', `${b >= 0 ? '+' : ''}${b.toFixed(2)}`);
+      drawGraphNode(sumNodeX, sumNodeY, 38, '#4f46e5', '#ffffff', '합산 (∑)', `${multVal.toFixed(1)}+${b.toFixed(1)}`);
+      drawGraphNode(outNodeX, outNodeY, 40, '#03c75a', '#ffffff', '출력 Ŷ', predY.toFixed(3));
+    }
+
+    function drawGraphNode(x, y, r, fillCol, textCol, title, val) {
+      nCtx.save();
+      nCtx.beginPath();
+      nCtx.arc(x, y, r, 0, Math.PI * 2);
+      nCtx.fillStyle = fillCol;
+      nCtx.fill();
+      nCtx.strokeStyle = '#ffffff';
+      nCtx.lineWidth = 3;
+      nCtx.stroke();
+
+      nCtx.fillStyle = textCol;
+      nCtx.textAlign = 'center';
+      nCtx.font = 'bold 11px sans-serif';
+      nCtx.fillText(title, x, y - 3);
+
+      nCtx.font = 'bold 11px monospace';
+      nCtx.fillText(val, x, y + 11);
+      nCtx.restore();
+    }
+
+    function neuronLoop(timestamp) {
+      const autoFlow = document.getElementById('autoFlowCheck').checked;
+      if (autoFlow && timestamp - lastPulseTime > 1400) {
+        pulses.push({ progress: 0, speed: 0.022, stage: 1 });
+        lastPulseTime = timestamp;
+      }
+      drawNeuronNetwork();
+      requestAnimationFrame(neuronLoop);
+    }
+
+    // ========================================================
+    // 5. 2차 함수 형태의 손실 곡선 (Loss Curve) 시각화
+    // ========================================================
+    function toggleLossCurve() {
+      const box = document.getElementById('lossCurveBox');
+      const btn = document.getElementById('btnToggleLossCurve');
+      box.classList.toggle('show');
+      if (box.classList.contains('show')) {
+        btn.classList.add('active');
+        resizeCanvases();
+        drawLossCurve();
+      } else {
+        btn.classList.remove('active');
+      }
+    }
+
+    function drawLossCurve() {
+      const box = document.getElementById('lossCurveBox');
+      if (!box.classList.contains('show')) return;
+
+      const cw = lossCurveCanvas.width;
+      const ch = lossCurveCanvas.height;
+      lossCtx.clearRect(0, 0, cw, ch);
+
+      const padX = 40;
+      const padY = 22;
+      const wMin = -0.5, wMax = 4.5;
+
+      let curveData = [];
+      let maxLoss = 10;
+
+      for (let tw = wMin; tw <= wMax; tw += 0.1) {
+        const l = calculateLoss(tw, b);
+        curveData.push({ w: tw, loss: l });
+        if (l > maxLoss) maxLoss = l;
+      }
+      maxLoss = Math.min(maxLoss, 200);
+
+      function toCurveX(wVal) {
+        return padX + ((wVal - wMin) / (wMax - wMin)) * (cw - 2 * padX);
+      }
+      function toCurveY(lVal) {
+        const clampedL = Math.max(0, Math.min(lVal, maxLoss));
+        return ch - padY - (clampedL / maxLoss) * (ch - 2 * padY);
+      }
+
+      // (1) 격자선
+      lossCtx.strokeStyle = '#f1f3f5';
+      lossCtx.lineWidth = 1;
+      lossCtx.fillStyle = '#868e96';
+      lossCtx.font = '9px monospace';
+      lossCtx.textAlign = 'center';
+
+      for (let tw = 0; tw <= 4; tw += 1) {
+        const cx = toCurveX(tw);
+        lossCtx.beginPath();
+        lossCtx.moveTo(cx, padY);
+        lossCtx.lineTo(cx, ch - padY);
+        lossCtx.stroke();
+        lossCtx.fillText(`W=${tw}`, cx, ch - padY + 12);
+      }
+
+      lossCtx.textAlign = 'right';
+      for (let lStep = 0; lStep <= maxLoss; lStep += maxLoss / 3) {
+        const cy = toCurveY(lStep);
+        lossCtx.beginPath();
+        lossCtx.moveTo(padX, cy);
+        lossCtx.lineTo(cw - padX, cy);
+        lossCtx.stroke();
+        lossCtx.fillText(lStep.toFixed(0), padX - 5, cy + 3);
+      }
+
+      // 축 선
+      lossCtx.strokeStyle = '#ced4da';
+      lossCtx.lineWidth = 1.5;
+      lossCtx.beginPath();
+      lossCtx.moveTo(padX, ch - padY);
+      lossCtx.lineTo(cw - padX, ch - padY);
+      lossCtx.moveTo(padX, padY);
+      lossCtx.lineTo(padX, ch - padY);
+      lossCtx.stroke();
+
+      lossCtx.fillStyle = '#1f4ef5';
+      lossCtx.font = 'bold 10px sans-serif';
+      lossCtx.fillText('W', cw - padX + 15, ch - padY + 3);
+      lossCtx.fillStyle = '#d63301';
+      lossCtx.fillText('Loss', padX + 35, padY - 6);
+
+      // (2) 2차 포물선 곡선
+      lossCtx.strokeStyle = '#1f4ef5';
+      lossCtx.lineWidth = 2.5;
+      lossCtx.beginPath();
+      curveData.forEach((pt, idx) => {
+        const cx = toCurveX(pt.w);
+        const cy = toCurveY(pt.loss);
+        if (idx === 0) lossCtx.moveTo(cx, cy);
+        else lossCtx.lineTo(cx, cy);
+      });
+      lossCtx.stroke();
+
+      // 최저점 표시
+      if (points.length > 0) {
+        let sumX2 = 0, sumXY = 0;
+        for (let p of points) {
+          sumX2 += p.x * p.x;
+          sumXY += p.x * (p.y - b);
+        }
+        const optW = sumX2 > 0 ? (sumXY / sumX2) : 2.0;
+        const optLoss = calculateLoss(optW, b);
+        const optX = toCurveX(optW);
+        const optY = toCurveY(optLoss);
+
+        lossCtx.fillStyle = '#03c75a';
+        lossCtx.beginPath();
+        lossCtx.arc(optX, optY, 5, 0, Math.PI * 2);
+        lossCtx.fill();
+        lossCtx.fillStyle = '#0f5132';
+        lossCtx.font = 'bold 9px sans-serif';
+        lossCtx.textAlign = 'center';
+        lossCtx.fillText(`최저점 W*=${optW.toFixed(2)}`, optX, optY + 13);
+      }
+
+      // (3) 에포크 궤적
+      if (epochHistory.length > 1) {
+        lossCtx.strokeStyle = 'rgba(255, 107, 107, 0.6)';
+        lossCtx.lineWidth = 1.5;
+        lossCtx.setLineDash([2, 2]);
+        lossCtx.beginPath();
+        epochHistory.forEach((item, idx) => {
+          const ex = toCurveX(item.W);
+          const ey = toCurveY(item.loss);
+          if (idx === 0) lossCtx.moveTo(ex, ey);
+          else lossCtx.lineTo(ex, ey);
+        });
+        lossCtx.stroke();
+        lossCtx.setLineDash([]);
+      }
+
+      // (4) 현재 위치 빨간색 공 & 접선
+      const currentLoss = calculateLoss(W, b);
+      const curX = toCurveX(W);
+      const curY = toCurveY(currentLoss);
+
+      let dW = 0;
+      if (points.length > 0) {
+        for (let p of points) {
+          dW += (2 / points.length) * (W * p.x + b - p.y) * p.x;
+        }
+      }
+
+      // 접선
+      lossCtx.strokeStyle = '#d63301';
+      lossCtx.lineWidth = 2;
+      const tanDx = 25;
+      const tanDy = (dW * tanDx * (ch - 2 * padY)) / (maxLoss * (wMax - wMin));
+      lossCtx.beginPath();
+      lossCtx.moveTo(curX - tanDx, curY + tanDy);
+      lossCtx.lineTo(curX + tanDx, curY - tanDy);
+      lossCtx.stroke();
+
+      // 공
+      lossCtx.fillStyle = '#ff4d4f';
+      lossCtx.beginPath();
+      lossCtx.arc(curX, curY, 7, 0, Math.PI * 2);
+      lossCtx.fill();
+      lossCtx.strokeStyle = '#ffffff';
+      lossCtx.lineWidth = 2;
+      lossCtx.stroke();
+
+      lossCtx.fillStyle = '#111111';
+      lossCtx.font = 'bold 10px sans-serif';
+      lossCtx.textAlign = 'center';
+      const slopeSign = dW > 0 ? '기울기(+): ⬅️하강' : '기울기(-): ➡️하강';
+      lossCtx.fillText(`W=${W.toFixed(2)} (${slopeSign})`, curX, Math.max(padY + 10, curY - 12));
+    }
+
+    // ========================================================
+    // 6. 경사하강법 학습 로직
+    // ========================================================
+    function stepGradientDescent(lr) {
+      const N = points.length;
+      if (N === 0) return { dW: 0, db: 0 };
+
+      let dW = 0, db = 0;
+      for (let p of points) {
+        const pred = W * p.x + b;
+        const diff = pred - p.y;
+        dW += (2 / N) * diff * p.x;
+        db += (2 / N) * diff;
+      }
+
+      W -= lr * dW;
+      b -= lr * db;
+      return { dW, db };
+    }
+
+    function startTraining(animated = true) {
+      if (points.length === 0) {
+        alert('먼저 점을 1개 이상 추가해주세요!');
+        return;
+      }
+
+      W = parseFloat(document.getElementById('initW').value) || 0.0;
+      b = parseFloat(document.getElementById('initB').value) || 0.0;
+      document.getElementById('ctrlW').value = W.toFixed(4);
+      document.getElementById('sliderW').value = W;
+      document.getElementById('ctrlB').value = b.toFixed(4);
+      document.getElementById('sliderB').value = b;
+
+      const lr = parseFloat(document.getElementById('lrInput').value) || 0.01;
+      const totalEpochs = parseInt(document.getElementById('epochInput').value) || 100;
+
+      const tableBody = document.getElementById('epochTableBody');
+      tableBody.innerHTML = '';
+      epochHistory = [{ W: W, loss: calculateLoss() }];
+
+      let currentEpoch = 0;
+      isTraining = true;
+      document.getElementById('btnStop').disabled = false;
+      document.getElementById('btnTrainAnim').disabled = true;
+      document.getElementById('btnTrainFast').disabled = true;
+
+      addTableRow(0, W, b, calculateLoss(), studentX * W, W * studentX + b);
+
+      if (!animated) {
+        for (let ep = 1; ep <= totalEpochs; ep++) {
+          stepGradientDescent(lr);
+          const loss = calculateLoss();
+          const multVal = studentX * W;
+          const predY = multVal + b;
+          epochHistory.push({ W: W, loss: loss });
+          if (ep <= 30 || ep % 5 === 0 || ep === totalEpochs) {
+            addTableRow(ep, W, b, loss, multVal, predY);
+          }
+        }
+        drawPlot();
+        drawLossCurve();
+        updateAllUI();
+        triggerPulseAnimation();
+        stopTraining();
+        return;
+      }
+
+      function loop() {
+        if (!isTraining || currentEpoch >= totalEpochs) {
+          stopTraining();
+          return;
+        }
+
+        currentEpoch++;
+        stepGradientDescent(lr);
+        const loss = calculateLoss();
+        const multVal = studentX * W;
+        const predY = multVal + b;
+
+        epochHistory.push({ W: W, loss: loss });
+
+        document.getElementById('ctrlW').value = W.toFixed(4);
+        document.getElementById('sliderW').value = W;
+        document.getElementById('ctrlB').value = b.toFixed(4);
+        document.getElementById('sliderB').value = b;
+
+        if (currentEpoch <= 25 || currentEpoch % 3 === 0 || currentEpoch === totalEpochs) {
+          addTableRow(currentEpoch, W, b, loss, multVal, predY);
+        }
+
+        drawPlot();
+        drawLossCurve();
+        updateAllUI();
+
+        if (currentEpoch % 6 === 0) {
+          pulses.push({ progress: 0, speed: 0.035, stage: 1 });
+        }
+
+        trainTimer = setTimeout(loop, 40);
+      }
+
+      loop();
+    }
+
+    function stopTraining() {
+      isTraining = false;
+      if (trainTimer) clearTimeout(trainTimer);
+      document.getElementById('btnStop').disabled = true;
+      document.getElementById('btnTrainAnim').disabled = false;
+      document.getElementById('btnTrainFast').disabled = false;
+    }
+
+    function addTableRow(epoch, wVal, bVal, lossVal, multVal, studentY) {
+      const tbody = document.getElementById('epochTableBody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="mono"><b>${epoch}</b></td>
+        <td class="mono">${wVal.toFixed(4)}</td>
+        <td class="mono">${bVal.toFixed(4)}</td>
+        <td class="mono loss-red">${lossVal.toFixed(4)}</td>
+        <td class="mono" style="color:#b45309; font-weight:600;">${multVal.toFixed(4)}</td>
+        <td class="mono" style="background:#e8f4fc; font-weight:bold; color:var(--brand-blue);">${studentY.toFixed(4)}</td>
+      `;
+      tbody.appendChild(row);
+      const wrapper = document.querySelector('.epoch-scroll');
+      wrapper.scrollTop = wrapper.scrollHeight;
+    }
+
+    function exportToCSV() {
+      if (points.length === 0) {
+        alert('내보낼 데이터 점이 없습니다.');
+        return;
+      }
+      let csvContent = 'data:text/csv;charset=utf-8,x,y\n';
+      points.forEach(p => {
+        csvContent += `${p.x},${p.y}\n`;
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', 'data.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // 초기 실행
+    loadSampleData();
+    resizeCanvases();
+    updateAllUI();
+    triggerPulseAnimation();
+    requestAnimationFrame(neuronLoop);
+    drawLossCurve();
+  </script>
+</body>
+</html>
