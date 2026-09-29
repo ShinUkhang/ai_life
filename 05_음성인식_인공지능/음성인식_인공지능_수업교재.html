@@ -20,6 +20,17 @@
       background: radial-gradient(ellipse at center, #1E1B4B 0%, #0F172A 100%);
     }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    /* 코랩에서 열기 배지 */
+    .colab-open-badge{display:inline-flex;align-items:center;gap:6px;background:#F9AB00;color:#1a1a1a;font-weight:700;text-decoration:none;box-shadow:0 2px 8px rgba(249,171,0,.35);transition:transform .15s ease,box-shadow .15s ease}
+    .colab-open-badge:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(249,171,0,.45)}
+    /* 탭 바 스크롤 안정화 */
+    .tab-scroll{-webkit-overflow-scrolling:touch;scrollbar-width:thin;}
+    /* 모바일(640px 이하) 대응 */
+    @media (max-width: 640px) {
+      .tab-btn{flex-shrink:0;}
+      .mobile-stack{grid-template-columns:1fr !important;}
+      .mobile-label{font-size:12px !important;}
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
@@ -30,6 +41,10 @@
   <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
       <div class="flex items-center gap-3">
+        <a href="../index.html" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition mr-1 shadow-xs">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span>홈</span>
+        </a>
         <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-md shadow-indigo-200">
           <i data-lucide="mic" class="w-5 h-5"></i>
         </div>
@@ -45,7 +60,7 @@
       </div>
 
       <!-- 상단 5대 탭 버튼 -->
-      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 tab-scroll">
         <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-btn tab-active px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap">
           <span>🎵 1단계: 소리와 파형</span>
         </button>
@@ -93,6 +108,24 @@
         </div>
       </div>
 
+      <!-- 📋 모듈 시작 안내: 이 모듈에서 배우는 것 + 준비물/선수 지식 -->
+      <div class="bg-amber-50 rounded-3xl p-5 sm:p-6 border-2 border-dashed border-amber-300 shadow-xs space-y-3">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🗺️</span>
+          <h3 class="font-black text-sm text-amber-900">이 모듈에서 배우는 것 (3줄 요약)</h3>
+        </div>
+        <ol class="text-xs sm:text-sm text-amber-900 space-y-1.5 list-decimal list-inside font-medium leading-relaxed">
+          <li><strong>1단계</strong>에서 소리의 정체를 파헤쳐요: 공기의 떨림이 어떻게 숫자와 그림(파형)이 되는지 직접 만져보기 🎵</li>
+          <li><strong>2~3단계</strong>에서 소리의 지문(특징 벡터)을 뽑고, 두 목소리가 몇 % 닮았는지 AI처럼 판정해보기 🔬</li>
+          <li><strong>4단계</strong>에서 진짜 AI 비서 완성! 마이크로 말하면 글자로 받아쓰고 음성으로 대답해줘요 🤖</li>
+        </ol>
+        <div class="flex flex-wrap gap-2 pt-1 text-[11px] font-bold">
+          <span class="px-2.5 py-1 rounded-full bg-white border border-amber-200 text-amber-800">🎒 준비물: 웹 브라우저 (마이크 없어도 OK!)</span>
+          <span class="px-2.5 py-1 rounded-full bg-white border border-amber-200 text-amber-800">📚 선수 지식: 없음! 처음이어도 괜찮아요 😊</span>
+          <span class="px-2.5 py-1 rounded-full bg-white border border-amber-200 text-amber-800">⏱️ 예상 시간: 45분 × 2차시</span>
+        </div>
+      </div>
+
       <!-- TTS vs STT 파이프라인 개념 카드 -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center gap-3">
@@ -119,8 +152,8 @@
               <i data-lucide="activity" class="w-4 h-4"></i>
             </div>
             <div>
-              <h3 class="font-extrabold text-base text-slate-900">직접 만져보는 소리 실험실: 주파수 & 파형 시뮬레이터</h3>
-              <p class="text-xs text-slate-400">슬라이더를 움직여 소리의 높낮이(주파수)와 크기(진폭)를 바꿔보고 스피커로 들어보세요!</p>
+              <h3 class="font-extrabold text-base text-slate-900">🎛️ 직접 만져보는 소리 실험실: 주파수 & 파형 시뮬레이터</h3>
+              <p class="text-xs text-slate-400">슬라이더를 움직여 소리의 높낮이(주파수)와 크기(진폭)를 바꿔보고 스피커로 들어보세요! ✅ 성공 기준: 슬라이더를 움직일 때마다 파형 모양과 소리가 바뀌면 성공!</p>
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -183,7 +216,7 @@
                 <span class="text-indigo-600 mono" id="sliderValFreq">440 Hz</span>
               </div>
               <input type="range" id="freqSlider" min="50" max="2000" value="440" class="w-full accent-indigo-600 cursor-pointer" oninput="updateFreq(this.value)">
-              <div class="flex justify-between text-[10px] text-slate-400 mono">
+              <div class="flex justify-between text-[10px] text-slate-500 mono">
                 <span>50Hz (초저음)</span>
                 <span>2,000Hz (고음)</span>
               </div>
@@ -209,7 +242,7 @@
           </div>
           <h4 class="font-black text-sm text-slate-900">1. 진폭 (Amplitude) = 소리의 크기</h4>
           <p class="text-xs text-slate-600 leading-relaxed">
-            파형의 높낮이 폭이 클수록 강한 에너지를 가지며 큰 소리(Big Volume)가 납니다. 컴퓨터는 이 값을 \(0 \sim 1.0\) 사이의 소수 숫자로 정규화하여 저장합니다.
+            파형의 높이(진폭)가 클수록 강한 에너지를 가지며 큰 소리(Big Volume)가 납니다. 컴퓨터는 이 값을 \(0 \sim 1.0\) 사이의 소수 숫자로 정규화하여 저장합니다.
           </p>
         </div>
 
@@ -235,25 +268,41 @@
       </div>
 
       <!-- 파이썬 코드 박스 (학생/선생님 Colab 복사용) -->
-      <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-md space-y-3">
-        <div class="flex items-center justify-between">
+            <div class="bg-slate-900 rounded-3xl p-5 sm:p-6 text-white shadow-md space-y-3">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-red-500"></span>
             <span class="w-3 h-3 rounded-full bg-amber-500"></span>
             <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
             <span class="text-xs mono text-slate-400 ml-2">🐍 [파이썬 코드로 구현하기] 01_소리파형_생성.py</span>
           </div>
-          <button onclick="copyCode('sampleCode1', this)" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1.5">
-            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-            <span>코드 복사</span>
+          <div class="flex items-center gap-2 flex-wrap">
+            <a href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/05_%EC%9D%8C%EC%84%B1%EC%9D%B8%EC%8B%9D_%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5/01_%EC%9D%8C%EC%84%B1%EC%9D%B8%EC%8B%9D_%EA%B8%B0%EC%B4%88_%EC%86%8C%EB%A6%AC%EC%9D%98_%ED%8C%8C%ED%98%95%EA%B3%BC_%EC%9B%90%EB%A6%AC.ipynb" target="_blank" rel="noopener" class="colab-open-badge text-xs font-bold px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5">🚀 코랩에서 열기</a>
+            <button onclick="copyCodeMulti(['sampleCode1_c1','sampleCode1_c2'], this)" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1.5">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>📋 전체 복사</span>
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between gap-2 flex-wrap px-1 pt-1">
+          <span class="text-[11px] font-bold text-slate-400 mono">📓 셀 1 · 라이브러리</span>
+          <button onclick="copyCode('sampleCode1_c1', this)" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1">
+            <i data-lucide="copy" class="w-3 h-3"></i>
+            <span>셀 복사</span>
           </button>
         </div>
-        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode1"># [1단계] 파이썬 NumPy로 440Hz 소리 파형을 만들고 노트북에서 바로 듣기
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode1_c1"># [1단계] 파이썬 NumPy로 440Hz 소리 파형을 만들고 노트북에서 바로 듣기
 import numpy as np
 import matplotlib.pyplot as plt
-import IPython.display as ipd
-
-sampling_rate = 16000    # 1초당 16,000번 소리 샘플링
+import IPython.display as ipd</pre>
+        <div class="flex items-center justify-between gap-2 flex-wrap px-1 pt-1">
+          <span class="text-[11px] font-bold text-slate-400 mono">📓 셀 2 · 파형 생성·시각화·듣기</span>
+          <button onclick="copyCode('sampleCode1_c2', this)" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1">
+            <i data-lucide="copy" class="w-3 h-3"></i>
+            <span>셀 복사</span>
+          </button>
+        </div>
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode1_c2">sampling_rate = 16000    # 1초당 16,000번 소리 샘플링
 duration = 1.5           # 1.5초 동안 지속
 t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
 
@@ -273,6 +322,7 @@ plt.show()
 
 # 주피터 노트북에서 재생 버튼 누르고 듣기!
 ipd.Audio(sound_wave, rate=sampling_rate)</pre>
+      </div>
       </div>
 
     </div>
@@ -306,8 +356,8 @@ ipd.Audio(sound_wave, rate=sampling_rate)</pre>
               <i data-lucide="fingerprint" class="w-4 h-4"></i>
             </div>
             <div>
-              <h3 class="font-extrabold text-base text-slate-900">소리 샘플 선택 및 고유 ID 특징 벡터 추출기</h3>
-              <p class="text-xs text-slate-400">단어 샘플을 선택하면 주파수 스펙트럼과 고유 지문 ID가 실시간으로 분석됩니다.</p>
+              <h3 class="font-extrabold text-base text-slate-900">🕵️ 소리 샘플 선택 및 고유 ID 특징 벡터 추출기</h3>
+              <p class="text-xs text-slate-400">단어 샘플을 선택하면 주파수 스펙트럼과 고유 지문 ID가 실시간으로 분석됩니다. ✅ 성공 기준: "바나나"를 눌렀더니 막대 그래프와 숫자가 바뀌면 성공!</p>
             </div>
           </div>
           <div class="flex flex-wrap gap-2">
@@ -372,7 +422,7 @@ ipd.Audio(sound_wave, rate=sampling_rate)</pre>
 
               <div>
                 <div class="flex justify-between text-slate-600 mb-0.5">
-                  <span>3. Low Band (0~300Hz 기본주파수)</span>
+                  <span>3. Low Band (0~300Hz 기본 주파수)</span>
                   <span class="mono font-bold text-indigo-600" id="valLow">0.485</span>
                 </div>
                 <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
@@ -410,23 +460,39 @@ ipd.Audio(sound_wave, rate=sampling_rate)</pre>
       </div>
 
       <!-- 파이썬 코드 박스 -->
-      <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-md space-y-3">
-        <div class="flex items-center justify-between">
+            <div class="bg-slate-900 rounded-3xl p-5 sm:p-6 text-white shadow-md space-y-3">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-red-500"></span>
             <span class="w-3 h-3 rounded-full bg-amber-500"></span>
             <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
             <span class="text-xs mono text-slate-400 ml-2">🐍 [파이썬 코드로 구현하기] 02_음성특징_ID추출.py</span>
           </div>
-          <button onclick="copyCode('sampleCode2', this)" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1.5">
-            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-            <span>코드 복사</span>
+          <div class="flex items-center gap-2 flex-wrap">
+            <a href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/05_%EC%9D%8C%EC%84%B1%EC%9D%B8%EC%8B%9D_%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5/02_%EC%9D%8C%EC%84%B1%EC%9D%B8%EC%8B%9D_%EC%8B%A4%EC%A0%84_AI_%EA%B7%80_%EB%A7%8C%EB%93%A4%EA%B8%B0%EC%99%80_%EC%8A%A4%EB%A7%88%ED%8A%B8_%EB%B9%84%EC%84%9C.ipynb" target="_blank" rel="noopener" class="colab-open-badge text-xs font-bold px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5">🚀 코랩에서 열기</a>
+            <button onclick="copyCodeMulti(['sampleCode2_c1','sampleCode2_c2'], this)" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1.5">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>📋 전체 복사</span>
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between gap-2 flex-wrap px-1 pt-1">
+          <span class="text-[11px] font-bold text-slate-400 mono">📓 셀 1 · 라이브러리</span>
+          <button onclick="copyCode('sampleCode2_c1', this)" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1">
+            <i data-lucide="copy" class="w-3 h-3"></i>
+            <span>셀 복사</span>
           </button>
         </div>
-        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode2"># [2단계] 소리 파형에서 푸리에 변환(FFT)을 수행하고 5차원 고유 지문 벡터 추출하기
-import numpy as np
-
-def extract_sound_fingerprint(y, sr=16000, sound_id="VOICE-01"):
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode2_c1"># [2단계] 소리 파형에서 푸리에 변환(FFT)을 수행하고 5차원 고유 지문 벡터 추출하기
+import numpy as np</pre>
+        <div class="flex items-center justify-between gap-2 flex-wrap px-1 pt-1">
+          <span class="text-[11px] font-bold text-slate-400 mono">📓 셀 2 · 지문 벡터 추출 함수</span>
+          <button onclick="copyCode('sampleCode2_c2', this)" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1">
+            <i data-lucide="copy" class="w-3 h-3"></i>
+            <span>셀 복사</span>
+          </button>
+        </div>
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode2_c2">def extract_sound_fingerprint(y, sr=16000, sound_id="VOICE-01"):
     # 1. 진폭 피크 정규화 (-1.0 ~ +1.0)
     y = y.astype(np.float32)
     peak = np.max(np.abs(y)) + 1e-12
@@ -466,6 +532,7 @@ def extract_sound_fingerprint(y, sr=16000, sound_id="VOICE-01"):
 # print("고유 ID:", fp['id'])
 # print("추출된 지문 벡터:", fp['vector'])</pre>
       </div>
+      </div>
 
     </div>
 
@@ -492,29 +559,29 @@ def extract_sound_fingerprint(y, sr=16000, sound_id="VOICE-01"):
       </div>
 
       <!-- 원클릭 비교 프리셋 버튼들 (마이크 없는 실습실 대비 100% 보장) -->
-      <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200 shadow-sm space-y-3">
+      <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-black text-slate-700 flex items-center gap-1.5">
             <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
             원클릭 비교 시뮬레이션 프리셋 (마이크가 없어도 바로 체험 가능!)
           </span>
-          <span class="text-[11px] text-slate-400 font-medium">아래 버튼을 누르면 두 학생의 음성 파형이 즉시 로드됩니다.</span>
+          <span class="text-[11px] text-slate-500 font-medium">아래 버튼을 누르면 두 학생의 음성 파형이 즉시 로드됩니다. 💪 여기가 이 모듈의 하이라이트! 실험 1→2→3 순서로 눌러보세요.</span>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           <button onclick="loadComparisonPreset(1)" class="p-3 rounded-2xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 text-left transition space-y-1">
             <div class="text-xs font-black text-indigo-900">🗣️ [실험 1] 같은 단어, 다른 목소리</div>
             <div class="text-[11px] text-indigo-700">학생 A: "안녕하세요" vs 학생 B: "안녕하세요"</div>
-            <div class="text-[10px] text-indigo-500 font-mono">예상 일치율: 약 78% ~ 86% (음색 차이)</div>
+            <div class="text-[10px] text-indigo-600 font-mono">예상 일치율: 약 78% ~ 86% (음색 차이)</div>
           </button>
           <button onclick="loadComparisonPreset(2)" class="p-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 hover:bg-emerald-100 text-left transition space-y-1">
             <div class="text-xs font-black text-emerald-900">👤 [실험 2] 같은 사람, 같은 단어 2번</div>
             <div class="text-[11px] text-emerald-700">학생 A: "사과" (1차) vs 학생 A: "사과" (2차)</div>
-            <div class="text-[10px] text-emerald-500 font-mono">예상 일치율: 약 94% ~ 98% (화자 일치)</div>
+            <div class="text-[10px] text-emerald-600 font-mono">예상 일치율: 약 94% ~ 98% (화자 일치)</div>
           </button>
           <button onclick="loadComparisonPreset(3)" class="p-3 rounded-2xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-left transition space-y-1">
             <div class="text-xs font-black text-rose-900">🔀 [실험 3] 완전히 다른 단어</div>
             <div class="text-[11px] text-rose-700">학생 A: "인공지능" vs 학생 B: "선형회귀"</div>
-            <div class="text-[10px] text-rose-500 font-mono">예상 일치율: 약 35% ~ 50% (불일치)</div>
+            <div class="text-[10px] text-rose-600 font-mono">예상 일치율: 약 35% ~ 50% (불일치)</div>
           </button>
         </div>
       </div>
@@ -548,25 +615,25 @@ def extract_sound_fingerprint(y, sr=16000, sound_id="VOICE-01"):
           </div>
 
           <!-- 특징 벡터 수치 A -->
-          <div class="grid grid-cols-5 gap-1 text-center mono text-[10px]">
+          <div class="grid grid-cols-5 gap-1 text-center mono text-[10px] mobile-stack">
             <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
-              <div class="text-slate-400">RMS</div>
+              <div class="text-slate-500">RMS</div>
               <div class="font-bold text-indigo-600" id="featA_0">0.32</div>
             </div>
             <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
-              <div class="text-slate-400">ZCR</div>
+              <div class="text-slate-500">ZCR</div>
               <div class="font-bold text-indigo-600" id="featA_1">0.14</div>
             </div>
             <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
-              <div class="text-slate-400">Low</div>
+              <div class="text-slate-500">Low</div>
               <div class="font-bold text-indigo-600" id="featA_2">0.45</div>
             </div>
             <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
-              <div class="text-slate-400">Mid</div>
+              <div class="text-slate-500">Mid</div>
               <div class="font-bold text-indigo-600" id="featA_3">0.76</div>
             </div>
             <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
-              <div class="text-slate-400">High</div>
+              <div class="text-slate-500">High</div>
               <div class="font-bold text-indigo-600" id="featA_4">0.33</div>
             </div>
           </div>
@@ -598,25 +665,25 @@ def extract_sound_fingerprint(y, sr=16000, sound_id="VOICE-01"):
           </div>
 
           <!-- 특징 벡터 수치 B -->
-          <div class="grid grid-cols-5 gap-1 text-center mono text-[10px]">
+          <div class="grid grid-cols-5 gap-1 text-center mono text-[10px] mobile-stack">
             <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
-              <div class="text-slate-400">RMS</div>
+              <div class="text-slate-500">RMS</div>
               <div class="font-bold text-emerald-600" id="featB_0">0.30</div>
             </div>
             <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
-              <div class="text-slate-400">ZCR</div>
+              <div class="text-slate-500">ZCR</div>
               <div class="font-bold text-emerald-600" id="featB_1">0.16</div>
             </div>
             <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
-              <div class="text-slate-400">Low</div>
+              <div class="text-slate-500">Low</div>
               <div class="font-bold text-emerald-600" id="featB_2">0.38</div>
             </div>
             <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
-              <div class="text-slate-400">Mid</div>
+              <div class="text-slate-500">Mid</div>
               <div class="font-bold text-emerald-600" id="featB_3">0.79</div>
             </div>
             <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-200">
-              <div class="text-slate-400">High</div>
+              <div class="text-slate-500">High</div>
               <div class="font-bold text-emerald-600" id="featB_4">0.36</div>
             </div>
           </div>
@@ -661,7 +728,7 @@ def extract_sound_fingerprint(y, sr=16000, sound_id="VOICE-01"):
             <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
               <div id="gaugeBar" class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 84.6%;"></div>
             </div>
-            <span class="text-[11px] mono text-slate-400" id="cosThetaText">\(\cos(	heta) = 0.8462\)</span>
+            <span class="text-[11px] mono text-slate-500" id="cosThetaText">\(\cos(	heta) = 0.8462\)</span>
           </div>
 
           <!-- 우측 8열: 판정 결과 배지 및 해석 -->
@@ -677,17 +744,17 @@ def extract_sound_fingerprint(y, sr=16000, sound_id="VOICE-01"):
               </p>
             </div>
 
-            <div class="grid grid-cols-3 gap-2 text-xs text-center mono">
+            <div class="grid grid-cols-3 gap-2 text-xs text-center mono mobile-stack">
               <div class="p-2 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="text-[10px] text-slate-400">음량(RMS) 일치도</div>
+                <div class="text-[10px] text-slate-500">음량(RMS) 일치도</div>
                 <div class="font-bold text-slate-800" id="metricRMS">94.1%</div>
               </div>
               <div class="p-2 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="text-[10px] text-slate-400">모음 포만트 일치도</div>
+                <div class="text-[10px] text-slate-500">모음 포만트 일치도</div>
                 <div class="font-bold text-emerald-600" id="metricMid">96.3%</div>
               </div>
               <div class="p-2 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="text-[10px] text-slate-400">음정(Low Hz) 차이</div>
+                <div class="text-[10px] text-slate-500">음정(Low Hz) 차이</div>
                 <div class="font-bold text-indigo-600" id="metricLow">15.5% 차이</div>
               </div>
             </div>
@@ -698,23 +765,39 @@ def extract_sound_fingerprint(y, sr=16000, sound_id="VOICE-01"):
       </div>
 
       <!-- 파이썬 코드 박스 -->
-      <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-md space-y-3">
-        <div class="flex items-center justify-between">
+            <div class="bg-slate-900 rounded-3xl p-5 sm:p-6 text-white shadow-md space-y-3">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-red-500"></span>
             <span class="w-3 h-3 rounded-full bg-amber-500"></span>
             <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
             <span class="text-xs mono text-slate-400 ml-2">🐍 [파이썬 코드로 구현하기] 03_2인_음성_유사도_비교.py</span>
           </div>
-          <button onclick="copyCode('sampleCode3', this)" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1.5">
-            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-            <span>코드 복사</span>
+          <div class="flex items-center gap-2 flex-wrap">
+            <a href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/05_%EC%9D%8C%EC%84%B1%EC%9D%B8%EC%8B%9D_%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5/02_%EC%9D%8C%EC%84%B1%EC%9D%B8%EC%8B%9D_%EC%8B%A4%EC%A0%84_AI_%EA%B7%80_%EB%A7%8C%EB%93%A4%EA%B8%B0%EC%99%80_%EC%8A%A4%EB%A7%88%ED%8A%B8_%EB%B9%84%EC%84%9C.ipynb" target="_blank" rel="noopener" class="colab-open-badge text-xs font-bold px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5">🚀 코랩에서 열기</a>
+            <button onclick="copyCodeMulti(['sampleCode3_c1','sampleCode3_c2'], this)" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1.5">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>📋 전체 복사</span>
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between gap-2 flex-wrap px-1 pt-1">
+          <span class="text-[11px] font-bold text-slate-400 mono">📓 셀 1 · 라이브러리</span>
+          <button onclick="copyCode('sampleCode3_c1', this)" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1">
+            <i data-lucide="copy" class="w-3 h-3"></i>
+            <span>셀 복사</span>
           </button>
         </div>
-        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode3"># [3단계] 두 학생의 음성 특징 벡터로부터 코사인 유사도(Cosine Similarity)를 계산하고 일치율 판정하기
-import numpy as np
-
-def compute_voice_similarity(feat_a, feat_b):
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode3_c1"># [3단계] 두 학생의 음성 특징 벡터로부터 코사인 유사도(Cosine Similarity)를 계산하고 일치율 판정하기
+import numpy as np</pre>
+        <div class="flex items-center justify-between gap-2 flex-wrap px-1 pt-1">
+          <span class="text-[11px] font-bold text-slate-400 mono">📓 셀 2 · 유사도 계산·판정 함수</span>
+          <button onclick="copyCode('sampleCode3_c2', this)" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1">
+            <i data-lucide="copy" class="w-3 h-3"></i>
+            <span>셀 복사</span>
+          </button>
+        </div>
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode3_c2">def compute_voice_similarity(feat_a, feat_b):
     """
     두 음성 특징 벡터 A, B 사이의 코사인 유사도를 계산합니다.
     공식: cos(theta) = (A · B) / (||A|| * ||B||)
@@ -744,6 +827,7 @@ def compute_voice_similarity(feat_a, feat_b):
 # print(f"💡 두 학생 목소리 일치율: {score:.2f}%")
 # print(f"📋 최종 판정: {verdict}")</pre>
       </div>
+      </div>
 
     </div>
 
@@ -753,7 +837,7 @@ def compute_voice_similarity(feat_a, feat_b):
     <div id="content-tab4" class="hidden space-y-6">
 
       <!-- 헤더 및 마이크 버튼 -->
-      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div class="flex items-center gap-2">
             <span class="bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-0.5 rounded-full">100% 무설치 웹 실습실</span>
@@ -761,6 +845,7 @@ def compute_voice_similarity(feat_a, feat_b):
           </div>
           <p class="text-xs sm:text-sm text-slate-500 mt-1">
             파이썬 코랩을 켜지 않고도 브라우저에서 마이크를 켜고 말하면 AI가 실시간으로 자막을 받아적고 질문에 음성으로 대답합니다!
+            🎉 여기까지 왔다면 여러분은 듣고(STT) → 이해하고 → 말하는(TTS) AI 비서의 전체 구조를 모두 체험한 거예요!
           </p>
         </div>
         <button onclick="toggleSpeechRecognition()" id="btnMicToggle" class="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm flex items-center gap-2 shadow-lg shadow-indigo-200 transition">
@@ -791,7 +876,7 @@ def compute_voice_similarity(feat_a, feat_b):
               <span class="text-base">🗣️</span>
               <h3 class="font-bold text-sm text-slate-900">내가 말한 내용 (실시간 STT)</h3>
             </div>
-            <span class="text-[11px] font-bold text-slate-400" id="recTimeInfo">실시간 인식 대기</span>
+            <span class="text-[11px] font-bold text-slate-500" id="recTimeInfo">실시간 인식 대기</span>
           </div>
           <div id="sttResultBox" class="min-h-[140px] p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-sm font-semibold text-slate-700 flex items-center justify-center text-center">
             상단의 [마이크 켜고 말하기] 버튼을 누르고<br>"오늘 급식 뭐야?", "시간표 알려줘" 등을 말씀해 보세요!
@@ -834,33 +919,55 @@ def compute_voice_similarity(feat_a, feat_b):
       </div>
 
       <!-- 파이썬 코드 박스 -->
-      <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-md space-y-3">
-        <div class="flex items-center justify-between">
+            <div class="bg-slate-900 rounded-3xl p-5 sm:p-6 text-white shadow-md space-y-3">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-red-500"></span>
             <span class="w-3 h-3 rounded-full bg-amber-500"></span>
             <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
             <span class="text-xs mono text-slate-400 ml-2">🐍 [파이썬 코드로 구현하기] 04_Whisper_스마트비서.py</span>
           </div>
-          <button onclick="copyCode('sampleCode4', this)" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1.5">
-            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-            <span>코드 복사</span>
+          <div class="flex items-center gap-2 flex-wrap">
+            <a href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/05_%EC%9D%8C%EC%84%B1%EC%9D%B8%EC%8B%9D_%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5/02_%EC%9D%8C%EC%84%B1%EC%9D%B8%EC%8B%9D_%EC%8B%A4%EC%A0%84_AI_%EA%B7%80_%EB%A7%8C%EB%93%A4%EA%B8%B0%EC%99%80_%EC%8A%A4%EB%A7%88%ED%8A%B8_%EB%B9%84%EC%84%9C.ipynb" target="_blank" rel="noopener" class="colab-open-badge text-xs font-bold px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5">🚀 코랩에서 열기</a>
+            <button onclick="copyCodeMulti(['sampleCode4_c1','sampleCode4_c2','sampleCode4_c3'], this)" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1.5">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>📋 전체 복사</span>
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between gap-2 flex-wrap px-1 pt-1">
+          <span class="text-[11px] font-bold text-slate-400 mono">📓 셀 1 · 라이브러리</span>
+          <button onclick="copyCode('sampleCode4_c1', this)" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1">
+            <i data-lucide="copy" class="w-3 h-3"></i>
+            <span>셀 복사</span>
           </button>
         </div>
-        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode4"># [4단계] OpenAI Whisper AI 모델로 마이크 음성을 받아쓰고 스마트 비서 답변 음성(TTS) 생성하기
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode4_c1"># [4단계] OpenAI Whisper AI 모델로 마이크 음성을 받아쓰고 스마트 비서 답변 음성(TTS) 생성하기
 import whisper
 from gtts import gTTS
-import IPython.display as ipd
-
-# 1. 최신 Whisper AI 모델 로드 (가장 빠른 base 모델)
+import IPython.display as ipd</pre>
+        <div class="flex items-center justify-between gap-2 flex-wrap px-1 pt-1">
+          <span class="text-[11px] font-bold text-slate-400 mono">📓 셀 2 · Whisper 음성 인식</span>
+          <button onclick="copyCode('sampleCode4_c2', this)" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1">
+            <i data-lucide="copy" class="w-3 h-3"></i>
+            <span>셀 복사</span>
+          </button>
+        </div>
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode4_c2"># 1. 최신 Whisper AI 모델 로드 (가장 빠른 base 모델)
 model = whisper.load_model("base")
 
 # 2. 학생의 음성 파일(WAV) 텍스트로 변환 (STT)
 result = model.transcribe("student_voice.wav", language="ko")
 user_query = result['text'].strip()
-print(f"🗣️ 학생이 말한 내용: {user_query}")
-
-# 3. 인공지능 비서 응답 로직 분기
+print(f"🗣️ 학생이 말한 내용: {user_query}")</pre>
+        <div class="flex items-center justify-between gap-2 flex-wrap px-1 pt-1">
+          <span class="text-[11px] font-bold text-slate-400 mono">📓 셀 3 · 스마트 비서 답변·TTS</span>
+          <button onclick="copyCode('sampleCode4_c3', this)" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg text-emerald-400 font-mono transition flex items-center gap-1">
+            <i data-lucide="copy" class="w-3 h-3"></i>
+            <span>셀 복사</span>
+          </button>
+        </div>
+        <pre class="mono text-xs text-slate-300 overflow-x-auto leading-relaxed p-4 bg-slate-950/80 rounded-xl" id="sampleCode4_c3"># 3. 인공지능 비서 응답 로직 분기
 def smart_assistant_response(query):
     if "급식" in query:
         return "오늘 우리 학교 중식 메뉴는 혼합잡곡밥, 맑은 된장찌개, 매콤달콤 주꾸미불고기, 고소한 고르곤졸라피자입니다. 맛있게 드세요!"
@@ -880,6 +987,7 @@ print(f"🤖 스마트 AI 비서의 답변: {reply_msg}")
 tts = gTTS(text=reply_msg, lang="ko")
 tts.save("response.mp3")
 ipd.Audio("response.mp3", autoplay=True)</pre>
+      </div>
       </div>
 
     </div>
@@ -979,18 +1087,52 @@ ipd.Audio("response.mp3", autoplay=True)</pre>
       if (tabId === 'tab3') renderWaveforms();
     }
 
-    // 코드 복사 헬퍼
-    function copyCode(preId, btn) {
-      const code = document.getElementById(preId).innerText;
-      navigator.clipboard.writeText(code).then(() => {
-        const original = btn.innerHTML;
-        btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i><span>복사 완료!</span>';
+    // 코드 복사 헬퍼 (클립보드 API + 구형 브라우저 fallback)
+    function showCopyFeedback(btn) {
+      const original = btn.innerHTML;
+      btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i><span>복사 완료!</span>';
+      lucide.createIcons();
+      setTimeout(() => {
+        btn.innerHTML = original;
         lucide.createIcons();
-        setTimeout(() => {
-          btn.innerHTML = original;
-          lucide.createIcons();
-        }, 2000);
-      });
+      }, 2000);
+    }
+    function copyTextFallback(text, btn) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '0';
+      ta.style.left = '0';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      showCopyFeedback(btn);
+    }
+    function copyTextWithFallback(text, btn) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          () => showCopyFeedback(btn),
+          () => copyTextFallback(text, btn)
+        );
+      } else {
+        copyTextFallback(text, btn);
+      }
+    }
+    function copyCode(preId, btn) {
+      const el = document.getElementById(preId);
+      if (!el || !btn) return;
+      copyTextWithFallback(el.innerText, btn);
+    }
+    function copyCodeMulti(preIds, btn) {
+      const code = preIds.map((id) => {
+        const el = document.getElementById(id);
+        return el ? el.innerText : '';
+      }).join('\n\n');
+      copyTextWithFallback(code, btn);
     }
 
     // ==========================================

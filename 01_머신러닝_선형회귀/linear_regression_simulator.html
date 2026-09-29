@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI 에듀 | 선형회귀 & 인공신경망 가중치 전파 실습</title>
@@ -23,7 +24,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "맑은 고딕", "NanumSquareNeo", "Apple SD Gothic Neo", sans-serif;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; letter-spacing: -0.015em;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -31,6 +32,147 @@
       background-color: var(--brand-bg);
       color: var(--text-main);
       line-height: 1.4;
+    }
+
+    
+    /* Toss Minimal Design System */
+    .toss-header {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    }
+    .toss-nav-inner {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .toss-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .toss-home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-sub);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 12px;
+      background: var(--brand-bg);
+      border: 1px solid var(--border-color);
+      transition: all 0.18s ease;
+    }
+    .toss-home-btn:hover {
+      color: var(--brand-blue);
+      border-color: var(--brand-blue);
+      background: var(--brand-blue-light);
+    }
+    .toss-nav-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border-color);
+    }
+    .toss-tag-pill {
+      background: var(--brand-blue-light);
+      color: var(--brand-blue);
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(49, 130, 246, 0.2);
+    }
+    .toss-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 0;
+    }
+    .toss-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .toss-status-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--brand-bg);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--text-sub);
+      font-weight: 500;
+    }
+    .status-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--brand-blue);
+      box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.2);
+    }
+    .chip-sep {
+      color: var(--border-color);
+    }
+    .text-blue { color: var(--brand-blue); }
+    .text-loss { color: #E11D48; }
+    .toss-colab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFFFFF;
+      background: #191F28;
+      padding: 7px 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: all 0.18s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .toss-colab-btn:hover {
+      background: #333D4B;
+      transform: translateY(-1px);
+    }
+
+    /* Upgrade Cards to Toss Minimalism */
+    .n-card {
+      border-radius: 20px !important;
+      border: 1px solid rgba(0,0,0,0.06) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
+      padding: 20px 22px !important;
+      margin-bottom: 16px !important;
+      background: #FFFFFF !important;
+    }
+    .step-card {
+      border-radius: 16px !important;
+      border: 1px solid var(--border-color) !important;
+      padding: 14px 16px !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02) !important;
+    }
+    .btn-b-subscribe, .btn-b-green, .btn-b-blue {
+      border-radius: 12px !important;
+      font-weight: 700 !important;
+      transition: all 0.18s ease !important;
+    }
+    .btn-b-subscribe:hover, .btn-b-green:hover, .btn-b-blue:hover {
+      transform: translateY(-1px) !important;
     }
 
     /* 1.  글로벌 탑 네비게이션 바 (GNB) */
@@ -148,11 +290,11 @@
     /* 메인 컨테이너 */
     .main-container {
       max-width: 1400px;
-      margin: 12px auto;
+      margin: 16px auto;
       padding: 0 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 16px;
     }
 
     /* 날짜 및 상단 요약 바 */
@@ -179,25 +321,25 @@
     .dashboard-layout {
       display: grid;
       grid-template-columns: 530px 1fr;
-      gap: 14px;
+      gap: 16px;
       align-items: start;
     }
 
     .col-left, .col-right {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
     }
 
     /*  카드 공통 */
     .n-card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 14px 16px;
+      border-radius: 12px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .n-card-header {
@@ -209,7 +351,7 @@
     }
 
     .n-card-title {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--text-main);
       display: flex;
@@ -244,8 +386,8 @@
       border: none;
       font-size: 13px;
       font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 4px;
+      padding: 7px 14px;
+      border-radius: 8px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -259,8 +401,8 @@
       border: none;
       font-size: 13px;
       font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 4px;
+      padding: 7px 14px;
+      border-radius: 8px;
       cursor: pointer;
     }
     .btn-b-blue:hover { background: var(--brand-blue-hover); }
@@ -271,8 +413,8 @@
       border: 1px solid var(--border-color);
       font-size: 12px;
       font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 4px;
+      padding: 7px 12px;
+      border-radius: 8px;
       cursor: pointer;
     }
     .btn-b-gray:hover { background: #e9ecef; }
@@ -283,8 +425,8 @@
       border: 1px solid #ffc9c9;
       font-size: 12px;
       font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 4px;
+      padding: 7px 12px;
+      border-radius: 8px;
       cursor: pointer;
     }
     .btn-b-danger:hover { background: #ffe3e3; }
@@ -293,6 +435,7 @@
     .plot-canvas-wrap {
       width: 100%;
       height: 250px;
+      overflow: hidden;
       background: #ffffff;
       border: 1px solid var(--border-color);
       border-radius: 6px;
@@ -318,8 +461,8 @@
     th {
       background: #f8fafc;
       color: var(--text-sub);
-      font-weight: 600;
-      padding: 5px;
+      font-weight: 700;
+      padding: 7px 5px;
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
@@ -327,7 +470,7 @@
     }
 
     td {
-      padding: 4px 5px;
+      padding: 6px 5px;
       border-bottom: 1px solid var(--border-light);
     }
 
@@ -342,10 +485,10 @@
     .param-box {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
+      gap: 8px;
       background: #f8fafc;
-      padding: 8px 10px;
-      border-radius: 6px;
+      padding: 10px 12px;
+      border-radius: 8px;
       border: 1px solid var(--border-light);
     }
 
@@ -371,6 +514,7 @@
     .loss-curve-wrap {
       width: 100%;
       height: 165px;
+      overflow: hidden;
       background: #ffffff;
       border: 1px solid var(--brand-blue);
       border-radius: 6px;
@@ -403,6 +547,7 @@
     .neuron-canvas-wrap {
       width: 100%;
       height: 200px;
+      overflow: hidden;
       background: #fafbfc;
       border: 1px solid var(--border-light);
       border-radius: 6px;
@@ -414,17 +559,17 @@
     .step-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      gap: 12px;
     }
 
     .step-card {
       background: #ffffff;
       border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 10px 12px;
+      border-radius: 10px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 6px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
 
@@ -502,53 +647,109 @@
       padding: 8px 12px;
       text-align: center;
     }
+  
+    /* ========================================================
+       작업 A: 코랩 배지 + 셀 단위 코드 복사
+       ======================================================== */
+    .colab-open-badge{display:inline-flex;align-items:center;gap:6px;background:#F9AB00;color:#1a1a1a;font-weight:700;font-size:13px;padding:8px 16px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(249,171,0,.35);transition:transform .15s ease,box-shadow .15s ease}
+    .colab-open-badge:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(249,171,0,.45)}
+    .py-cell{margin-bottom:14px}.py-cell:last-child{margin-bottom:0}
+    .py-cell-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px}
+    .py-cell-label{font-size:12px;font-weight:700;color:#7dd3fc;font-family:monospace}
+    .py-copy-btn{font-size:12px;background:#1e293b;border:1px solid #334155;color:#34d399;font-family:monospace;padding:5px 12px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s ease;white-space:nowrap}
+    .py-copy-btn:hover{background:#334155}.py-copy-btn:disabled{opacity:.75;cursor:default}
+    .py-cell-code{font-family:monospace;font-size:12px;line-height:1.6;color:#cbd5e1;overflow-x:auto;background:rgba(2,6,23,.8);padding:16px;border-radius:12px;margin:0}
+  
+    /* ========================================================
+       작업 B: 모바일 대응 (640px 이하)
+       - 대시보드/스텝 그리드 1열, 캔버스 꽉 차게
+       ======================================================== */
+    @media (max-width: 640px) {
+      .toss-header { height: auto; min-height: 56px; padding: 10px 12px; }
+      .toss-nav-inner { flex-wrap: wrap; row-gap: 8px; }
+      .toss-title { font-size: 15px; }
+      .toss-status-chip { font-size: 12px; }
+      .main-container { padding: 0 12px; margin: 8px auto; gap: 12px; }
+      .dashboard-layout { grid-template-columns: 1fr; gap: 12px; }
+      .col-left, .col-right { gap: 12px; }
+      .step-grid { grid-template-columns: 1fr; }
+      .param-box { grid-template-columns: repeat(2, 1fr); }
+      .n-card { padding: 12px; }
+      .n-card-header { flex-wrap: wrap; gap: 8px; }
+      .plot-canvas-wrap { height: 220px; }
+      .loss-curve-wrap { height: 160px; }
+      .neuron-canvas-wrap { height: 200px; }
+      canvas { max-width: 100%; }
+      .py-cell-code { padding: 12px; font-size: 11px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- 1.  GNB 헤더 -->
-  <header class="portal-gnb">
-    <div class="gnb-left">
-      <a href="#" class="header-logo">
-        <span class="logo-badge" style="background:#ffffff; color:#1f4ef5; font-weight:900; font-size:14px; padding:2px 7px; border-radius:4px; margin-right:4px;">AI</span> 실습실
-      </a>
-      <span class="gnb-service-title">인공지능 선형회귀 & 가중치 전파</span>
-      <nav class="gnb-menu">
-        <span>머신러닝 기초</span>
-        <span>경사하강법 2차곡선</span>
-        <span>신경망 순전파</span>
-        <span>구글 코랩 연동</span>
-      </nav>
-    </div>
-    <div class="gnb-right">
-      <button class="btn-student-mode">학생 인터랙티브 모드</button>
+  <!-- Toss Style Minimal Top Navigation -->
+  <header class="toss-header">
+    <div class="toss-nav-inner">
+      <div class="toss-nav-left">
+        <a href="../index.html" class="toss-home-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+          <span>AI Life 홈</span>
+        </a>
+        <div class="toss-nav-divider"></div>
+        <span class="toss-tag-pill">01 머신러닝</span>
+        <h1 class="toss-title">선형회귀 & 단일 뉴런 가중치 전파 실습</h1>
+      </div>
+      <div class="toss-nav-right">
+        <div class="toss-status-chip">
+          <span class="status-pulse"></span>
+          <span>수식: <b id="headEqText" class="text-blue">y = 1.9231x + 0.6331</b></span>
+          <span class="chip-sep">|</span>
+          <span>손실(MSE): <b id="headLossText" class="text-loss">0.0000</b></span>
+        </div>
+        <a href="./colab_linear_regression.ipynb" download class="toss-colab-btn">
+          <span>Colab 실습</span> 📓
+        </a>
+      </div>
     </div>
   </header>
-
-  <!-- 2.  서브 내비게이션 바 (SNB) -->
-  <nav class="portal-snb">
-    <div class="snb-item active">단일 뉴런 파라미터 조절</div>
-    <div class="snb-item">10개 점 데이터셋</div>
-    <div class="snb-item">2차함수 경사하강법 곡선</div>
-    <div class="snb-item">에포크 랭킹 표</div>
-    <div class="snb-item">코랩(Colab) 코드</div>
-  </nav>
 
   <!-- 메인 컨테이너 -->
   <main class="main-container">
 
-    <!-- 날짜 정보 및 상태 요약 바 -->
-    <div class="date-bar">
-      <div>
-        <span class="date-strong">09.26(토)</span>
-        <span style="margin-left: 6px;">인공지능 단일 뉴런 가중치 곱 & 편향 계산 실습</span>
+    <!-- ========================================================
+         🌱 모듈 인트로: 이 모듈에서 배우는 것
+         ======================================================== -->
+    <section class="n-card" style="border-left: 3px solid var(--brand-blue);">
+      <div class="n-card-header">
+        <div class="n-card-title">
+          <span>🌱 모듈 1 · 머신러닝: 선형회귀 — AI가 직선을 그리는 법</span>
+        </div>
+        <span style="font-size: 11px; color: var(--text-gray);">⏱️ 약 30분 · 준비물: 이 페이지 하나!</span>
       </div>
-      <div>
-        <span>현재 수식: <b id="headEqText" style="color:var(--brand-blue);">y = 1.9231x + 0.6331</b></span>
-        <span style="margin: 0 6px;">|</span>
-        <span>손실(MSE): <b id="headLossText" style="color:#d63301;">0.0000</b></span>
+
+      <div style="font-size: 13px; color: var(--text-main); line-height: 1.8;">
+        <b>📌 이 모듈에서 배우는 것</b><br>
+        ① 점들을 보고 AI가 스스로 직선(y = Wx + b)을 찾아내는 원리<br>
+        ② <b>경사하강법</b> — AI가 조금씩 정답에 가까워지는 공부 방법<br>
+        ③ 아래 시뮬레이터로 체험하고, 맨 아래 파이썬 코드로 직접 확인하기
       </div>
-    </div>
+
+      <div style="display: flex; gap: 6px; flex-wrap: wrap; font-size: 12px;">
+        <span style="background: #eff4ff; color: var(--brand-blue); border-radius: 12px; padding: 3px 10px; font-weight: 600;">🎒 준비물: 없음 (마우스 클릭만 하면 돼요!)</span>
+        <span style="background: #f0fdf4; color: #15803d; border-radius: 12px; padding: 3px 10px; font-weight: 600;">📖 선수 지식: 일차함수 y = ax + b</span>
+      </div>
+
+      <div style="font-size: 12.5px; color: var(--text-main); background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 12px; line-height: 1.7;">
+        💡 <b>비유로 먼저 이해해요!</b><br>
+        · <b>가중치(W)</b>란? AI가 "이 입력이 얼마나 중요할까?"라고 생각하는 정도예요. (직선의 기울기!)<br>
+        · <b>편향(b)</b>이란? 입력이 0이어도 나오는 기본값이에요. (직선의 y절편!)<br>
+        · <b>손실(MSE)</b>이란? AI의 예측이 정답과 얼마나 다른지 재는 '틀린 정도 점수'예요.<br>
+        · <b>경사하강법</b>이란? '틀린 정도'를 조금씩 줄여나가는 AI의 공부법이에요. <b>안개 낀 산에서 가장 낮은 골짜기를 찾아 내려가는 것</b>과 같아요!
+      </div>
+
+      <div style="font-size: 12.5px; color: var(--text-gray);">
+        🗺️ <b style="color: var(--text-main);">학습 순서:</b> ① 비유로 이해하기 (지금!) → ② 시뮬레이터로 체험하기 → ③ 파이썬 코드로 확인하기
+      </div>
+    </section>
 
     <!-- ========================================================
          ✨ 재배치된 대시보드 레이아웃:
@@ -567,6 +768,7 @@
           <div class="n-card-header">
             <div class="n-card-title">
               <span>📍 평면좌표 데이터 점 (<span id="pointCountText">0</span>/10개)</span>
+              <span style="font-size: 11px; color: var(--text-gray); font-weight: 400;">점을 찍어보세요 — AI 공부의 첫걸음이에요 🌱</span>
             </div>
             <button class="btn-b-subscribe" onclick="loadSampleData()">+ 10개 점 자동채우기</button>
           </div>
@@ -602,6 +804,7 @@
               </tbody>
             </table>
           </div>
+          <div style="font-size: 11px; color: var(--brand-blue);">✅ 체크포인트: 점 10개가 채워지면 다음 카드로 고고!</div>
         </section>
 
         <!-- 카드 2: 경사하강법 파라미터 & 2차 함수 손실 곡선 & 에포크 랭킹 표 -->
@@ -609,9 +812,10 @@
           <div class="n-card-header">
             <div class="n-card-title">
               <span>⚙️ 경사하강법 제어 & 2차 곡선</span>
+              <span style="font-size: 11px; color: var(--text-gray); font-weight: 400;">공이 골짜기로 데굴데굴! 손실이 줄어드는 걸 확인해 보세요 ⛷️</span>
             </div>
             <button class="btn-b-subscribe active" id="btnToggleLossCurve" onclick="toggleLossCurve()">
-              📊 2차함수 손실곡선 (열기/닫기)
+              📊 2차 함수 손실 곡선 (열기/닫기)
             </button>
           </div>
 
@@ -649,8 +853,9 @@
 
           <!-- 에포크 수렴 테이블 -->
           <div style="font-size: 12px; font-weight: 700; color: var(--text-main); margin-top: 2px;">
-            에포크별 수렴 랭킹 표 (손실 감소 & 가중치 곱)
+            에포크별 수렴 기록 표 (손실 감소 & 가중치 곱)
           </div>
+          <div style="font-size: 11px; color: var(--brand-blue);">✅ 체크포인트: '실시간 학습'을 누르면 손실(MSE) 숫자가 점점 줄어들어요!</div>
           <div class="epoch-scroll">
             <table>
               <thead>
@@ -685,6 +890,7 @@
           <div class="n-card-header">
             <div class="n-card-title">
               <span>🧠 단일 뉴런 순전파: 동그란 노드를 통한 가중치(W) 곱 전달</span>
+              <span style="font-size: 11px; color: var(--text-gray); font-weight: 400;">신호가 동그란 노드를 타고 흘러가요 ✨</span>
             </div>
             <div style="display: flex; align-items: center; gap: 6px;">
               <button class="btn-b-subscribe" onclick="triggerPulseAnimation()">+ 신호 재생</button>
@@ -697,6 +903,7 @@
           <div class="neuron-canvas-wrap" id="neuronWrap">
             <canvas id="neuronCanvas" width="750" height="200"></canvas>
           </div>
+          <div style="font-size: 11px; color: var(--brand-blue);">✅ 체크포인트: 1 → 2 → 3 → 4단계 순서로 숫자가 흘러가면 성공!</div>
         </section>
 
         <!-- 카드 4: 1단계 ~ 4단계 실시간 인터랙티브 조절 패널 (2x2 시원한 배치) -->
@@ -704,8 +911,9 @@
           <div class="n-card-header">
             <div class="n-card-title">
               <span>🎛️ 1~4단계 실시간 파라미터 조절 (임의 조절 시 노드에 즉시 반영)</span>
+              <span style="font-size: 11px; color: var(--text-gray); font-weight: 400;">마음껏 움직여보세요 — AI는 실패해도 괜찮아요 😄</span>
             </div>
-            <span style="font-size: 11px; color: var(--text-gray);">슬라이더 드래그 시 0.001초 동기화</span>
+            <span style="font-size: 11px; color: var(--text-gray);">슬라이더를 드래그하면 바로 반영돼요</span>
           </div>
 
           <div class="step-grid">
@@ -779,6 +987,10 @@
 
     <!-- 파이썬 코드 박스 -->
     <div style="margin-top: 24px; background: #0f172a; border-radius: 20px; padding: 20px; color: #f8fafc; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+      <div style="margin-bottom:12px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+        <a class="colab-open-badge" target="_blank" rel="noopener" href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/01_%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D_%EC%84%A0%ED%98%95%ED%9A%8C%EA%B7%80/colab_linear_regression.ipynb">🚀 구글 코랩에서 열기</a>
+        <span style="font-size:12px;color:#94a3b8;">노트북 파일을 코랩에서 바로 열어 한 셀씩 실행해 보세요!</span>
+      </div>
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></span>
@@ -786,66 +998,126 @@
           <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></span>
           <span style="font-family: monospace; font-size: 13px; color: #94a3b8; margin-left: 8px;">🐍 [파이썬 코드로 구현하기] 01_선형회귀_전파_및_학습.py</span>
         </div>
-        <button onclick="copyPythonCode()" id="btnCopyPy" style="font-size: 12px; background: #1e293b; border: 1px solid #334155; color: #34d399; font-family: monospace; padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-          📋 코드 복사
-        </button>
+        <button type="button" class="py-copy-btn" onclick="copyAllCells(this)" style="font-size:12px;padding:6px 12px;">📋 전체 코드 복사</button>
       </div>
-      <pre id="pythonCodeBlock" style="font-family: monospace; font-size: 12px; line-height: 1.6; color: #cbd5e1; overflow-x: auto; background: rgba(2, 6, 23, 0.8); padding: 16px; border-radius: 12px; margin: 0;"># [파이썬 실습] 4단계 노드 전파 및 경사하강법으로 최적 가중치(W)와 편향(b) 학습하기
+      <div style="font-size: 12px; color: #94a3b8; margin-bottom: 10px;">💪 여기까지 왔다면 이제 코드로 확인할 차례예요! 위에서 체험한 내용이 그대로 담겨 있어요. ✅ 체크포인트: 주석을 읽으며 "아, 이게 그거구나!" 하면 성공!</div>
+<div class="py-cell">
+  <div class="py-cell-head">
+    <span class="py-cell-label">셀 1 · 라이브러리 불러오기</span>
+    <button type="button" class="py-copy-btn" data-copy-target="pyCell01_1" onclick="copyCell(this)">📋 복사</button>
+  </div>
+  <pre id="pyCell01_1" class="py-cell-code"># [파이썬 실습] 4단계 노드 전파 및 경사하강법으로 최적 가중치(W)와 편향(b) 학습하기
+# 💡 이 코드는 위 시뮬레이터에서 체험한 내용을 파이썬으로 옮긴 거예요.
+#    "아, 이게 그거구나!" 하며 한 줄씩 읽어보세요.
 import numpy as np
-import matplotlib.pyplot as plt
-
-# 1. 10개의 샘플 데이터 준비 (X: 공부 시간, Y: 시험 점수)
+import matplotlib.pyplot as plt</pre>
+</div>
+<div class="py-cell">
+  <div class="py-cell-head">
+    <span class="py-cell-label">셀 2 · 데이터 준비</span>
+    <button type="button" class="py-copy-btn" data-copy-target="pyCell01_2" onclick="copyCell(this)">📋 복사</button>
+  </div>
+  <pre id="pyCell01_2" class="py-cell-code"># 1. 10개의 샘플 데이터 준비 (X: 공부 시간, Y: 시험 점수)
+#    → AI에게 보여줄 '문제집' 10개예요.
 X = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
-Y = np.array([2.1, 3.8, 6.2, 7.9, 10.2, 12.1, 13.9, 16.2, 18.0, 20.3])
-
-# 2. 초기 가중치(W)와 편향(b) 설정
+Y = np.array([2.1, 3.8, 6.2, 7.9, 10.2, 12.1, 13.9, 16.2, 18.0, 20.3])</pre>
+</div>
+<div class="py-cell">
+  <div class="py-cell-head">
+    <span class="py-cell-label">셀 3 · 초기값 설정</span>
+    <button type="button" class="py-copy-btn" data-copy-target="pyCell01_3" onclick="copyCell(this)">📋 복사</button>
+  </div>
+  <pre id="pyCell01_3" class="py-cell-code"># 2. 초기 가중치(W)와 편향(b) 설정
+#    → W(기울기)와 b(y절편)를 0.5에서 시작해요. 학습률(한 번에 고치는 양)은 0.01!
 W = 0.5
 b = 0.5
 learning_rate = 0.01
-epochs = 100
-
-# 3. 경사하강법 훈련 반복문
+epochs = 100</pre>
+</div>
+<div class="py-cell">
+  <div class="py-cell-head">
+    <span class="py-cell-label">셀 4 · 경사하강법 학습 반복</span>
+    <button type="button" class="py-copy-btn" data-copy-target="pyCell01_4" onclick="copyCell(this)">📋 복사</button>
+  </div>
+  <pre id="pyCell01_4" class="py-cell-code"># 3. 경사하강법 훈련 반복문: AI의 공부 시간! (안개 낀 산 내려가기 🏔️)
 for epoch in range(1, epochs + 1):
     # [1~4단계 순전파] 출력 예측값 Y_pred = X * W + b
+    # → ① 지금 실력으로 점수 맞혀보기
     Y_pred = X * W + b
-    
+
     # 손실 함수 (MSE 오차)
+    # → ② '틀린 정도 점수' 재기 (실제 점수와 예측 점수 차이의 제곱 평균)
     loss = np.mean((Y - Y_pred) ** 2)
-    
+
     # 기울기 계산 (미분)
+    # → ③ W와 b를 어느 방향으로 얼마나 고칠지 계산
     w_gradient = -2 * np.mean(X * (Y - Y_pred))
     b_gradient = -2 * np.mean(Y - Y_pred)
-    
+
     # 가중치와 편향 업데이트 (경사하강)
+    # → ④ 기울기의 반대 방향으로 조금씩 이동! (산 내려가기)
     W -= learning_rate * w_gradient
     b -= learning_rate * b_gradient
-    
+
     if epoch % 20 == 0:
         print(f"Epoch {epoch:3d} | W: {W:.4f} | b: {b:.4f} | MSE Loss: {loss:.4f}")
-
-# 4. 최종 결과 출력 및 수식 완성
-print(f"\n최종 회귀식: y = {W:.4f} * x + {b:.4f}")
-
-# 5. 시각화 (산점도와 회귀선)
+        # ✅ 체크포인트: MSE Loss 숫자가 점점 줄어들면 AI가 공부 중인 거예요!</pre>
+</div>
+<div class="py-cell">
+  <div class="py-cell-head">
+    <span class="py-cell-label">셀 5 · 최종 결과 출력</span>
+    <button type="button" class="py-copy-btn" data-copy-target="pyCell01_5" onclick="copyCell(this)">📋 복사</button>
+  </div>
+  <pre id="pyCell01_5" class="py-cell-code"># 4. 최종 결과 출력 및 수식 완성
+# → 학습이 끝난 AI가 찾아낸 직선의 수식!
+print(f"\n최종 회귀식: y = {W:.4f} * x + {b:.4f}")</pre>
+</div>
+<div class="py-cell">
+  <div class="py-cell-head">
+    <span class="py-cell-label">셀 6 · 시각화</span>
+    <button type="button" class="py-copy-btn" data-copy-target="pyCell01_6" onclick="copyCell(this)">📋 복사</button>
+  </div>
+  <pre id="pyCell01_6" class="py-cell-code"># 5. 시각화 (산점도와 회귀선)
+# → 점들 사이에 AI가 그은 직선을 그려봐요
 plt.figure(figsize=(8, 4))
 plt.scatter(X, Y, color='#1f4ef5', label='실제 데이터 (x, y)')
 plt.plot(X, W * X + b, color='#03c75a', lw=2.5, label=f'예측선: y={W:.2f}x+{b:.2f}')
 plt.xlabel('x (입력 노드)'); plt.ylabel('y (출력 노드)')
 plt.title('선형회귀 가중치 전파 학습 결과')
 plt.legend(); plt.grid(True, alpha=0.3); plt.show()</pre>
+</div>
     </div>
 
   </main>
 
   <script>
-    function copyPythonCode() {
-      const code = document.getElementById('pythonCodeBlock').innerText;
-      navigator.clipboard.writeText(code).then(() => {
-        const btn = document.getElementById('btnCopyPy');
-        const orig = btn.innerHTML;
-        btn.innerHTML = '✅ 복사 완료!';
-        setTimeout(() => { btn.innerHTML = orig; }, 2000);
-      });
+    function copyTextWithFeedback(text, btn, doneLabel) {
+      var label = doneLabel || '✅ 복사됨!';
+      var orig = btn.innerHTML;
+      var done = function() {
+        btn.innerHTML = label; btn.disabled = true;
+        setTimeout(function(){ btn.innerHTML = orig; btn.disabled = false; }, 1800);
+      };
+      var fallback = function() {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { ta.setSelectionRange(0, ta.value.length); } catch (e) {}
+        try { document.execCommand('copy'); done(); }
+        catch (e) { alert('자동 복사에 실패했어요. 코드를 직접 드래그해서 복사해 주세요 🙏'); }
+        document.body.removeChild(ta);
+      };
+      if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).then(done, fallback); }
+      else { fallback(); }
+    }
+    function copyCell(btn) {
+      var pre = document.getElementById(btn.getAttribute('data-copy-target'));
+      if (pre) copyTextWithFeedback(pre.innerText, btn);
+    }
+    function copyAllCells(btn) {
+      var codes = Array.prototype.map.call(document.querySelectorAll('.py-cell-code'), function(el){ return el.innerText.replace(/\s+$/, ''); });
+      copyTextWithFeedback(codes.join('\n\n'), btn, '✅ 전체 복사됨!');
     }
 
     // ========================================================
@@ -997,7 +1269,7 @@ plt.legend(); plt.grid(True, alpha=0.3); plt.show()</pre>
     // 마우스 클릭으로 점 추가
     plotCanvas.addEventListener('click', (e) => {
       if (points.length >= 10) {
-        alert('최대 10개의 점까지만 입력할 수 있습니다.');
+        alert('점은 최대 10개까지만 입력할 수 있어요!');
         return;
       }
       const rect = plotCanvas.getBoundingClientRect();
@@ -1488,7 +1760,7 @@ plt.legend(); plt.grid(True, alpha=0.3); plt.show()</pre>
       lossCtx.fillStyle = '#111111';
       lossCtx.font = 'bold 10px sans-serif';
       lossCtx.textAlign = 'center';
-      const slopeSign = dW > 0 ? '기울기(+): ⬅️하강' : '기울기(-): ➡️하강';
+      const slopeSign = dW > 0 ? '기울기(+): ⬅️ 왼쪽으로 하강' : '기울기(-): 오른쪽 ➡️으로 하강';
       lossCtx.fillText(`W=${W.toFixed(2)} (${slopeSign})`, curX, Math.max(padY + 10, curY - 12));
     }
 
@@ -1622,7 +1894,7 @@ plt.legend(); plt.grid(True, alpha=0.3); plt.show()</pre>
 
     function exportToCSV() {
       if (points.length === 0) {
-        alert('내보낼 데이터 점이 없습니다.');
+        alert('아직 내보낼 데이터 점이 없어요. 먼저 점을 추가해 보세요!');
         return;
       }
       let csvContent = 'data:text/csv;charset=utf-8,x,y\n';

@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>문학 & 규정집 AI 에이전트 실습실 - AI School</title>
   <style>
     :root {
-      --brand-green: #03c75a;
+      --brand-green: #00B06B;
       --brand-green-hover: #17b75e;
       --brand-blue: #1f4ef5;
       --brand-blue-hover: #1740d6;
@@ -15,7 +16,7 @@
       --card-bg: #ffffff;
       --text-main: #111111;
       --text-sub: #555555;
-      --text-gray: #888888;
+      --text-gray: #6b7280;
       --accent-orange: #ff6b00;
       --accent-purple: #7c3aed;
       --accent-red: #ef4444;
@@ -690,6 +691,66 @@
       .data-vs-ai-banner { grid-template-columns: 1fr; }
       .pipeline-arrow { transform: rotate(90deg); margin: 6px 0; }
     }
+
+    /* ===== [작업 A] 코랩 배지 & 셀 단위 복사 ===== */
+    .colab-open-badge{display:inline-flex;align-items:center;gap:6px;background:#F9AB00;color:#1a1a1a;font-weight:700;font-size:13px;padding:8px 16px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(249,171,0,.35);transition:transform .15s ease,box-shadow .15s ease}
+    .colab-open-badge:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(249,171,0,.45)}
+    .py-cell{margin-bottom:14px}.py-cell:last-child{margin-bottom:0}
+    .py-cell-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px}
+    .py-cell-label{font-size:12px;font-weight:700;color:#7dd3fc;font-family:monospace}
+    .py-copy-btn{font-size:12px;background:#1e293b;border:1px solid #334155;color:#34d399;font-family:monospace;padding:5px 12px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s ease;white-space:nowrap}
+    .py-copy-btn:hover{background:#334155}.py-copy-btn:disabled{opacity:.75;cursor:default}
+    .py-cell-code{font-family:monospace;font-size:12px;line-height:1.6;color:#cbd5e1;overflow-x:auto;background:rgba(2,6,23,.8);padding:16px;border-radius:12px;margin:0}
+
+    /* ===== [작업 B] 그래픽 개선: 누락된 toss-* 클래스 정의 (토스 미니멀 정체성) ===== */
+    .toss-header{background:#ffffff;border-bottom:1px solid var(--brand-border);position:sticky;top:0;z-index:100}
+    .toss-nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .toss-nav-left{display:flex;align-items:center;gap:10px;min-width:0}
+    .toss-home-btn{display:inline-flex;align-items:center;gap:6px;background:#f2f4f6;border:1px solid #e4e8eb;color:#191f28;font-size:13px;font-weight:700;padding:7px 12px;border-radius:10px;text-decoration:none;white-space:nowrap;transition:background .15s ease}
+    .toss-home-btn:hover{background:#e9ecef}
+    .toss-nav-divider{width:1px;height:20px;background:var(--brand-border);flex:none}
+    .toss-tag-pill{background:#eefbf4;color:var(--brand-green);font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+    .toss-title{font-size:16px;font-weight:800;letter-spacing:-0.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .toss-nav-right{display:flex;align-items:center;gap:8px}
+    .toss-tab-bar{background:#ffffff;border-bottom:1px solid var(--brand-border);display:flex;gap:8px;padding:10px 24px;overflow-x:auto;position:sticky;top:60px;z-index:99}
+    .toss-tab-pill{background:#f2f4f6;color:var(--text-sub);font-size:13px;font-weight:700;padding:9px 16px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:background .15s ease,color .15s ease}
+    .toss-tab-pill:hover{background:#e9ecef;color:var(--text-main)}
+    .toss-tab-pill.active{background:var(--brand-green);color:#ffffff}
+
+    /* ===== [작업 B] 섹션 간 여백 리듬 통일 ===== */
+    .grid-2col,.grid-3col{margin-bottom:20px}
+    .grid-2col:last-child,.grid-3col:last-child{margin-bottom:0}
+    .grid-2col>.n-card,.grid-3col>.n-card{margin-bottom:0}
+    .grid-3col{gap:16px}
+
+    /* ===== [작업 B] 버튼 패딩 일관성 ===== */
+    .btn-b-gray{padding:8px 16px}
+
+    /* ===== [작업 B] 토큰·각도기·범례 라벨 가독성 & 색상 대비 ===== */
+    .token-cloud{padding:12px}
+    .token-id{font-size:11px}
+    .angle-canvas-wrap{padding:14px}
+    .angle-canvas-wrap canvas{max-width:100%;height:auto}
+    .math-explain-box{line-height:1.65}
+    .msg-engine-badge{font-size:11px}
+
+    /* ===== [작업 B] 모바일 대응 (640px 이하: 그리드 1열 등) ===== */
+    @media (max-width:640px){
+      .main-container{padding:16px 14px 48px 14px}
+      .toss-nav-inner{padding:8px 12px;flex-wrap:wrap;row-gap:8px}
+      .toss-title{font-size:14px}
+      .toss-tab-bar{padding:8px 12px;position:static}
+      .toss-tab-pill{font-size:12px;padding:8px 13px}
+      .grid-2col,.grid-3col{grid-template-columns:1fr;gap:12px}
+      .n-card{padding:16px}
+      .chat-container{height:440px}
+      .msg-bubble{max-width:90%;font-size:13px}
+      .data-vs-ai-banner{padding:16px;gap:12px}
+      .sim-table{font-size:11px}
+      .sim-table th,.sim-table td{padding:6px 8px}
+      .py-cell-code{font-size:11px;padding:12px}
+      .api-status-badge{font-size:11px}
+    }
   </style>
 </head>
 <body>
@@ -697,42 +758,50 @@
   <!-- ========================================================
        GNB 상단 헤더 & 교사용 API / 수업 종료 컨트롤 바
        ======================================================== -->
-  <header class="portal-gnb">
-    <div class="gnb-left">
-      <span class="logo-badge" style="background:#03c75a; color:#ffffff; font-weight:900; font-size:14px; padding:4px 9px; border-radius:4px; letter-spacing:-0.5px;">AI LAB</span>
-      <span class="service-badge">AI School</span>
-      <span class="service-title">문학 & 규정집 AI 에이전트 실습실</span>
-    </div>
-
-    <!-- 우측: 구글 API 상태 및 수업 관리 버튼 -->
-    <div style="display:flex; gap:10px; align-items:center;">
-      <span class="api-status-badge" id="gnbApiBadge">
-        <span id="gnbApiDot">⚪</span> <span id="gnbApiText">오프라인 시뮬레이션 모드</span>
-      </span>
-
-      <button class="btn-api-settings" onclick="openApiModal()">
-        <span>🔑</span> 구글 API 설정
-      </button>
-
-      <button class="btn-terminate-class" onclick="terminateClassAndShredKey()">
-        <span>🚨</span> 수업 종료 (키 파기)
-      </button>
+  <!-- Toss Style Minimal Top Navigation -->
+  <header class="toss-header">
+    <div class="toss-nav-inner">
+      <div class="toss-nav-left">
+        <a href="../index.html" class="toss-home-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+          <span>AI Life 홈</span>
+        </a>
+        <div class="toss-nav-divider"></div>
+        <span class="toss-tag-pill">04 자연어처리</span>
+        <h1 class="toss-title">문학 & 규정집 RAG AI 에이전트 실습실</h1>
+      </div>
+      
+      <!-- 우측: 구글 API 상태 및 수업 관리 버튼 -->
+      <div class="toss-nav-right">
+        <span class="api-status-badge" id="gnbApiBadge" style="border-radius:20px; padding:6px 12px;">
+          <span id="gnbApiDot">⚪</span> <span id="gnbApiText">오프라인 시뮬레이션 모드</span>
+        </span>
+        <button class="btn-api-settings" onclick="openApiModal()" style="border-radius:12px; font-weight:700;">
+          <span>🔑</span> 구글 API 설정
+        </button>
+        <button class="btn-terminate-class" onclick="terminateClassAndShredKey()" style="border-radius:12px; font-weight:700;">
+          <span>🚨</span> 수업 종료
+        </button>
+        <a href="./실습)_텍스트_에이전트.ipynb" download class="toss-home-btn" style="background:#191F28; color:#fff; border-color:#191F28;">
+          <span>Colab</span> 📓
+        </a>
+      </div>
     </div>
   </header>
 
-  <!-- SNB 탭 메뉴 -->
-  <nav class="portal-snb">
-    <div class="snb-item active" id="tabNav1" onclick="switchTab('tab1')">
+  <!-- Toss Style 4-Step Pill Tabs -->
+  <nav class="toss-tab-bar">
+    <div class="toss-tab-pill active" id="tabNav1" onclick="switchTab('tab1')">
       <span>📚 1. LLM & 에이전트 개념 & 토큰화</span>
     </div>
-    <div class="snb-item" id="tabNav2" onclick="switchTab('tab2')">
-      <span>📐 2. 텍스트 벡터 & 코사인 유사도 각도기</span>
+    <div class="toss-tab-pill" id="tabNav2" onclick="switchTab('tab2')">
+      <span>📐 2. 텍스트 벡터 & 코사인 유사도</span>
     </div>
-    <div class="snb-item" id="tabNav3" onclick="switchTab('tab3')">
-      <span>🤖 3. 나만의 AI 에이전트 만들기 (데이터 vs AI 분리)</span>
+    <div class="toss-tab-pill" id="tabNav3" onclick="switchTab('tab3')">
+      <span>🤖 3. 나만의 AI 에이전트 만들기</span>
     </div>
-    <div class="snb-item" id="tabNav4" onclick="switchTab('tab4')">
-      <span>💬 4. 실시간 Q&A 대화 & AI 독서 탐구</span>
+    <div class="toss-tab-pill" id="tabNav4" onclick="switchTab('tab4')">
+      <span>💬 4. 실시간 Q&A 대화 & 독서 탐구</span>
     </div>
   </nav>
 
@@ -756,11 +825,19 @@
          📚 [탭 1] LLM & 에이전트 개념 & 문장 토큰화(Tokenization)
          ======================================================== -->
     <section class="tab-section active" id="tabSection1">
-      
+
+      <div class="math-explain-box" style="background:#f0f9ff; border-color:#7dd3fc;">
+        🎯 <b>이 모듈에서 배우는 것 (3줄 요약)</b><br>
+        1. <b>문장을 숫자로</b>: 컴퓨터가 글을 작은 조각(토큰)으로 쪼개고 고유 번호표(ID)를 붙이는 원리<br>
+        2. <b>문장을 화살표로</b>: 문장을 좌표(벡터)로 바꾸고, 사잇각의 코사인(코사인 유사도)으로 관련성을 재는 수학<br>
+        3. <b>나만의 AI 에이전트</b>: RAG(검색 증강 생성 — 책에서 근거를 먼저 <b>검색</b>한 뒤, 그 근거로 답을 <b>생성</b>하는 방식)으로 원문 근거를 찾아 답하는 에이전트 만들기<br>
+        <span style="font-size:12px;">🎒 <b>준비물</b>: 인터넷 되는 노트북 · <b>선수 지식</b>: 파이썬 변수·리스트·함수 기초 · <b>선택</b>: Google AI Studio API 키 (없어도 마지막 단계 전까지 모두 체험 가능!)</span>
+      </div>
+
       <div class="math-explain-box">
         💡 <b>선생님과 함께 짚고 가는 기초 개념</b>:<br>
         1. <b>LLM (거대 언어 모델)</b>: 수억 개의 책과 글을 읽고 학습하여 인간처럼 말을 이해하고 다음 단어를 자연스럽게 이어 쓰는 거대한 언어 두뇌입니다.<br>
-        2. <b>AI 에이전트 (AI Agent)</b>: 단순한 챗봇을 넘어, <b>'목표(Goal)'</b>를 가지고 주변 문서나 환경을 <b>'탐색(Search)'</b>하고, <b>'판단(Reason)'</b>하여 스스로 행동(Act)하는 자율적인 인공지능입니다.<br>
+        2. <b>AI 에이전트 (AI Agent)</b>: 단순한 챗봇을 넘어, <b>'목표(Goal)'</b>를 가지고 주변 문서나 환경을 <b>'탐색(Search)'</b>하고 <b>'판단(Reason)'</b>한 뒤, 스스로 <b>'행동(Act)'</b>하는 자율적인 인공지능입니다.<br>
         3. <b>토큰화 (Tokenization)</b>: 컴퓨터는 한글 글자를 그대로 이해하지 못합니다. 따라서 문장을 <b>'의미 있는 작은 조각(토큰)'</b>으로 쪼개고 각각 고유한 <b>'숫자 번호표(ID)'</b>를 부여해야 합니다.
       </div>
 
@@ -769,7 +846,7 @@
         <div class="n-card">
           <div class="n-card-header">
             <div class="n-card-title">
-              <span>✍️ 실습 1: 문장 입력 및 토큰 쪼개기</span>
+              <span>✍️ 실습 1: 문장을 잘게 쪼개보자! (토큰 쪼개기)</span>
             </div>
             <span class="n-card-badge">어절/단어 단위 토큰화</span>
           </div>
@@ -819,6 +896,10 @@
         </div>
       </div>
 
+      <div class="math-explain-box" style="background:#f0fdf4; border-color:#86efac; margin-top:14px;">
+        ✅ <b>1단계 체크포인트</b>: 문장을 토큰으로 쪼개고, 각 토큰에 고유 번호표(ID)를 붙일 수 있다면 성공이에요! 🎉 2단계 탭으로 가서 이 숫자들을 화살표(벡터)로 바꿔볼게요. 🚀
+      </div>
+
     </section>
 
 
@@ -833,7 +914,7 @@
         2. <b>사잇각과 코사인 수식</b>: 두 문장의 의미가 비슷하면 두 화살표는 거의 같은 방향을 가리켜 사잇각 <b>&theta;</b>가 <b>0&deg;</b>에 가까워집니다.<br>
         &nbsp;&nbsp;• <b>cos(0&deg;) = 1.0</b> : 완벽하게 같은 주제!<br>
         &nbsp;&nbsp;• <b>cos(90&deg;) = 0.0</b> : 전혀 상관없는 딴소리!<br>
-        3. <b>수식 공식</b>: <b>유사도 = cos(&theta;) = (A &middot; B) / (||A|| &times; ||B||)</b>
+        3. <b>유사도 공식</b>: <b>유사도 = cos(&theta;) = (A &middot; B) / (||A|| &times; ||B||)</b>
       </div>
 
       <div class="grid-2col">
@@ -841,7 +922,7 @@
         <div class="n-card">
           <div class="n-card-header">
             <div class="n-card-title">
-              <span>🎯 2D 의미 공간 속 화살표 각도기</span>
+              <span>🎯 2D 의미 공간 속 화살표 각도기 — 문장들의 방향 재기!</span>
             </div>
             <span class="n-card-badge" id="angleBadge">사잇각 θ = 18.5°</span>
           </div>
@@ -850,7 +931,7 @@
             <canvas id="vectorCanvas" width="340" height="260" style="background:#ffffff; border-radius:4px;"></canvas>
             <div style="display:flex; justify-content:space-around; width:100%; margin-top:8px; font-size:12px; font-weight:700;">
               <span style="color: var(--brand-blue);">🔵 질문: "점순이의 감자"</span>
-              <span style="color: var(--brand-green);">🟢 책 원문: "감자 세 개를 내밀었다"</span>
+              <span style="color: #0b7a45;">🟢 책 원문: "감자 세 개를 내밀었다"</span>
             </div>
           </div>
 
@@ -863,7 +944,7 @@
         <div class="n-card">
           <div class="n-card-header">
             <div class="n-card-title">
-              <span>📊 코사인 유사도 실시간 랭킹 검색기</span>
+              <span>📊 코사인 유사도 실시간 랭킹 검색기 — 어떤 문장이 1등일까?</span>
             </div>
             <span class="n-card-badge">검색 엔진 원리</span>
           </div>
@@ -893,6 +974,10 @@
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div class="math-explain-box" style="background:#f0fdf4; border-color:#86efac; margin-top:14px;">
+        ✅ <b>2단계 체크포인트</b>: "두 문장의 사잇각이 좁을수록(0°에 가까울수록) 같은 주제!"라고 설명할 수 있다면 성공이에요! 🎉 이제 3단계 탭에서 이 수학으로 진짜 AI 에이전트를 조립해봐요. 🤖
       </div>
 
     </section>
@@ -1032,7 +1117,7 @@
             <div style="font-size:12px; font-weight:700; color:#334155; margin-bottom:6px;">🛡️ AI 에이전트 엄격 행동 지침 (환각 방지):</div>
             <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#475569; margin-bottom:4px;">
               <input type="checkbox" id="ruleGrounded" checked disabled />
-              <strong>[원칙 1]</strong> 오직 등록된 <b>[데이터 영역]의 본문 내용에만 근거</b>하여 답할 것
+              <strong>[원칙 1]</strong> 오직 등록된 <b>[데이터 영역]의 본문 내용만을 근거로 삼아</b> 답할 것
             </label>
             <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#475569; margin-bottom:4px;">
               <input type="checkbox" id="ruleHonest" checked disabled />
@@ -1050,6 +1135,10 @@
           </button>
         </div>
 
+      </div>
+
+      <div class="math-explain-box" style="background:#f0fdf4; border-color:#86efac; margin-top:14px;">
+        🎉 <b>3단계 클리어!</b> 나만의 [데이터 + AI 두뇌] 에이전트가 완성됐어요. 4단계 탭에서 직접 질문하며 대화해보세요! 💬
       </div>
 
     </section>
@@ -1090,8 +1179,8 @@
             <div class="chat-messages" id="chatMessages">
               <div class="msg-bubble msg-agent">
                 <span class="msg-engine-badge badge-gemini">시스템 안내</span><br>
-                안녕하세요! 저는 등록된 문서를 학습하고 캐릭터 페르소나를 장착한 <b>AI 도우미 에이전트</b>입니다. 
-                작품이나 규정에 대해 무엇이든 질문해 주세요!
+                안녕하세요! 저는 등록된 문서를 학습하고 캐릭터 페르소나를 장착한 <b>AI 도우미 에이전트</b>입니다.
+                작품이나 규정에 대해 무엇이든 질문해 주세요! 틀려도 괜찮아요 — 제가 원문 근거를 함께 보여드릴게요. 😊
               </div>
             </div>
 
@@ -1150,6 +1239,10 @@
             "에이전트가 찾은 원문 근거를 확인하면서, 작가의 의도나 복잡한 규정의 원문을 직접 대조해보는 <b>비판적 사고력과 문해력</b>을 함께 기를 수 있습니다."
           </div>
         </div>
+      </div>
+
+      <div class="math-explain-box" style="background:#f0fdf4; border-color:#86efac; margin-top:14px;">
+        🏁 <b>모듈 완주!</b> 토큰화 → 벡터 → 코사인 유사도 → RAG 에이전트까지, AI가 글을 읽는 원리를 전부 직접 체험했어요. 정말 잘했어요! 👏 다음엔 내가 좋아하는 책으로 나만의 에이전트를 만들어보세요. 📚
       </div>
 
     </section>
@@ -1226,6 +1319,10 @@
   
     <!-- 파이썬 코드 박스 -->
     <div style="max-width: 1200px; margin: 24px auto; background: #0f172a; border-radius: 20px; padding: 20px; color: #f8fafc; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+      <div style="margin-bottom:12px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+        <a class="colab-open-badge" target="_blank" rel="noopener" href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/04_%EC%9E%90%EC%97%B0%EC%96%B4%EC%B2%98%EB%A6%AC_AI%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8/%EC%8B%A4%EC%8A%B5%29_%ED%85%8D%EC%8A%A4%ED%8A%B8_%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8.ipynb">🚀 구글 코랩에서 열기</a>
+        <span style="font-size:12px;color:#94a3b8;">노트북 파일을 코랩에서 바로 열어 한 셀씩 실행해 보세요!</span>
+      </div>
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></span>
@@ -1233,13 +1330,24 @@
           <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></span>
           <span style="font-family: monospace; font-size: 13px; color: #94a3b8; margin-left: 8px;">🐍 [파이썬 코드로 구현하기] 04_자연어처리_RAG_에이전트.py</span>
         </div>
-        <button onclick="copyPythonCode()" id="btnCopyPy" style="font-size: 12px; background: #1e293b; border: 1px solid #334155; color: #34d399; font-family: monospace; padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-          📋 코드 복사
-        </button>
+        <button type="button" class="py-copy-btn" onclick="copyAllCells(this)" style="font-size:12px;padding:6px 12px;">📋 전체 코드 복사</button>
       </div>
-      <pre id="pythonCodeBlock" style="font-family: monospace; font-size: 12px; line-height: 1.6; color: #cbd5e1; overflow-x: auto; background: rgba(2, 6, 23, 0.8); padding: 16px; border-radius: 12px; margin: 0;"># [파이썬 실습] 토큰화, 코사인 유사도 기반 RAG(검색 증강 생성) 및 Gemini API 연동 에이전트
+            <div class="py-cell">
+        <div class="py-cell-head">
+          <span class="py-cell-label">셀 1 · 라이브러리 불러오기</span>
+          <button type="button" class="py-copy-btn" data-copy-target="pyCell04_1" onclick="copyCell(this)">📋 복사</button>
+        </div>
+        <pre id="pyCell04_1" class="py-cell-code"># [파이썬 실습] 토큰화, 코사인 유사도 기반 RAG(검색 증강 생성) 및 Gemini API 연동 에이전트
+# 💡 위에서 체험한 '토큰화 → 벡터 → 코사인 유사도 → RAG 에이전트' 과정을 파이썬 코드로 그대로 옮긴 것입니다.
 import numpy as np
-
+</pre>
+      </div>
+      <div class="py-cell">
+        <div class="py-cell-head">
+          <span class="py-cell-label">셀 2 · 토큰화 & 어휘 사전 만들기</span>
+          <button type="button" class="py-copy-btn" data-copy-target="pyCell04_2" onclick="copyCell(this)">📋 복사</button>
+        </div>
+        <pre id="pyCell04_2" class="py-cell-code"># 📚 코퍼스(corpus): 에이전트가 읽을 '책' = 문장들의 모음
 # 1. 문장 토큰화 및 어휘 사전(Vocab) 만들기
 corpus = [
     "동백꽃이 붉게 피어나는 봄날이었다",
@@ -1250,50 +1358,98 @@ corpus = [
 
 vocab = sorted(list(set(" ".join(corpus).split())))
 word_to_id = {w: i for i, w in enumerate(vocab)}
-
-# 2. Bag-of-Words 문장 벡터화
+</pre>
+      </div>
+      <div class="py-cell">
+        <div class="py-cell-head">
+          <span class="py-cell-label">셀 3 · Bag-of-Words 벡터화</span>
+          <button type="button" class="py-copy-btn" data-copy-target="pyCell04_3" onclick="copyCell(this)">📋 복사</button>
+        </div>
+        <pre id="pyCell04_3" class="py-cell-code"># 2. Bag-of-Words 문장 벡터화
 def text_to_vector(text):
-    vec = np.zeros(len(vocab))
+    # 문장을 단어 빈도 벡터로 바꾸는 함수: 각 단어가 몇 번 나왔는지 셉니다
+    vec = np.zeros(len(vocab))  # 단어 사전 크기만큼 0으로 채운 빈 리스트 준비
     for word in text.split():
         if word in word_to_id:
-            vec[word_to_id[word]] += 1
+            vec[word_to_id[word]] += 1  # 사전에 있는 단어라면 해당 칸의 숫자를 1 올리기
     return vec
-
+</pre>
+      </div>
+      <div class="py-cell">
+        <div class="py-cell-head">
+          <span class="py-cell-label">셀 4 · 코사인 유사도 계산</span>
+          <button type="button" class="py-copy-btn" data-copy-target="pyCell04_4" onclick="copyCell(this)">📋 복사</button>
+        </div>
+        <pre id="pyCell04_4" class="py-cell-code"># 💡 코사인 유사도 = 두 화살표가 같은 방향을 볼수록 1에 가까워지는 '관련성 점수'
 # 3. 코사인 유사도: cos(theta) = (A · B) / (||A|| * ||B||)
 def cosine_similarity(v1, v2):
-    norm1 = np.linalg.norm(v1)
-    norm2 = np.linalg.norm(v2)
-    if norm1 == 0 or norm2 == 0: return 0.0
+    norm1 = np.linalg.norm(v1)  # 화살표 A의 길이
+    norm2 = np.linalg.norm(v2)  # 화살표 B의 길이
+    if norm1 == 0 or norm2 == 0: return 0.0  # 길이가 0이면 0으로 나누는 오류 방지
     return float(np.dot(v1, v2) / (norm1 * norm2))
-
-# 4. 사용자 질문에 가장 관련 깊은 근거 문장 검색 (RAG 검색기)
-query = "점순이가 건넨 선물은 무엇인가?"
+</pre>
+      </div>
+      <div class="py-cell">
+        <div class="py-cell-head">
+          <span class="py-cell-label">셀 5 · RAG 근거 문장 검색</span>
+          <button type="button" class="py-copy-btn" data-copy-target="pyCell04_5" onclick="copyCell(this)">📋 복사</button>
+        </div>
+        <pre id="pyCell04_5" class="py-cell-code"># 4. 사용자 질문에 가장 관련 깊은 근거 문장 검색 (RAG 검색기)
+query = "점순이가 건넨 선물은 무엇인가?"  # 🙋 학생의 질문
 q_vec = text_to_vector(query)
 
 scores = [cosine_similarity(q_vec, text_to_vector(doc)) for doc in corpus]
-best_doc_idx = int(np.argmax(scores))
+best_doc_idx = int(np.argmax(scores))  # 점수가 가장 높은 문장의 번호 찾기
 print(f"질문: {query}")
 print(f"가장 유사한 원문 근거: \"{corpus[best_doc_idx]}\" (유사도: {scores[best_doc_idx]:.3f})")
-
-# 5. Gemini LLM에게 캐릭터 페르소나와 근거 문장을 결합하여 전달
+</pre>
+      </div>
+      <div class="py-cell">
+        <div class="py-cell-head">
+          <span class="py-cell-label">셀 6 · Gemini 프롬프트 조립</span>
+          <button type="button" class="py-copy-btn" data-copy-target="pyCell04_6" onclick="copyCell(this)">📋 복사</button>
+        </div>
+        <pre id="pyCell04_6" class="py-cell-code"># 5. Gemini LLM에게 캐릭터 페르소나와 근거 문장을 결합하여 전달
+# 🧠 AI 두뇌에게 줄 '조립된 지시문(프롬프트)': 근거 + 질문 + 말투를 한 번에 전달!
 prompt = f"""
 당신은 소설 '동백꽃'의 '점순이'입니다.
 [참고할 원문 근거]: {corpus[best_doc_idx]}
 [질문]: {query}
 점순이의 톡톡 쏘는 새침데기 말투로 위 근거에 기반하여 대답해주세요.
 """
-print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")</pre>
+print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")
+# ✅ 여기까지 따라오면: 질문과 가장 관련 있는 원문 문장을 스스로 찾아내는 RAG 검색기 완성!</pre>
+      </div>
     </div>
 
   <script>
-    function copyPythonCode() {
-      const code = document.getElementById('pythonCodeBlock').innerText;
-      navigator.clipboard.writeText(code).then(() => {
-        const btn = document.getElementById('btnCopyPy');
-        const orig = btn.innerHTML;
-        btn.innerHTML = '✅ 복사 완료!';
-        setTimeout(() => { btn.innerHTML = orig; }, 2000);
-      });
+    function copyTextWithFeedback(text, btn, doneLabel) {
+      var label = doneLabel || '✅ 복사됨!';
+      var orig = btn.innerHTML;
+      var done = function() {
+        btn.innerHTML = label; btn.disabled = true;
+        setTimeout(function(){ btn.innerHTML = orig; btn.disabled = false; }, 1800);
+      };
+      var fallback = function() {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { ta.setSelectionRange(0, ta.value.length); } catch (e) {}
+        try { document.execCommand('copy'); done(); }
+        catch (e) { alert('자동 복사에 실패했어요. 코드를 직접 드래그해서 복사해 주세요 🙏'); }
+        document.body.removeChild(ta);
+      };
+      if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).then(done, fallback); }
+      else { fallback(); }
+    }
+    function copyCell(btn) {
+      var pre = document.getElementById(btn.getAttribute('data-copy-target'));
+      if (pre) copyTextWithFeedback(pre.innerText, btn);
+    }
+    function copyAllCells(btn) {
+      var codes = Array.prototype.map.call(document.querySelectorAll('.py-cell-code'), function(el){ return el.innerText.replace(/\s+$/, ''); });
+      copyTextWithFeedback(codes.join('\n\n'), btn, '✅ 전체 복사됨!');
     }
 
     // ========================================================

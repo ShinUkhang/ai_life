@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Life | 인공지능과 일상 - 5대 핵심 커리큘럼</title>
+  
+  <!-- Pretendard Font -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            toss: {
+              blue: '#3182F6',
+              blueHover: '#1B64DA',
+              lightBlue: '#E8F3FF',
+              dark: '#191F28',
+              gray: '#4E5968',
+              muted: '#8B95A1',
+              border: '#E5E8EB',
+              bg: '#F9FAFB',
+              card: '#FFFFFF',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background-color: #F9FAFB;
+      color: #191F28;
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+    }
+    .toss-card {
+      background: #FFFFFF;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .toss-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 36px rgba(49, 130, 246, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+      border-color: rgba(49, 130, 246, 0.3);
+    }
+    .toss-btn {
+      transition: all 0.18s ease;
+    }
+    .toss-btn:hover {
+      transform: translateY(-1px);
+    }
+    .toss-btn:active {
+      transform: scale(0.98);
+    }
+    /* Smooth gradient blur for background decoration */
+    .hero-glow {
+      background: radial-gradient(circle at 50% 0%, rgba(49, 130, 246, 0.08) 0%, rgba(49, 130, 246, 0) 70%);
+    }
+    .colab-open-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #F9AB00; color: #1a1a1a;
+      font-size: 12px; font-weight: 700;
+      padding: 10px 12px; border-radius: 12px; text-decoration: none; white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(249,171,0,.35);
+    }
+    .colab-open-badge:hover { background: #E69A00; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-100 selection:text-toss-blue">
+
+  <!-- 1. Minimal Top Navigation -->
+  <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-toss-border/80">
+    <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-2.5 group">
+          <div class="w-9 h-9 rounded-xl bg-toss-blue text-white flex items-center justify-center font-black text-lg shadow-sm shadow-blue-500/30 group-hover:scale-105 transition-transform">
+            AI
+          </div>
+          <span class="font-extrabold text-xl tracking-tight text-toss-dark group-hover:text-toss-blue transition-colors">AI Life</span>
+        </a>
+        <span class="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-toss-blue border border-blue-100/80">
+          5대 핵심 커리큘럼
+        </span>
+      </div>
+
+      <nav class="flex items-center gap-2 sm:gap-4 text-sm font-semibold">
+        <a href="#curriculum" class="text-toss-gray hover:text-toss-dark px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">수업 모듈</a>
+        <a href="#interactive-demo" class="text-toss-gray hover:text-toss-dark px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">실시간 체험</a>
+        <a href="https://github.com/ShinUkhang/ai_life" target="_blank" class="toss-btn flex items-center gap-1.5 bg-slate-900 text-white hover:bg-slate-800 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium shadow-sm">
+          <i data-lucide="github" class="w-4 h-4"></i>
+          <span>GitHub 저장소</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 2. Hero Section (Toss Style Minimal & Big Typography) -->
+  <section class="relative pt-16 pb-20 overflow-hidden hero-glow">
+    <div class="max-w-4xl mx-auto px-5 text-center">
+      <!-- Tag Pill -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-toss-blue text-xs sm:text-sm font-bold mb-6 animate-fade-in shadow-xs">
+        <span class="w-2 h-2 rounded-full bg-toss-blue animate-pulse"></span>
+        초·중·고 & 비전공자를 위한 인터랙티브 인공지능 실습
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-toss-dark tracking-tight leading-[1.18] sm:leading-[1.15] mb-6">
+        어려운 인공지능,<br>
+        <span class="text-toss-blue">손으로 만지며</span> 쉽게 배웁니다.
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="text-base sm:text-lg md:text-xl text-toss-gray max-w-2xl mx-auto font-normal leading-relaxed mb-10">
+        복잡한 수학 공식 대신, 실시간 인터랙티브 시뮬레이터와 파이썬 코드로 인공지능의 동작 원리를 눈으로 확인하고 직관을 완성하세요.
+      </p>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-wrap items-center justify-center gap-3.5">
+        <a href="01_머신러닝_선형회귀/linear_regression_simulator.html" class="toss-btn inline-flex items-center gap-2 bg-toss-blue text-white hover:bg-toss-blueHover px-6 py-3.5 rounded-2xl text-base font-bold shadow-lg shadow-blue-500/25">
+          <span>01. 선형회귀부터 시작하기</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+        <a href="#curriculum" class="toss-btn inline-flex items-center gap-2 bg-white text-toss-dark hover:bg-slate-50 border border-toss-border px-6 py-3.5 rounded-2xl text-base font-semibold shadow-xs">
+          <span>전체 5개 단원 보기</span>
+          <i data-lucide="layout-grid" class="w-4 h-4 text-toss-gray"></i>
+        </a>
+      </div>
+
+      <!-- Quick Metrics Bar -->
+      <div class="mt-14 pt-8 border-t border-slate-200/60 grid grid-cols-3 max-w-xl mx-auto text-center">
+        <div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-toss-dark">5개</div>
+          <div class="text-xs sm:text-sm text-toss-muted font-medium mt-0.5">핵심 AI 분야</div>
+        </div>
+        <div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-toss-blue">100%</div>
+          <div class="text-xs sm:text-sm text-toss-muted font-medium mt-0.5">웹 브라우저 무설치</div>
+        </div>
+        <div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-toss-dark">코랩 연동</div>
+          <div class="text-xs sm:text-sm text-toss-muted font-medium mt-0.5">실행 가능 파이썬 코드</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2b. Who Is This For + Learning Path (Beginner Friendly) -->
+  <section class="py-14 bg-white border-b border-toss-border">
+    <div class="max-w-4xl mx-auto px-5">
+      <div class="toss-card rounded-3xl p-7 sm:p-9">
+        <div class="flex items-center gap-2.5 mb-3">
+          <span class="text-2xl">🙋</span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-toss-dark tracking-tight">코딩 처음인 고1도 OK! 누구를 위한 자료인가요?</h2>
+        </div>
+        <p class="text-sm sm:text-base text-toss-gray leading-relaxed mb-6">
+          "AI가 궁금한데 수식 보면 머리가 아파요" 하는 친구들을 위한 자료예요.
+          <strong class="text-toss-dark">설치할 게 전혀 없고, 크롬 브라우저 하나면 바로 시작</strong>할 수 있어요.
+          각 단원은 <strong class="text-toss-dark">비유(이야기) → 체험(시뮬레이터 만져보기) → 코드(따라하기)</strong> 순서로 되어 있어서,
+          코드를 몰라도 시뮬레이터부터 가지고 놀다 보면 개념이 자연스럽게 잡혀요! 🎉
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-5 gap-2.5 text-center">
+          <a href="01_머신러닝_선형회귀/linear_regression_simulator.html" class="toss-btn bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-2xl p-4 block">
+            <div class="text-lg mb-1">🌱</div>
+            <div class="text-xs font-extrabold text-toss-dark">1. 선형회귀</div>
+            <div class="text-[11px] text-toss-muted mt-0.5">여기서 시작!</div>
+          </a>
+          <a href="02_컴퓨터비전_물체인식/object_detection_simulator.html" class="toss-btn bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-2xl p-4 block">
+            <div class="text-lg mb-1">👀</div>
+            <div class="text-xs font-extrabold text-toss-dark">2. 컴퓨터비전</div>
+            <div class="text-[11px] text-toss-muted mt-0.5">눈으로 확인</div>
+          </a>
+          <a href="03_CNN_합성곱신경망/cnn_classifier_simulator.html" class="toss-btn bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-2xl p-4 block">
+            <div class="text-lg mb-1">🧩</div>
+            <div class="text-xs font-extrabold text-toss-dark">3. CNN</div>
+            <div class="text-[11px] text-toss-muted mt-0.5">개념이 모여요</div>
+          </a>
+          <a href="04_자연어처리_AI에이전트/text_agent_simulator.html" class="toss-btn bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-2xl p-4 block">
+            <div class="text-lg mb-1">💬</div>
+            <div class="text-xs font-extrabold text-toss-dark">4. 자연어처리</div>
+            <div class="text-[11px] text-toss-muted mt-0.5">말로 배우는 AI</div>
+          </a>
+          <a href="05_음성인식_인공지능/음성인식_인공지능_수업교재.html" class="toss-btn bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-2xl p-4 block">
+            <div class="text-lg mb-1">🎙️</div>
+            <div class="text-xs font-extrabold text-toss-dark">5. 음성인식</div>
+            <div class="text-[11px] text-toss-muted mt-0.5">심화 프로젝트</div>
+          </a>
+        </div>
+        <p class="text-xs text-toss-muted mt-5 text-center font-medium">
+          💡 1→2→3→4→5 순서대로 하면 "숫자 → 픽셀 → 패턴 → 문장 → 파형"으로 이어지는 AI의 세계를 한눈에 볼 수 있어요
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Interactive Mini Sandbox (Toss Experience Widget) -->
+  <section id="interactive-demo" class="py-12 bg-white border-y border-toss-border">
+    <div class="max-w-4xl mx-auto px-5">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-6">
+        <div>
+          <span class="text-xs font-bold text-toss-blue uppercase tracking-wider">맛보기 체험</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-toss-dark mt-1">슬라이더를 움직여 회귀선을 맞춰보세요</h2>
+        </div>
+        <p class="text-sm text-toss-gray mt-2 sm:mt-0 font-medium">처음이어도 괜찮아요! 일단 슬라이더를 좌우로 움직여보세요 🎉 가중치($W$)와 편향($b$)을 조절하면 손실(MSE)이 실시간으로 바뀌어요.</p>
+      </div>
+
+      <!-- Interactive Widget Card -->
+      <div class="bg-slate-50 border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-xs">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          
+          <!-- Left: Canvas Plot -->
+          <div class="md:col-span-7 bg-white rounded-2xl p-3 border border-slate-200/80 shadow-xs relative">
+            <canvas id="miniPlotCanvas" width="480" height="260" class="w-full h-auto block rounded-xl"></canvas>
+            <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur px-2.5 py-1 rounded-lg text-xs font-bold text-toss-dark border border-slate-100 shadow-xs">
+              MSE 손실: <span id="miniLossText" class="text-rose-500 font-mono text-sm">0.00</span>
+            </div>
+          </div>
+
+          <!-- Right: Sliders & Controls -->
+          <div class="md:col-span-5 flex flex-col gap-4">
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+              <div class="flex justify-between items-center text-xs font-bold mb-2">
+                <span class="text-toss-dark">가중치 기울기 (W)</span>
+                <span id="miniWVal" class="text-toss-blue font-mono font-bold text-sm">1.50</span>
+              </div>
+              <input type="range" id="miniWSlider" min="0" max="3" step="0.05" value="1.50" 
+                class="w-full accent-blue-600 h-2 bg-slate-100 rounded-lg cursor-pointer">
+              <div class="flex justify-between text-[11px] text-toss-muted mt-1 font-mono">
+                <span>0.0</span>
+                <span>목표 ≈ 2.0</span>
+                <span>3.0</span>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+              <div class="flex justify-between items-center text-xs font-bold mb-2">
+                <span class="text-toss-dark">편향 절편 (b)</span>
+                <span id="miniBVal" class="text-emerald-600 font-mono font-bold text-sm">0.50</span>
+              </div>
+              <input type="range" id="miniBSlider" min="-2" max="3" step="0.05" value="0.50" 
+                class="w-full accent-emerald-500 h-2 bg-slate-100 rounded-lg cursor-pointer">
+              <div class="flex justify-between text-[11px] text-toss-muted mt-1 font-mono">
+                <span>-2.0</span>
+                <span>목표 ≈ 1.0</span>
+                <span>3.0</span>
+              </div>
+            </div>
+
+            <!-- Auto-fit Button -->
+            <button onclick="autoFitMini()" class="toss-btn w-full py-3 bg-toss-lightBlue text-toss-blue hover:bg-blue-100 rounded-2xl font-bold text-sm flex items-center justify-center gap-2">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span>AI 경사하강법으로 최적선 찾기</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 5 Core Curriculum Modules (Toss Card Grid) -->
+  <section id="curriculum" class="py-20">
+    <div class="max-w-6xl mx-auto px-5">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <span class="text-xs font-bold text-toss-blue uppercase tracking-wider">커리큘럼 안내</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-toss-dark mt-2 tracking-tight">
+          인공지능 5대 핵심 실습 단원
+        </h2>
+        <p class="text-base text-toss-gray mt-3">
+          각 단원은 인터랙티브 웹 시뮬레이터와 실전 파이썬 코드로 유기적으로 연결되어 있습니다.
+        </p>
+      </div>
+
+      <!-- The 5 Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Card 01: Linear Regression -->
+        <div class="toss-card rounded-3xl p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="w-12 h-12 rounded-2xl bg-blue-50 text-toss-blue flex items-center justify-center text-xl font-bold">
+                📈
+              </span>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-toss-gray">
+                01 단원
+              </span>
+            </div>
+
+            <div class="text-xs font-bold text-toss-blue mb-1">머신러닝 & 수치 예측</div>
+            <h3 class="text-xl font-extrabold text-toss-dark mb-2.5">
+              선형회귀와 가중치 전파
+            </h3>
+            <p class="text-sm text-toss-gray leading-relaxed mb-6">
+              데이터에 가장 잘 맞는 1차 직선을 찾고, 손실 함수(MSE)와 경사하강법으로 인공신경망의 가중치($W$)와 편향($b$)이 학습되는 수학적 원리를 직관적으로 이해합니다.
+            </p>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">4단계 뉴런 전파</span>
+              <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">2차 손실곡선</span>
+              <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">순수 파이썬</span>
+            </div>
+          </div>
+
+          <div class="pt-5 border-t border-slate-100 flex flex-wrap items-center gap-2">
+            <a href="01_머신러닝_선형회귀/linear_regression_simulator.html" class="toss-btn flex-1 py-2.5 bg-toss-blue text-white hover:bg-toss-blueHover rounded-xl text-xs sm:text-sm font-bold text-center">
+              시뮬레이터 실행 →
+            </a>
+            <a href="01_머신러닝_선형회귀/colab_linear_regression.ipynb" download class="toss-btn px-3 py-2.5 bg-slate-100 text-toss-dark hover:bg-slate-200 rounded-xl text-xs font-bold" title="코랩 노트북 다운로드">
+              코랩 📓
+            </a>
+            <a href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/01_%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D_%EC%84%A0%ED%98%95%ED%9A%8C%EA%B7%80/colab_linear_regression.ipynb" target="_blank" rel="noopener" class="toss-btn colab-open-badge" title="구글 코랩에서 바로 열기">
+              🚀 열기
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 02: Computer Vision -->
+        <div class="toss-card rounded-3xl p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">
+                👁️
+              </span>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-toss-gray">
+                02 단원
+              </span>
+            </div>
+
+            <div class="text-xs font-bold text-amber-600 mb-1">컴퓨터 비전 & 영상 분석</div>
+            <h3 class="text-xl font-extrabold text-toss-dark mb-2.5">
+              컴퓨터의 눈: 테두리와 물체 인식
+            </h3>
+            <p class="text-sm text-toss-gray leading-relaxed mb-6">
+              컴퓨터가 이미지를 픽셀과 숫자 행렬로 읽고 이웃 픽셀 간의 값 차이(뺄셈)로 테두리를 검출하는 원리부터, 주행 차량과 보행자를 추적하는 실전 비전을 실습합니다.
+            </p>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">픽셀 숫자 행렬</span>
+              <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">웹캠 실시간 외곽선</span>
+              <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">차량 카운터</span>
+            </div>
+          </div>
+
+          <div class="pt-5 border-t border-slate-100 flex flex-wrap items-center gap-2">
+            <a href="02_컴퓨터비전_물체인식/object_detection_simulator.html" class="toss-btn flex-1 py-2.5 bg-toss-blue text-white hover:bg-toss-blueHover rounded-xl text-xs sm:text-sm font-bold text-center">
+              시뮬레이터 실행 →
+            </a>
+            <a href="02_컴퓨터비전_물체인식/실습)_물체_인식.ipynb" download class="toss-btn px-3 py-2.5 bg-slate-100 text-toss-dark hover:bg-slate-200 rounded-xl text-xs font-bold" title="코랩 노트북 다운로드">
+              코랩 📓
+            </a>
+            <a href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/02_%EC%BB%B4%ED%93%A8%ED%84%B0%EB%B9%84%EC%A0%84_%EB%AC%BC%EC%B2%B4%EC%9D%B8%EC%8B%9D/%EC%8B%A4%EC%8A%B5%29_%EB%AC%BC%EC%B2%B4_%EC%9D%B8%EC%8B%9D.ipynb" target="_blank" rel="noopener" class="toss-btn colab-open-badge" title="구글 코랩에서 바로 열기">
+              🚀 열기
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 03: CNN Classifier -->
+        <div class="toss-card rounded-3xl p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                🔢
+              </span>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-toss-gray">
+                03 단원
+              </span>
+            </div>
+
+            <div class="text-xs font-bold text-emerald-600 mb-1">딥러닝 & 이미지 판별</div>
+            <h3 class="text-xl font-extrabold text-toss-dark mb-2.5">
+              CNN 합성곱 신경망 계산
+            </h3>
+            <p class="text-sm text-toss-gray leading-relaxed mb-6">
+              손글씨 숫자(1과 2)를 6×6 픽셀에 그리면 3×3 필터 합성곱, ReLU, 맥스풀링, 완전연결층을 거쳐 컴퓨터가 숫자를 판별해 내는 9단계 전 과정을 수식으로 투명하게 관찰합니다.
+            </p>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">6x6 픽셀 그리기</span>
+              <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">엑셀 수식 동기화</span>
+              <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">소프트맥스 확률</span>
+            </div>
+          </div>
+
+          <div class="pt-5 border-t border-slate-100 flex flex-wrap items-center gap-2">
+            <a href="03_CNN_합성곱신경망/cnn_classifier_simulator.html" class="toss-btn flex-1 py-2.5 bg-toss-blue text-white hover:bg-toss-blueHover rounded-xl text-xs sm:text-sm font-bold text-center">
+              시뮬레이터 실행 →
+            </a>
+            <a href="03_CNN_합성곱신경망/실습)_CNN_계산과정.ipynb" download class="toss-btn px-3 py-2.5 bg-slate-100 text-toss-dark hover:bg-slate-200 rounded-xl text-xs font-bold" title="코랩 노트북 다운로드">
+              코랩 📓
+            </a>
+            <a href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/03_CNN_%ED%95%A9%EC%84%B1%EA%B3%B1%EC%8B%A0%EA%B2%BD%EB%A7%9D/%EC%8B%A4%EC%8A%B5%29_CNN_%EA%B3%84%EC%82%B0%EA%B3%BC%EC%A0%95.ipynb" target="_blank" rel="noopener" class="toss-btn colab-open-badge" title="구글 코랩에서 바로 열기">
+              🚀 열기
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 04: NLP & Agent -->
+        <div class="toss-card rounded-3xl p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                🤖
+              </span>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-toss-gray">
+                04 단원
+              </span>
+            </div>
+
+            <div class="text-xs font-bold text-indigo-600 mb-1">자연어처리 & LLM 에이전트</div>
+            <h3 class="text-xl font-extrabold text-toss-dark mb-2.5">
+              RAG 문학 & 규정집 AI 에이전트
+            </h3>
+            <p class="text-sm text-toss-gray leading-relaxed mb-6">
+              문학작품(메밀꽃 필 무렵 등)과 생활규정 텍스트를 토큰화하고 코사인 유사도로 가장 알맞은 근거 문장을 찾아 답변하는 최신 RAG(검색 증강 생성) 에이전트를 직접 구축합니다.
+            </p>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">문장 토큰화</span>
+              <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">코사인 유사도 검색</span>
+              <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">Gemini API 연동</span>
+            </div>
+          </div>
+
+          <div class="pt-5 border-t border-slate-100 flex flex-wrap items-center gap-2">
+            <a href="04_자연어처리_AI에이전트/text_agent_simulator.html" class="toss-btn flex-1 py-2.5 bg-toss-blue text-white hover:bg-toss-blueHover rounded-xl text-xs sm:text-sm font-bold text-center">
+              시뮬레이터 실행 →
+            </a>
+            <a href="04_자연어처리_AI에이전트/실습)_텍스트_에이전트.ipynb" download class="toss-btn px-3 py-2.5 bg-slate-100 text-toss-dark hover:bg-slate-200 rounded-xl text-xs font-bold" title="코랩 노트북 다운로드">
+              코랩 📓
+            </a>
+            <a href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/04_%EC%9E%90%EC%97%B0%EC%96%B4%EC%B2%98%EB%A6%AC_AI%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8/%EC%8B%A4%EC%8A%B5%29_%ED%85%8D%EC%8A%A4%ED%8A%B8_%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8.ipynb" target="_blank" rel="noopener" class="toss-btn colab-open-badge" title="구글 코랩에서 바로 열기">
+              🚀 열기
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 05: Voice Recognition -->
+        <div class="toss-card rounded-3xl p-7 flex flex-col justify-between md:col-span-2 lg:col-span-2">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl font-bold">
+                🎙️
+              </span>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-toss-gray">
+                05 단원 (심화 & 특별 Lab)
+              </span>
+            </div>
+
+            <div class="text-xs font-bold text-rose-600 mb-1">음성인식 & 스마트 비서</div>
+            <h3 class="text-2xl font-extrabold text-toss-dark mb-2.5">
+              음성인식 AI: 파형, 주파수 ID & 2인 목소리 유사도 비교
+            </h3>
+            <p class="text-sm sm:text-base text-toss-gray leading-relaxed mb-6">
+              마이크로 목소리를 직접 녹음하여 시간 영역의 파형(진폭)과 주파수(FFT 스펙트럼)를 분석하고, 5차원 음성 특징 벡터로 고유한 Voice ID를 생성합니다. 
+              특히 <strong>두 학생의 목소리를 녹음하여 코사인 유사도를 백분율(%)로 비교 판별하는 2인 음성 유사도 연구소</strong>와 OpenAI Whisper 음성 비서 실습을 지원합니다.
+            </p>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-2 mb-6">
+              <span class="px-3 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">소리 삼각함수 파형</span>
+              <span class="px-3 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">FFT 고유 Voice ID</span>
+              <span class="px-3 py-1 rounded-lg text-xs font-medium bg-rose-50 text-rose-700 border border-rose-100 font-bold">2인 음성 유사도 비교 Lab</span>
+              <span class="px-3 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">Whisper 스마트 비서</span>
+              <span class="px-3 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">교사용 수업 지도안</span>
+            </div>
+          </div>
+
+          <div class="pt-5 border-t border-slate-100 flex flex-wrap items-center gap-2.5">
+            <a href="05_음성인식_인공지능/음성인식_인공지능_수업교재.html" class="toss-btn flex-1 min-w-[200px] py-3 bg-toss-blue text-white hover:bg-toss-blueHover rounded-xl text-sm font-bold text-center">
+              음성인식 교재 & 2인 비교 Lab 열기 →
+            </a>
+            <a href="05_음성인식_인공지능/01_음성인식_기초_소리의_파형과_원리.ipynb" download class="toss-btn px-3.5 py-3 bg-slate-100 text-toss-dark hover:bg-slate-200 rounded-xl text-xs font-bold">
+              기초 1차시 📓
+            </a>
+            <a href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/05_%EC%9D%8C%EC%84%B1%EC%9D%B8%EC%8B%9D_%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5/01_%EC%9D%8C%EC%84%B1%EC%9D%B8%EC%8B%9D_%EA%B8%B0%EC%B4%88_%EC%86%8C%EB%A6%AC%EC%9D%98_%ED%8C%8C%ED%98%95%EA%B3%BC_%EC%9B%90%EB%A6%AC.ipynb" target="_blank" rel="noopener" class="toss-btn colab-open-badge" title="구글 코랩에서 바로 열기">
+              🚀 열기
+            </a>
+            <a href="05_음성인식_인공지능/02_음성인식_실전_AI_귀_만들기와_스마트_비서.ipynb" download class="toss-btn px-3.5 py-3 bg-slate-100 text-toss-dark hover:bg-slate-200 rounded-xl text-xs font-bold">
+              실전 2차시 📓
+            </a>
+            <a href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/05_%EC%9D%8C%EC%84%B1%EC%9D%B8%EC%8B%9D_%EC%8B%A4%EC%A0%84_AI_%EA%B7%80_%EB%A7%8C%EB%93%A4%EA%B8%B0%EC%99%80_%EC%8A%A4%EB%A7%88%ED%8A%B8_%EB%B9%84%EC%84%9C.ipynb" target="_blank" rel="noopener" class="toss-btn colab-open-badge" title="구글 코랩에서 바로 열기">
+              🚀 열기
+            </a>
+            <a href="05_음성인식_인공지능/음성인식_수업_교사용_지도안.md" class="toss-btn px-3.5 py-3 bg-slate-100 text-toss-dark hover:bg-slate-200 rounded-xl text-xs font-bold">
+              교사용 지도안 📋
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Conceptual Roadmap (From Numbers to Signals) -->
+  <section class="py-16 bg-slate-100/70 border-t border-toss-border">
+    <div class="max-w-4xl mx-auto px-5 text-center">
+      <span class="text-xs font-bold text-toss-blue uppercase tracking-wider">학습 로드맵</span>
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-toss-dark mt-1 mb-8">
+        데이터의 형태가 확장되는 5단계 AI 여정
+      </h2>
+
+      <div class="grid grid-cols-5 gap-2 sm:gap-4 text-center">
+        <div class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div class="text-xl sm:text-2xl mb-1">📊</div>
+          <div class="text-xs sm:text-sm font-extrabold text-toss-dark">1. 숫자</div>
+          <div class="text-[11px] text-toss-muted mt-0.5">선형회귀</div>
+        </div>
+        <div class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div class="text-xl sm:text-2xl mb-1">🖼️</div>
+          <div class="text-xs sm:text-sm font-extrabold text-toss-dark">2. 픽셀</div>
+          <div class="text-[11px] text-toss-muted mt-0.5">컴퓨터비전</div>
+        </div>
+        <div class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div class="text-xl sm:text-2xl mb-1">🧩</div>
+          <div class="text-xs sm:text-sm font-extrabold text-toss-dark">3. 공간패턴</div>
+          <div class="text-[11px] text-toss-muted mt-0.5">합성곱 CNN</div>
+        </div>
+        <div class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div class="text-xl sm:text-2xl mb-1">📝</div>
+          <div class="text-xs sm:text-sm font-extrabold text-toss-dark">4. 문장</div>
+          <div class="text-[11px] text-toss-muted mt-0.5">자연어 RAG</div>
+        </div>
+        <div class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div class="text-xl sm:text-2xl mb-1">〰️</div>
+          <div class="text-xs sm:text-sm font-extrabold text-toss-dark">5. 파형</div>
+          <div class="text-[11px] text-toss-muted mt-0.5">음성인식</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Footer (Toss Style Minimalist) -->
+  <footer class="bg-white border-t border-toss-border py-12 text-sm text-toss-gray">
+    <div class="max-w-6xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded-lg bg-toss-blue text-white flex items-center justify-center font-black text-sm">
+          AI
+        </div>
+        <span class="font-extrabold text-toss-dark tracking-tight">AI Life (인공지능과 일상)</span>
+        <span class="text-xs text-toss-muted">| 누구나 쉽게 배우는 실습형 인공지능 교재</span>
+      </div>
+
+      <div class="flex items-center gap-6 text-xs sm:text-sm">
+        <a href="https://github.com/ShinUkhang/ai_life" target="_blank" class="hover:text-toss-dark flex items-center gap-1 font-semibold">
+          <i data-lucide="github" class="w-4 h-4"></i>
+          <span>GitHub</span>
+        </a>
+        <a href="README.md" class="hover:text-toss-dark font-semibold">전체 개요서 (README)</a>
+      </div>
+    </div>
+    <div class="max-w-6xl mx-auto px-5 mt-6 pt-6 border-t border-slate-100 text-xs text-toss-muted text-center sm:text-left">
+      © 2026 ShinUkhang. Open Source Educational Materials. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Mini Sandbox Logic -->
+  <script>
+    lucide.createIcons();
+
+    const canvas = document.getElementById('miniPlotCanvas');
+    const ctx = canvas.getContext('2d');
+    const wSlider = document.getElementById('miniWSlider');
+    const bSlider = document.getElementById('miniBSlider');
+    const wVal = document.getElementById('miniWVal');
+    const bVal = document.getElementById('miniBVal');
+    const lossText = document.getElementById('miniLossText');
+
+    // 8 Sample Points with true W ≈ 2.0, b ≈ 1.0 + slight noise
+    const samplePoints = [
+      { x: 1.0, y: 3.1 },
+      { x: 1.5, y: 3.9 },
+      { x: 2.0, y: 5.2 },
+      { x: 2.5, y: 6.0 },
+      { x: 3.0, y: 6.8 },
+      { x: 3.5, y: 8.2 },
+      { x: 4.0, y: 9.1 },
+      { x: 4.5, y: 9.9 }
+    ];
+
+    function toScreenX(x) {
+      return 40 + (x / 5.5) * (canvas.width - 70);
+    }
+    function toScreenY(y) {
+      return (canvas.height - 35) - (y / 12) * (canvas.height - 60);
+    }
+
+    function drawMiniPlot() {
+      const W = parseFloat(wSlider.value);
+      const b = parseFloat(bSlider.value);
+      wVal.textContent = W.toFixed(2);
+      bVal.textContent = b.toFixed(2);
+
+      // Compute MSE
+      let totalSqErr = 0;
+      samplePoints.forEach(p => {
+        const pred = W * p.x + b;
+        totalSqErr += (p.y - pred) ** 2;
+      });
+      const mse = totalSqErr / samplePoints.length;
+      lossText.textContent = mse.toFixed(3);
+      if (mse < 0.1) {
+        lossText.className = 'text-emerald-600 font-mono text-sm font-bold';
+      } else {
+        lossText.className = 'text-rose-500 font-mono text-sm';
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Grid
+      ctx.strokeStyle = '#F1F5F9';
+      ctx.lineWidth = 1;
+      for (let x = 1; x <= 5; x++) {
+        ctx.beginPath();
+        ctx.moveTo(toScreenX(x), 15);
+        ctx.lineTo(toScreenX(x), canvas.height - 35);
+        ctx.stroke();
+      }
+      for (let y = 2; y <= 11; y += 2) {
+        ctx.beginPath();
+        ctx.moveTo(40, toScreenY(y));
+        ctx.lineTo(canvas.width - 25, toScreenY(y));
+        ctx.stroke();
+      }
+
+      // Regression Line
+      ctx.beginPath();
+      ctx.strokeStyle = '#3182F6';
+      ctx.lineWidth = 3;
+      const xStart = 0;
+      const yStart = W * xStart + b;
+      const xEnd = 5.2;
+      const yEnd = W * xEnd + b;
+      ctx.moveTo(toScreenX(xStart), toScreenY(yStart));
+      ctx.lineTo(toScreenX(xEnd), toScreenY(yEnd));
+      ctx.stroke();
+
+      // Residual Lines & Data Points
+      samplePoints.forEach(p => {
+        const predY = W * p.x + b;
+        // Error line
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([3, 3]);
+        ctx.moveTo(toScreenX(p.x), toScreenY(p.y));
+        ctx.lineTo(toScreenX(p.x), toScreenY(predY));
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Point
+        ctx.beginPath();
+        ctx.fillStyle = '#191F28';
+        ctx.arc(toScreenX(p.x), toScreenY(p.y), 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+    }
+
+    wSlider.addEventListener('input', drawMiniPlot);
+    bSlider.addEventListener('input', drawMiniPlot);
+    drawMiniPlot();
+
+    // Auto-fit animation
+    function autoFitMini() {
+      let step = 0;
+      const targetW = 2.0;
+      const targetB = 1.05;
+      const startW = parseFloat(wSlider.value);
+      const startB = parseFloat(bSlider.value);
+
+      const interval = setInterval(() => {
+        step++;
+        const progress = step / 30;
+        const currentW = startW + (targetW - startW) * progress;
+        const currentB = startB + (targetB - startB) * progress;
+        wSlider.value = currentW;
+        bSlider.value = currentB;
+        drawMiniPlot();
+
+        if (step >= 30) {
+          clearInterval(interval);
+          confetti({
+            particleCount: 40,
+            spread: 60,
+            origin: { y: 0.6 }
+          });
+        }
+      }, 20);
+    }
+  </script>
+</body>
+</html>
