@@ -14,6 +14,9 @@
 #   - 경사하강법이란?  '틀린 정도'를 조금씩 줄여나가는 AI의 공부 방법이에요.
 #                      안개 낀 산에서 가장 낮은 골짜기를 찾아 내려가는 것과 같아요!
 # ==============================================================================
+#한글을 그래프에 보여주는 라이브러리
+!pip install koreanize_matplotlib
+import koreanize_matplotlib
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
