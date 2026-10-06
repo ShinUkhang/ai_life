@@ -1028,6 +1028,8 @@
             <button class="btn-preset" id="btnDocPrince" onclick="loadAgentDoc('prince')">🌹 《어린 왕자》 (문학)</button>
             <button class="btn-preset" id="btnDocSchoolRule" onclick="loadAgentDoc('school_rule')">🏫 《학생생활규정》 (규정집)</button>
             <button class="btn-preset" id="btnDocCustom" onclick="loadAgentDoc('custom')">✏️ 나만의 글 직접 입력</button>
+            <button class="btn-preset" id="btnDocUpload" onclick="document.getElementById('txtFileInput').click()">📁 텍스트 파일 업로드 (.txt)</button>
+            <input type="file" id="txtFileInput" accept=".txt,text/plain" style="display:none;" onchange="handleFileUpload(event)" />
           </div>
 
           <!-- 원문 텍스트 에디터/뷰어 -->
@@ -1901,6 +1903,59 @@ print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")
         nameIn.value = "나만의 AI";
         styleIn.value = "친절하고 성실하게 본문 내용을 안내해주는 도우미";
       }
+    }
+
+    // 📁 텍스트 파일 업로드 (.txt) — 학생이 직접 구한 원문(봄봄 등)으로 에이전트 만들기
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const buffer = e.target.result;
+        let text = '';
+        // UTF-8 먼저 시도, 실패하면 EUC-KR(구 한글 윈도우 인코딩)로 재시도
+        try {
+          text = new TextDecoder('utf-8', { fatal: true }).decode(buffer);
+        } catch (err) {
+          try {
+            text = new TextDecoder('euc-kr').decode(buffer);
+          } catch (err2) {
+            text = new TextDecoder('utf-8').decode(buffer);
+          }
+        }
+
+        text = text.trim();
+        if (!text) {
+          alert('파일에서 텍스트를 읽을 수 없습니다. .txt 파일인지 확인해주세요.');
+          event.target.value = '';
+          return;
+        }
+
+        // 파일명을 문서 제목으로 사용
+        const fileName = file.name.replace(/\.[^.]+$/, '');
+        currentDocKey = 'custom';
+        sampleDocs['custom'].title = `📁 ${fileName}`;
+
+        document.querySelectorAll('#tabSection3 .btn-preset').forEach(b => b.classList.remove('active'));
+        document.getElementById('btnDocUpload').classList.add('active');
+        document.getElementById('currentDocBadge').textContent = `📁 ${fileName}`;
+        document.getElementById('customDocInput').value = text;
+
+        // 페르소나는 기본 도우미로 설정 (학생이 직접 바꿀 수 있음)
+        selectPersonaPreset('custom');
+
+        // 문장 분할 및 저장 (기존 로직 재사용)
+        splitAndSaveCustomDoc();
+
+        // 같은 파일 다시 선택 가능하도록 초기화
+        event.target.value = '';
+      };
+      reader.onerror = function() {
+        alert('파일을 읽는 중 오류가 발생했습니다.');
+        event.target.value = '';
+      };
+      reader.readAsArrayBuffer(file);
     }
 
     function splitAndSaveCustomDoc() {
