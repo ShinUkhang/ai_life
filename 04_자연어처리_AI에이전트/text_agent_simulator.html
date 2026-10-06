@@ -774,14 +774,8 @@
       <!-- 우측: 구글 API 상태 및 수업 관리 버튼 -->
       <div class="toss-nav-right">
         <span class="api-status-badge" id="gnbApiBadge" style="border-radius:20px; padding:6px 12px;">
-          <span id="gnbApiDot">⚪</span> <span id="gnbApiText">오프라인 시뮬레이션 모드</span>
+          <span id="gnbApiDot">📚</span> <span id="gnbApiText">오프라인 학습 모드 (무료)</span>
         </span>
-        <button class="btn-api-settings" onclick="openApiModal()" style="border-radius:12px; font-weight:700;">
-          <span>🔑</span> 구글 API 설정
-        </button>
-        <button class="btn-terminate-class" onclick="terminateClassAndShredKey()" style="border-radius:12px; font-weight:700;">
-          <span>🚨</span> 수업 종료
-        </button>
         <a href="./실습)_텍스트_에이전트.ipynb" download class="toss-home-btn" style="background:#191F28; color:#fff; border-color:#191F28;">
           <span>Colab</span> 📓
         </a>
@@ -1067,18 +1061,12 @@
             <span class="n-card-badge" id="aiEngineBadge" style="background:#e8f7ee; color:var(--brand-green); font-weight:700;">Google Gemini 1.5 Flash</span>
           </div>
 
-                    <!-- 인라인 구글 API 키 간편 설정 바 (내장 키 자동 연결이므로 입력란 숨김) -->
+                    <!-- 학습 모드 안내 (무료 오프라인) -->
           <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <span style="font-size:12px; font-weight:700; color:#166534;">✅ 선생님 키로 자동 연결됨 (입력 불필요)</span>
-            </div>
-            <div style="display:none; gap:6px;" id="inlineKeyInputRow">
-              <input type="password" id="inlineApiKeyInput" class="form-input" placeholder="AIzaSy... (입력 시 실제 Gemini가 페르소나 연기)" style="padding:6px 10px; font-size:12px;" onchange="saveInlineKey(this.value)" />
-              <button class="btn-b-blue" style="font-size:11px; padding:6px 10px; white-space:nowrap;" onclick="testInlineKey()">연결 확인</button>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-              <span style="font-size:11px; color:#15803d;" id="inlineKeyStatusMsg">🔄 자동 연결 중...</span>
-              <span style="font-size:11px; color:#dc2626; font-weight:700; cursor:pointer;" onclick="terminateClassAndShredKey()">🚨 키 파기</span>
+            <div style="font-size:12px; font-weight:700; color:#166534;">📚 무료 오프라인 학습 모드</div>
+            <div style="font-size:11px; color:#15803d; margin-top:4px; line-height:1.5;">
+              API 키 없이 동작합니다. 내장 규칙 엔진이 토큰화 → 코사인 유사도 검색 → 페르소나 답변까지<br>
+              AI 에이전트의 전체 원리를 그대로 체험할 수 있어요.
             </div>
           </div>
 
@@ -1248,72 +1236,6 @@
 
   </main>
 
-  <!-- ========================================================
-       🔑 교사용 Google Gemini API 설정 및 세션 관리 모달
-       ======================================================== -->
-  <div class="modal-backdrop" id="apiModalBackdrop">
-    <div class="modal-window">
-      <div class="modal-header">
-        <h3><span>🔑</span> 교사용 Google Gemini API 설정</h3>
-        <button class="modal-close-btn" onclick="closeApiModal()">&times;</button>
-      </div>
-
-      <div class="modal-body">
-        <p style="font-size:12.5px; color:#475569; margin-bottom:14px; line-height:1.5;">
-          선생님의 <b>Google AI Studio API Key</b>를 등록하면, 학생들이 입력한 문학작품을 기반으로 
-          실제 최신 거대 언어 모델(Gemini)이 캐릭터 페르소나를 연기하며 생생하게 답변합니다.
-        </p>
-
-        <!-- API 키: 선생님 키가 파일에 내장되어 자동 연결되므로 입력란 숨김 -->
-        <div class="form-group" id="apiKeyInputGroup" style="display:none;">
-          <label class="form-label" style="display:flex; justify-content:space-between;">
-            <span>구글 Gemini API Key:</span>
-            <span style="font-size:11px; color:#0284c7; cursor:pointer;" onclick="toggleKeyVisibility()" id="toggleKeyText">👁️ 키 표시하기</span>
-          </label>
-          <input type="password" id="apiKeyInput" class="form-input" placeholder="AIzaSy... (Google AI Studio 발급 키)" />
-          <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
-            🔒 빔프로젝터 노출을 방지하기 위해 기본적으로 마스킹 처리(••••)됩니다.
-          </div>
-        </div>
-        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px 12px; font-size:12px; color:#166534; margin-bottom:12px;">
-          ✅ <b>선생님 API 키 내장됨</b> — 페이지를 열면 자동으로 연결됩니다. 키 입력이 필요 없습니다.<br>
-          <span style="color:#64748b;">수업 종료 후에는 아래 [수업 종료: API 키 즉시 파기] 버튼을 눌러주세요.</span>
-        </div>
-
-        <!-- 모델 선택 -->
-        <div class="form-group">
-          <label class="form-label">사용할 인공지능 모델 (Model):</label>
-          <select id="apiModelSelect" class="form-input" style="cursor:pointer;">
-            <option value="gemini-1.5-flash" selected>gemini-1.5-flash (수업 추천! 초고속 & 무료 넉넉함)</option>
-            <option value="gemini-2.0-flash">gemini-2.0-flash (최신 모델)</option>
-            <option value="gemini-2.5-flash">gemini-2.5-flash (고성능 추론)</option>
-          </select>
-        </div>
-
-        <!-- 테스트 결과 알림 박스 -->
-        <div id="apiTestResultBox" style="display:none; padding:10px 12px; border-radius:6px; font-size:12px; margin-bottom:14px; line-height:1.5;"></div>
-
-        <!-- 수업 종료 안내 박스 -->
-        <div style="background:#fff7ed; border:1px solid #ffedd5; border-left:4px solid #f97316; border-radius:0 6px 6px 0; padding:10px 12px; font-size:11.5px; color:#9a3412; line-height:1.5;">
-          🚨 <b>수업 보안 필수 안내:</b><br>
-          • API 키는 브라우저를 닫으면 자동 삭제되는 임시 세션(sessionStorage)에만 보관됩니다.<br>
-          • 수업이 끝난 후 아래 <b>[수업 종료: API 키 즉시 파기]</b> 버튼을 누르면 브라우저 메모리에서 키가 즉각 소멸되고 오프라인 모드로 안전하게 전환됩니다.
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn-terminate-class" onclick="terminateClassAndShredKey()">
-          <span>🚨</span> 수업 종료 (키 파기)
-        </button>
-        <button class="btn-b-blue" onclick="testApiKey()">
-          <span>🧪</span> 연결 테스트
-        </button>
-        <button class="btn-b-green" onclick="saveApiKey()">
-          <span>💾</span> 키 저장 및 적용
-        </button>
-      </div>
-    </div>
-  </div>
 
 
   <!-- ========================================================
@@ -1456,309 +1378,14 @@ print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")
     }
 
     // ========================================================
-    // 1. Google Gemini API 관리 & 세션 보안 (자동 모델 탐색 및 다중 버전 호환)
+    // 1. 학습 모드 설정
     // ========================================================
-    // 🔑 선생님 API 키를 아래 TEACHER_API_KEY = ' ' 안에 붙여넣으세요.
-    //    결제(빌링)가 연결된 Google Cloud 프로젝트에서 발급받은 키를 사용하세요.
-    //    키가 들어있으면 학생은 키 입력 없이 페이지를 열자마자 자동 연결됩니다.
-    //    비워두면 이전처럼 학생이 직접 키를 입력해야 합니다.
-    //    예: let TEACHER_API_KEY = 'AIzaSy...';
-    let TEACHER_API_KEY = '';
-    let GOOGLE_API_KEY = TEACHER_API_KEY || sessionStorage.getItem('gemini_api_key') || '';
-    let SELECTED_MODEL = sessionStorage.getItem('gemini_selected_model') || 'gemini-1.5-flash';
-    let CURRENT_API_VERSION = sessionStorage.getItem('gemini_api_version') || 'v1beta';
-    let AVAILABLE_MODELS = [];
-    let isApiLocked = false;
-
-    function openApiModal() {
-      document.getElementById('apiKeyInput').value = GOOGLE_API_KEY;
-      document.getElementById('apiModelSelect').value = SELECTED_MODEL;
-      document.getElementById('apiTestResultBox').style.display = 'none';
-      document.getElementById('apiModalBackdrop').classList.add('open');
-    }
-
-    function closeApiModal() {
-      document.getElementById('apiModalBackdrop').classList.remove('open');
-    }
-
-    function toggleKeyVisibility() {
-      const input = document.getElementById('apiKeyInput');
-      const toggleText = document.getElementById('toggleKeyText');
-      if (!input) return;
-      if (input.type === 'password') {
-        input.type = 'text';
-        toggleText.textContent = '🙈 키 숨기기';
-      } else {
-        input.type = 'password';
-        toggleText.textContent = '👁️ 키 표시하기';
-      }
-    }
-
-    function toggleInlineKeyVisibility() {
-      const input = document.getElementById('inlineApiKeyInput');
-      const toggleText = document.getElementById('inlineKeyToggleText');
-      if (!input) return;
-      if (input.type === 'password') {
-        input.type = 'text';
-        toggleText.textContent = '🙈 키 숨기기';
-      } else {
-        input.type = 'password';
-        toggleText.textContent = '👁️ 키 표시하기';
-      }
-    }
-
-    // 🚀 스마트 자동 탐색 및 연결 테스트 엔진 (ModelService.ListModels + 다중 버전 프로브)
-    async function autoDetectAndConnectKey(key, statusBox, isInline = false) {
-      if (!key) {
-        statusBox.style.display = 'block';
-        statusBox.innerHTML = '<span style="color:#dc2626;">⚠️ API Key를 먼저 입력해주세요!</span>';
-        return false;
-      }
-
-      statusBox.style.display = 'block';
-      if (!isInline) {
-        statusBox.style.background = '#f0f9ff';
-        statusBox.style.color = '#0369a1';
-        statusBox.style.border = '1px solid #bae6fd';
-      }
-      statusBox.innerHTML = '🔄 Google 서버에서 사용 가능한 Gemini 모델 목록을 탐색 중입니다...';
-
-      let workingModel = null;
-      let workingVersion = 'v1beta';
-      let foundModels = [];
-
-      // 1단계: ModelService.ListModels 호출 (v1beta 및 v1 시도)
-      for (const ver of ['v1beta', 'v1']) {
-        try {
-          const listRes = await fetch(`https://generativelanguage.googleapis.com/${ver}/models?key=${key}`);
-          const listData = await listRes.json();
-          if (listRes.ok && listData.models && listData.models.length > 0) {
-            workingVersion = ver;
-            // generateContent를 지원하는 모델 필터링
-            foundModels = listData.models
-              .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
-              .map(m => m.name.replace(/^models\//, ''));
-            if (foundModels.length > 0) break;
-          }
-        } catch (e) {
-          console.warn(`ListModels failed on ${ver}:`, e);
-        }
-      }
-
-      // 모델 선택 우선순위 결정
-      if (foundModels.length > 0) {
-        AVAILABLE_MODELS = foundModels;
-        updateModelDropdown(foundModels);
-        // 우선순위: 1.5-flash -> 2.0-flash -> 2.5-flash -> gemini-pro -> 첫 번째 모델
-        workingModel = foundModels.find(m => m === 'gemini-1.5-flash')
-          || foundModels.find(m => m.includes('1.5-flash'))
-          || foundModels.find(m => m.includes('2.0-flash'))
-          || foundModels.find(m => m.includes('gemini-pro'))
-          || foundModels[0];
-      } else {
-        // 2단계: ListModels 접근이 제한된 경우 후보군 직접 프로브
-        const candidates = [
-          { ver: 'v1beta', model: 'gemini-1.5-flash' },
-          { ver: 'v1', model: 'gemini-1.5-flash' },
-          { ver: 'v1beta', model: 'gemini-2.0-flash' },
-          { ver: 'v1beta', model: 'gemini-1.5-flash-latest' },
-          { ver: 'v1beta', model: 'gemini-1.5-flash-001' },
-          { ver: 'v1beta', model: 'gemini-1.5-flash-002' },
-          { ver: 'v1', model: 'gemini-pro' },
-          { ver: 'v1beta', model: 'gemini-pro' }
-        ];
-
-        for (const c of candidates) {
-          try {
-            const probeRes = await fetch(`https://generativelanguage.googleapis.com/${c.ver}/models/${c.model}:generateContent?key=${key}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ contents: [{ parts: [{ text: "테스트" }] }] })
-            });
-            const pData = await probeRes.json();
-            if (probeRes.ok && pData.candidates && pData.candidates[0]) {
-              workingModel = c.model;
-              workingVersion = c.ver;
-              break;
-            }
-          } catch (e) {}
-        }
-      }
-
-      if (!workingModel) {
-        statusBox.style.display = 'block';
-        if (!isInline) {
-          statusBox.style.background = '#fef2f2';
-          statusBox.style.color = '#dc2626';
-          statusBox.style.border = '1px solid #fecaca';
-        }
-        statusBox.innerHTML = `❌ <b>연결 실패:</b> 유효한 Gemini 모델을 찾을 수 없습니다.<br><small>API 키가 올바른지, Google AI Studio(aistudio.google.com)에서 발급된 키인지 확인해 주세요.</small>`;
-        return false;
-      }
-
-      // 3단계: 최종 모델로 가벼운 핑 테스트
-      try {
-        const testRes = await fetch(`https://generativelanguage.googleapis.com/${workingVersion}/models/${workingModel}:generateContent?key=${key}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: "안녕?" }] }] })
-        });
-        const tData = await testRes.json();
-        if (!testRes.ok || !tData.candidates || !tData.candidates[0]) {
-          throw new Error(tData.error?.message || "모델 응답 실패");
-        }
-      } catch (err) {
-        statusBox.style.display = 'block';
-        if (!isInline) {
-          statusBox.style.background = '#fef2f2';
-          statusBox.style.color = '#dc2626';
-          statusBox.style.border = '1px solid #fecaca';
-        }
-        statusBox.innerHTML = `❌ <b>테스트 실패:</b> ${err.message}`;
-        return false;
-      }
-
-      // 연결 성공! 상태 저장
-      GOOGLE_API_KEY = key;
-      SELECTED_MODEL = workingModel;
-      CURRENT_API_VERSION = workingVersion;
-      sessionStorage.setItem('gemini_api_key', key);
-      sessionStorage.setItem('gemini_selected_model', workingModel);
-      sessionStorage.setItem('gemini_api_version', workingVersion);
-      isApiLocked = false;
-
-      updateApiStatusUI();
-
-      statusBox.style.display = 'block';
-      if (!isInline) {
-        statusBox.style.background = '#f0fdf4';
-        statusBox.style.color = '#166534';
-        statusBox.style.border = '1px solid #bbf7d0';
-      }
-      statusBox.innerHTML = `✅ <b>연결 성공!</b> 모델: <code>${workingModel}</code> (${workingVersion}) 사용 준비 완료!`;
-      return true;
-    }
-
-    function updateModelDropdown(models) {
-      const select = document.getElementById('apiModelSelect');
-      if (!select) return;
-      // 수업용: 무료 할당량이 0인 pro 계열은 목록에서 제외 (선택 시 quota 에러 발생)
-      // flash 계열만 표시 — 무료 티어가 넉넉해서 수업에 적합
-      const freeTierModels = models.filter(m => !m.toLowerCase().includes('pro'));
-      const displayModels = freeTierModels.length > 0 ? freeTierModels : models;
-      // 이전에 pro 모델이 선택되어 있었다면 flash 기본값으로 되돌림
-      if (SELECTED_MODEL && !displayModels.includes(SELECTED_MODEL)) {
-        SELECTED_MODEL = displayModels.find(m => m === 'gemini-1.5-flash')
-          || displayModels.find(m => m.includes('1.5-flash'))
-          || displayModels.find(m => m.includes('flash'))
-          || displayModels[0];
-        try { sessionStorage.setItem('gemini_selected_model', SELECTED_MODEL); } catch (e) {}
-      }
-      select.innerHTML = '';
-      displayModels.forEach(m => {
-        const opt = document.createElement('option');
-        opt.value = m;
-        let label = m;
-        if (m === 'gemini-1.5-flash') label += ' (수업 추천! 초고속 & 무료 넉넉함)';
-        else if (m === 'gemini-2.0-flash') label += ' (최신 모델)';
-        else if (m === 'gemini-2.5-flash') label += ' (고성능 추론)';
-        opt.textContent = label;
-        if (m === SELECTED_MODEL) opt.selected = true;
-        select.appendChild(opt);
-      });
-    }
-
-    // 모달창에서 연결 테스트
-    async function testApiKey() {
-      const key = document.getElementById('apiKeyInput').value.trim();
-      const box = document.getElementById('apiTestResultBox');
-      await autoDetectAndConnectKey(key, box, false);
-    }
-
-    // 모달창에서 저장
-    async function saveApiKey() {
-      const key = document.getElementById('apiKeyInput').value.trim();
-      const box = document.getElementById('apiTestResultBox');
-      const customModel = document.getElementById('apiModelSelect').value;
-      if (customModel) SELECTED_MODEL = customModel;
-
-      if (!key) {
-        alert('API 키를 입력해주세요. 없으시면 오프라인 시뮬레이션 모드로 작동합니다.');
-        return;
-      }
-
-      const success = await autoDetectAndConnectKey(key, box, false);
-      if (success) {
-        closeApiModal();
-        alert(`🎉 Google Gemini API 연결 성공!\n모델: [${SELECTED_MODEL}]이 활성화되었습니다.`);
-      }
-    }
-
-    // 인라인(3단계/4단계)에서 연결 확인
-    async function testInlineKey() {
-      const input = document.getElementById('inlineApiKeyInput');
-      const key = input ? input.value.trim() : '';
-      const statusMsg = document.getElementById('inlineKeyStatusMsg');
-      await autoDetectAndConnectKey(key, statusMsg, true);
-    }
-
-    function saveInlineKey(val) {
-      val = val.trim();
-      if (val) {
-        const statusMsg = document.getElementById('inlineKeyStatusMsg');
-        autoDetectAndConnectKey(val, statusMsg, true);
-      } else {
-        GOOGLE_API_KEY = '';
-        sessionStorage.removeItem('gemini_api_key');
-        updateApiStatusUI();
-      }
-    }
-
-    // 🚨 수업 종료 및 API 키 즉시 파기 함수
-    function terminateClassAndShredKey() {
-      if (!confirm('🚨 정말로 수업을 종료하고 등록된 API 키를 완전히 파기하시겠습니까?\n파기 후에는 API 호출이 즉각 차단되며 안전한 오프라인 모드로 전환됩니다.')) {
-        return;
-      }
-
-      // 1. 메모리 및 세션 스토리지 파기
-      GOOGLE_API_KEY = '';
-      sessionStorage.removeItem('gemini_api_key');
-      sessionStorage.removeItem('gemini_selected_model');
-      sessionStorage.removeItem('gemini_api_version');
-      isApiLocked = true;
-
-      // 2. UI 즉각 차단 갱신
-      const input = document.getElementById('apiKeyInput');
-      if (input) input.value = '';
-      const inlineInput = document.getElementById('inlineApiKeyInput');
-      if (inlineInput) inlineInput.value = '';
-      const inlineStatus = document.getElementById('inlineKeyStatusMsg');
-      if (inlineStatus) inlineStatus.innerHTML = '<span style="color:#dc2626; font-weight:bold;">🔒 수업 종료: API 키가 파기되었습니다. (오프라인 모드)</span>';
-
-      updateApiStatusUI();
-      closeApiModal();
-
-      // 알림 메시지 버블 추가
-      const chatBox = document.getElementById('chatMessages');
-      if (chatBox) {
-        const termBubble = document.createElement('div');
-        termBubble.className = 'msg-bubble msg-agent';
-        termBubble.style.borderColor = '#fca5a5';
-        termBubble.style.background = '#fef2f2';
-        termBubble.innerHTML = `
-          <span class="msg-engine-badge" style="background:#fee2e2; color:#b91c1c;">🔒 수업 종료 안내</span><br>
-          <b>수업이 안전하게 종료되었습니다.</b><br>
-          등록되어 있던 교사용 Google API 키가 브라우저 메모리에서 <b>완전히 파기(Shred)</b>되었습니다.<br>
-          이후의 대화는 외부 API 호출 없이 <b>오프라인 시뮬레이션 모드</b>로 안전하게 진행됩니다.
-        `;
-        chatBox.appendChild(termBubble);
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }
-
-      alert('🔒 수업이 종료되었습니다! 등록된 API 키가 안전하게 파기되었습니다.');
-    }
+    // 📚 학습용: API 키 없이 무료 오프라인 모드로만 동작합니다.
+    //    교사·학생 모두 키 입력이 필요 없으며, 내장 규칙 엔진으로
+    //    토큰화→벡터→코사인 유사도→페르소나 답변의 전 과정을 체험합니다.
 
     function updateApiStatusUI() {
+      // 📚 학습용: 항상 무료 오프라인 모드 표시 (API 키 기능 비활성화)
       const badge = document.getElementById('gnbApiBadge');
       const dot = document.getElementById('gnbApiDot');
       const text = document.getElementById('gnbApiText');
@@ -1766,56 +1393,21 @@ print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")
       const aiEngineBadge = document.getElementById('aiEngineBadge');
       const chatEngineBadge = document.getElementById('chatEngineBadge');
 
-      const apiKeyIn = document.getElementById('apiKeyInput');
-      if (apiKeyIn) apiKeyIn.value = GOOGLE_API_KEY;
-      const inlineIn = document.getElementById('inlineApiKeyInput');
-      if (inlineIn && !isApiLocked) inlineIn.value = GOOGLE_API_KEY;
-
-      if (isApiLocked) {
-        badge.className = 'api-status-badge locked';
-        dot.textContent = '🔒';
-        text.textContent = '수업 종료 (API 잠금)';
-        connText.textContent = '● 수업 종료 (오프라인 모드)';
-        connText.style.color = '#dc2626';
-        if (aiEngineBadge) {
-          aiEngineBadge.style.background = '#fee2e2';
-          aiEngineBadge.style.color = '#b91c1c';
-          aiEngineBadge.textContent = '🔒 수업 종료 (오프라인 규칙 모드)';
-        }
-        if (chatEngineBadge) {
-          chatEngineBadge.className = 'msg-engine-badge badge-offline';
-          chatEngineBadge.textContent = '오프라인 규칙 엔진';
-        }
-      } else if (GOOGLE_API_KEY) {
-        badge.className = 'api-status-badge online';
-        dot.textContent = '🟢';
-        text.textContent = `Google Gemini (${SELECTED_MODEL})`;
-        connText.textContent = `● Google LLM 온라인 연결됨`;
-        connText.style.color = '#059669';
-        if (aiEngineBadge) {
-          aiEngineBadge.style.background = '#e8f7ee';
-          aiEngineBadge.style.color = 'var(--brand-green)';
-          aiEngineBadge.textContent = `Google ${SELECTED_MODEL} 활성`;
-        }
-        if (chatEngineBadge) {
-          chatEngineBadge.className = 'msg-engine-badge badge-gemini';
-          chatEngineBadge.textContent = `Google Gemini (${SELECTED_MODEL})`;
-        }
-      } else {
-        badge.className = 'api-status-badge';
-        dot.textContent = '⚪';
-        text.textContent = '오프라인 시뮬레이션 모드';
+      if (badge) badge.className = 'api-status-badge';
+      if (dot) dot.textContent = '📚';
+      if (text) text.textContent = '오프라인 학습 모드 (무료)';
+      if (connText) {
         connText.textContent = '● 오프라인 모의 실행 모드';
         connText.style.color = '#475569';
-        if (aiEngineBadge) {
-          aiEngineBadge.style.background = '#f1f5f9';
-          aiEngineBadge.style.color = '#475569';
-          aiEngineBadge.textContent = '내장 규칙 추론 엔진 (무료/오프라인)';
-        }
-        if (chatEngineBadge) {
-          chatEngineBadge.className = 'msg-engine-badge badge-offline';
-          chatEngineBadge.textContent = '오프라인 규칙 엔진';
-        }
+      }
+      if (aiEngineBadge) {
+        aiEngineBadge.style.background = '#f1f5f9';
+        aiEngineBadge.style.color = '#475569';
+        aiEngineBadge.textContent = '내장 규칙 추론 엔진 (무료/오프라인)';
+      }
+      if (chatEngineBadge) {
+        chatEngineBadge.className = 'msg-engine-badge badge-offline';
+        chatEngineBadge.textContent = '오프라인 규칙 엔진';
       }
     }
 
@@ -2325,7 +1917,7 @@ ${query}`;
 
       document.getElementById('promptAssemblyBox').textContent = assembledPrompt;
 
-      // 4. 답변 생성: Google Gemini API or 오프라인 룰 엔진
+      // 4. 답변 생성: 오프라인 룰 엔진 (무료 학습 모드)
       const agentBubble = document.createElement('div');
       agentBubble.className = 'msg-bubble msg-agent';
       agentBubble.innerHTML = `<i>🧠 ${agentName} 두뇌가 데이터를 읽고 생각하는 중...</i>`;
@@ -2334,33 +1926,21 @@ ${query}`;
       btnSend.disabled = true;
 
       try {
-        if (!isApiLocked && GOOGLE_API_KEY) {
-          // Google Gemini 실제 호출
-          const geminiAnswer = await callGeminiApi(assembledPrompt);
-          agentBubble.innerHTML = `
-            <span class="msg-engine-badge badge-gemini">🟢 Google Gemini 1.5 Flash 추론</span><br>
-            ${geminiAnswer.replace(/\n/g, '<br>')}
-            <div class="msg-source-quote">
-              <b>📚 AI가 읽은 원문 데이터:</b> "${best.chunk}" (유사도: ${(best.score * 100).toFixed(1)}%)
-            </div>
-          `;
-        } else {
-          // 오프라인 규칙 엔진 시뮬레이션
-          await new Promise(r => setTimeout(r, 450));
-          const offlineAnswer = generateOfflineAnswer(query, best.chunk, currentDocKey);
-          agentBubble.innerHTML = `
-            <span class="msg-engine-badge badge-offline">⚪ 오프라인 시뮬레이션 답변</span><br>
-            ${offlineAnswer}
-            <div class="msg-source-quote">
-              <b>📚 AI가 읽은 원문 데이터:</b> "${best.chunk}" (유사도: ${(best.score * 100).toFixed(1)}%)
-            </div>
-          `;
-        }
+        // 📚 학습용: 항상 오프라인 규칙 엔진으로 답변
+        await new Promise(r => setTimeout(r, 450));
+        const offlineAnswer = generateOfflineAnswer(query, best.chunk, currentDocKey);
+        agentBubble.innerHTML = `
+          <span class="msg-engine-badge badge-offline">📚 오프라인 학습 모드 답변</span><br>
+          ${offlineAnswer}
+          <div class="msg-source-quote">
+            <b>📚 AI가 읽은 원문 데이터:</b> "${best.chunk}" (유사도: ${(best.score * 100).toFixed(1)}%)
+          </div>
+        `;
       } catch (err) {
         console.error(err);
         const fallback = generateOfflineAnswer(query, best.chunk, currentDocKey);
         agentBubble.innerHTML = `
-          <span class="msg-engine-badge badge-offline">⚠️ API 오류로 오프라인 모드 전환</span><br>
+          <span class="msg-engine-badge badge-offline">📚 오프라인 학습 모드 답변</span><br>
           ${fallback}
           <div class="msg-source-quote">
             <b>📚 AI가 읽은 원문 데이터:</b> "${best.chunk}"
@@ -2373,33 +1953,6 @@ ${query}`;
     }
 
     // Google Gemini API 호출
-    async function callGeminiApi(fullPrompt) {
-      const model = SELECTED_MODEL || 'gemini-1.5-flash';
-      const ver = CURRENT_API_VERSION || 'v1beta';
-      const url = `https://generativelanguage.googleapis.com/${ver}/models/${model}:generateContent?key=${GOOGLE_API_KEY}`;
-
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: fullPrompt }] }],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 600
-          }
-        })
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error?.message || 'API 응답 실패');
-      }
-
-      if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-        return data.candidates[0].content.parts[0].text;
-      }
-      throw new Error('응답 텍스트를 찾을 수 없습니다.');
-    }
 
     // 코사인 유사도 검색 로직
     function searchBestChunks(query, chunks) {
@@ -2470,33 +2023,10 @@ ${query}`;
     // ========================================================
     // 9. 초기화
     // ========================================================
-    // 내장 API 키로 조용히 자동 연결 (학생이 키를 입력할 필요 없음)
-    async function autoConnectSilent() {
-      let box = document.getElementById('silentApiStatusBox');
-      if (!box) {
-        box = document.createElement('div');
-        box.id = 'silentApiStatusBox';
-        box.setAttribute('aria-hidden', 'true');
-        // autoDetectAndConnectKey가 display:block으로 바꿔도 화면에 안 보이게 오프스크린 배치
-        box.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;';
-        document.body.appendChild(box);
-      }
-      try {
-        const ok = await autoDetectAndConnectKey(GOOGLE_API_KEY, box, false);
-        if (ok) updateApiStatusUI();
-      } catch (e) {
-        console.warn('자동 연결 실패, 오프라인 모드로 동작:', e);
-      }
-    }
-
     window.onload = function() {
       runTokenize();
       loadAgentDoc('dongbaek');
       updateApiStatusUI();
-      // 선생님 키가 내장되어 있으면 자동으로 모델 탐색·연결 (키 입력 단계 생략)
-      if (typeof GOOGLE_API_KEY !== 'undefined' && GOOGLE_API_KEY && !isApiLocked) {
-        autoConnectSilent();
-      }
     };
   </script>
 </body>
