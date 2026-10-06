@@ -1058,7 +1058,7 @@
               <span style="color:var(--brand-green-hover);">🧠 2. 내 AI 두뇌(Brain) 영역</span>
               <span style="font-size:12px; font-weight:normal; color:#64748b;">(페르소나 & 규칙)</span>
             </div>
-            <span class="n-card-badge" id="aiEngineBadge" style="background:#e8f7ee; color:var(--brand-green); font-weight:700;">Google Gemini 1.5 Flash</span>
+            <span class="n-card-badge" id="aiEngineBadge" style="background:#e8f7ee; color:var(--brand-green); font-weight:700;">내장 규칙 추론 엔진</span>
           </div>
 
                     <!-- 학습 모드 안내 + 선택적 무료 API 연결 -->
@@ -1398,8 +1398,16 @@ print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")
     // 📚 학습용: 기본은 무료 오프라인 모드. 학생이 원하면 자신의 무료 API 키로
     //    실제 Gemini에 연결해 "오프라인 vs 실제 AI" 답변 차이를 비교 체험할 수 있다.
     let GOOGLE_API_KEY = '';
+    // 무료로 쓸 수 있는 flash 계열 후보 (위부터 순서대로 시도 — 단종 대비)
+    const FREE_FLASH_CANDIDATES = [
+      'gemini-2.5-flash',
+      'gemini-flash-latest',
+      'gemini-2.5-flash-lite',
+      'gemini-2.0-flash',
+    ];
+    let WORKING_MODEL = '';
 
-    // 무료 키로 실제 Gemini 연결 (gemini-1.5-flash 고정 — 무료 할당량이 가장 넉넉)
+    // 무료 키로 실제 Gemini 연결 (위 후보 중 동작하는 첫 모델 자동 선택)
     async function connectFreeKey() {
       const input = document.getElementById('freeApiKeyInput');
       const msg = document.getElementById('freeKeyStatusMsg');
@@ -1417,32 +1425,40 @@ print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")
         msg.style.color = '#0369a1';
         msg.textContent = '🔄 연결 확인 중...';
       }
-      try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: '안녕?' }] }] })
-        });
-        const data = await res.json();
-        if (!res.ok || !data.candidates || !data.candidates[0]) {
-          throw new Error(data.error?.message || '연결 실패');
+      let lastErr = null;
+      for (const model of FREE_FLASH_CANDIDATES) {
+        try {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: '안녕?' }] }] })
+          });
+          const data = await res.json();
+          if (!res.ok || !data.candidates || !data.candidates[0]) {
+            lastErr = new Error(data.error?.message || '연결 실패');
+            continue;
+          }
+          WORKING_MODEL = model;
+          GOOGLE_API_KEY = key;
+          if (msg) {
+            msg.style.color = '#166534';
+            msg.textContent = `✅ 연결 성공! (${model}) 이제 실제 Gemini가 답변합니다. 같은 질문을 다시 해보세요.`;
+          }
+          updateApiStatusUI();
+          return;
+        } catch (e) {
+          lastErr = e;
         }
-        GOOGLE_API_KEY = key;
-        if (msg) {
-          msg.style.color = '#166534';
-          msg.textContent = '✅ 연결 성공! 이제 실제 Gemini가 답변합니다. 같은 질문을 다시 해보세요.';
-        }
-        updateApiStatusUI();
-      } catch (e) {
-        if (msg) {
-          msg.style.color = '#dc2626';
-          msg.textContent = '❌ 연결 실패: ' + e.message;
-        }
+      }
+      if (msg) {
+        msg.style.color = '#dc2626';
+        msg.textContent = '❌ 연결 실패: ' + (lastErr ? lastErr.message : '사용 가능한 무료 모델이 없습니다.');
       }
     }
 
     function disconnectFreeKey() {
       GOOGLE_API_KEY = '';
+      WORKING_MODEL = '';
       const input = document.getElementById('freeApiKeyInput');
       if (input) input.value = '';
       const msg = document.getElementById('freeKeyStatusMsg');
@@ -1450,9 +1466,10 @@ print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")
       updateApiStatusUI();
     }
 
-    // Gemini API 호출 (무료 gemini-1.5-flash 고정)
+    // Gemini API 호출 (연결 시 확정된 무료 flash 모델 사용)
     async function callGeminiApi(fullPrompt) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`;
+      const model = WORKING_MODEL || FREE_FLASH_CANDIDATES[0];
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GOOGLE_API_KEY}`;
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1494,7 +1511,7 @@ print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")
       if (aiEngineBadge) {
         aiEngineBadge.style.background = online ? '#e8f7ee' : '#f1f5f9';
         aiEngineBadge.style.color = online ? '#166534' : '#475569';
-        aiEngineBadge.textContent = online ? '실제 Gemini 1.5 Flash 답변 중' : '내장 규칙 추론 엔진 (무료/오프라인)';
+        aiEngineBadge.textContent = online ? '실제 Gemini Flash 답변 중' : '내장 규칙 추론 엔진 (무료/오프라인)';
       }
       if (chatEngineBadge) {
         chatEngineBadge.className = 'msg-engine-badge ' + (online ? 'badge-gemini' : 'badge-offline');
@@ -2027,7 +2044,7 @@ ${query}`;
           // 🟢 실제 Gemini 호출 (무료 키 연결 시) — 오프라인 답변과 비교 체험!
           const geminiAnswer = await callGeminiApi(assembledPrompt);
           agentBubble.innerHTML = `
-            <span class="msg-engine-badge badge-gemini">🟢 실제 Gemini 1.5 Flash 답변</span><br>
+            <span class="msg-engine-badge badge-gemini">🟢 실제 Gemini Flash 답변</span><br>
             ${geminiAnswer.replace(/\n/g, '<br>')}
             <div class="msg-source-quote">
               <b>📚 AI가 읽은 원문 데이터:</b> "${best.chunk}" (유사도: ${(best.score * 100).toFixed(1)}%)
