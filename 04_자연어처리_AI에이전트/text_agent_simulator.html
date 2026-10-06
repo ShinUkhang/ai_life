@@ -1458,7 +1458,13 @@ print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")
     // ========================================================
     // 1. Google Gemini API 관리 & 세션 보안 (자동 모델 탐색 및 다중 버전 호환)
     // ========================================================
-    let GOOGLE_API_KEY = sessionStorage.getItem('gemini_api_key') || '';
+    // 🔑 선생님 API 키를 아래 TEACHER_API_KEY = ' ' 안에 붙여넣으세요.
+    //    결제(빌링)가 연결된 Google Cloud 프로젝트에서 발급받은 키를 사용하세요.
+    //    키가 들어있으면 학생은 키 입력 없이 페이지를 열자마자 자동 연결됩니다.
+    //    비워두면 이전처럼 학생이 직접 키를 입력해야 합니다.
+    //    예: let TEACHER_API_KEY = 'AIzaSy...';
+    let TEACHER_API_KEY = '';
+    let GOOGLE_API_KEY = TEACHER_API_KEY || sessionStorage.getItem('gemini_api_key') || '';
     let SELECTED_MODEL = sessionStorage.getItem('gemini_selected_model') || 'gemini-1.5-flash';
     let CURRENT_API_VERSION = sessionStorage.getItem('gemini_api_version') || 'v1beta';
     let AVAILABLE_MODELS = [];
