@@ -1633,11 +1633,27 @@ print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")
     function updateModelDropdown(models) {
       const select = document.getElementById('apiModelSelect');
       if (!select) return;
+      // 수업용: 무료 할당량이 0인 pro 계열은 목록에서 제외 (선택 시 quota 에러 발생)
+      // flash 계열만 표시 — 무료 티어가 넉넉해서 수업에 적합
+      const freeTierModels = models.filter(m => !m.toLowerCase().includes('pro'));
+      const displayModels = freeTierModels.length > 0 ? freeTierModels : models;
+      // 이전에 pro 모델이 선택되어 있었다면 flash 기본값으로 되돌림
+      if (SELECTED_MODEL && !displayModels.includes(SELECTED_MODEL)) {
+        SELECTED_MODEL = displayModels.find(m => m === 'gemini-1.5-flash')
+          || displayModels.find(m => m.includes('1.5-flash'))
+          || displayModels.find(m => m.includes('flash'))
+          || displayModels[0];
+        try { sessionStorage.setItem('gemini_selected_model', SELECTED_MODEL); } catch (e) {}
+      }
       select.innerHTML = '';
-      models.forEach(m => {
+      displayModels.forEach(m => {
         const opt = document.createElement('option');
         opt.value = m;
-        opt.textContent = m;
+        let label = m;
+        if (m === 'gemini-1.5-flash') label += ' (수업 추천! 초고속 & 무료 넉넉함)';
+        else if (m === 'gemini-2.0-flash') label += ' (최신 모델)';
+        else if (m === 'gemini-2.5-flash') label += ' (고성능 추론)';
+        opt.textContent = label;
         if (m === SELECTED_MODEL) opt.selected = true;
         select.appendChild(opt);
       });
