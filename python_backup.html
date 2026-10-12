@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파이썬 비상 실행기 (로그인 불필요)</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Malgun Gothic', sans-serif; margin: 0; background: #f4f6fa; color: #222; }
+  header { background: #1a73e8; color: #fff; padding: 18px 24px; }
+  header h1 { margin: 0; font-size: 22px; }
+  header p { margin: 6px 0 0; font-size: 14px; opacity: .9; }
+  .badge { display: inline-block; background: #ff7043; color: #fff; font-size: 12px; font-weight: bold;
+           padding: 3px 10px; border-radius: 12px; margin-left: 8px; vertical-align: middle; }
+  main { max-width: 960px; margin: 0 auto; padding: 20px 16px 40px; }
+  .card { background: #fff; border-radius: 12px; padding: 18px; margin-bottom: 16px;
+          box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  button { font-family: inherit; cursor: pointer; border: none; border-radius: 8px; padding: 10px 18px; font-size: 15px; }
+  .btn-run { background: #1a73e8; color: #fff; font-weight: bold; font-size: 17px; padding: 12px 34px; }
+  .btn-run:disabled { background: #9db9e8; cursor: wait; }
+  .btn-sub { background: #e8eefc; color: #1a73e8; }
+  .btn-clear { background: #f1f3f4; color: #555; }
+  #status { font-size: 14px; color: #666; }
+  #status.ready { color: #188038; font-weight: bold; }
+  #code { width: 100%; height: 300px; font-family: 'Consolas','D2Coding',monospace; font-size: 15px;
+          line-height: 1.6; padding: 12px; border: 2px solid #dfe3ea; border-radius: 8px; resize: vertical; }
+  #code:focus { outline: none; border-color: #1a73e8; }
+  #output { background: #202124; color: #e8eaed; border-radius: 8px; padding: 14px; min-height: 120px;
+            font-family: 'Consolas','D2Coding',monospace; font-size: 14px; white-space: pre-wrap;
+            word-break: break-all; max-height: 400px; overflow-y: auto; }
+  #output .err { color: #ff8a80; }
+  #plots img { max-width: 100%; border: 1px solid #dfe3ea; border-radius: 8px; margin-top: 10px; background: #fff; }
+  h2 { font-size: 17px; margin: 0 0 10px; }
+  .hint { font-size: 13px; color: #888; margin-top: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🐍 파이썬 비상 실행기 <span class="badge">비상용</span></h1>
+  <p>로그인 없이 브라우저에서 바로 파이썬 코드를 실행합니다. Colab이 열리지 않을 때 사용하세요.</p>
+</header>
+<main>
+  <div class="card">
+    <div class="row">
+      <button class="btn-sub" id="exBasic">📝 기본 예제</button>
+      <button class="btn-sub" id="exReg">📈 선형회귀 맛보기</button>
+      <span id="status">⏳ 파이썬 준비 중... (첫 로딩에 20~30초 걸려요)</span>
+    </div>
+    <textarea id="code" spellcheck="false" placeholder="여기에 파이썬 코드를 붙여넣으세요"></textarea>
+    <div class="row" style="margin-top:12px; margin-bottom:0;">
+      <button class="btn-run" id="runBtn" disabled>▶ 실행</button>
+      <button class="btn-clear" id="clearBtn">지우기</button>
+    </div>
+    <p class="hint">Tab 키로 들여쓰기 가능 · <code>input()</code>은 지원하지 않아요 · 그래프는 아래에 자동 표시됩니다</p>
+  </div>
+  <div class="card">
+    <h2>📟 실행 결과</h2>
+    <div id="output">(아직 실행하지 않았어요)</div>
+    <div id="plots"></div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script>
+const EXAMPLES = {
+basic: `# 기본 파이썬 예제
+print("안녕하세요! 로그인 없이 실행 중이에요.")
+
+# 변수와 반복문
+for i in range(1, 6):
+    print(f"{i}의 제곱 = {i**2}")
+
+# 함수 만들기
+def hello(name):
+    return f"{name}님, 파이썬 재미있죠?"
+
+print(hello("여러분"))
+`,
+reg: `# 선형회귀 맛보기 (공부 시간 -> 시험 점수)
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 데이터: x시간 공부하면 y점을 받았대요 (10명의 기록)
+x = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], dtype=float)
+y = np.array([2.1, 3.8, 6.2, 7.9, 10.2, 12.1, 13.9, 16.2, 18.0, 20.3])
+
+# AI의 공부 규칙 찾기 (경사하강법)
+W, b = 0.0, 0.0
+for epoch in range(200):
+    y_pred = W * x + b
+    err = y_pred - y
+    W -= 0.01 * np.mean(err * x)
+    b -= 0.01 * np.mean(err)
+
+print(f"찾은 규칙: 점수 = {W:.2f} x 시간 + {b:.2f}")
+print(f"5.5시간 공부하면? 약 {W*5.5 + b:.1f}점 예상!")
+
+plt.figure(figsize=(7, 4.5))
+plt.scatter(x, y, s=60, label="실제 기록")
+plt.plot(x, W*x + b, "r-", linewidth=2, label="AI가 찾은 직선")
+plt.xlabel("study hours")
+plt.ylabel("score")
+plt.title("Linear Regression")
+plt.legend()
+plt.grid(alpha=0.3)
+`
+};
+
+const codeEl = document.getElementById('code');
+const runBtn = document.getElementById('runBtn');
+const statusEl = document.getElementById('status');
+const outputEl = document.getElementById('output');
+const plotsEl = document.getElementById('plots');
+
+codeEl.value = EXAMPLES.basic;
+document.getElementById('exBasic').onclick = () => codeEl.value = EXAMPLES.basic;
+document.getElementById('exReg').onclick = () => codeEl.value = EXAMPLES.reg;
+document.getElementById('clearBtn').onclick = () => { codeEl.value = ''; outputEl.textContent = '(아직 실행하지 않았어요)'; plotsEl.innerHTML = ''; };
+
+// Tab 키 들여쓰기
+codeEl.addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const s = codeEl.selectionStart;
+    codeEl.value = codeEl.value.slice(0, s) + '    ' + codeEl.value.slice(codeEl.selectionEnd);
+    codeEl.selectionStart = codeEl.selectionEnd = s + 4;
+  }
+});
+
+let pyodide = null;
+
+const BOOTSTRAP = `
+import io, sys, base64, traceback
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from contextlib import redirect_stdout, redirect_stderr
+
+def __run__(user_code):
+    out, err = io.StringIO(), io.StringIO()
+    figs = []
+    try:
+        with redirect_stdout(out), redirect_stderr(err):
+            exec(compile(user_code, "<cell>", "exec"), {"__name__": "__main__"})
+        for n in plt.get_fignums():
+            buf = io.BytesIO()
+            plt.figure(n).savefig(buf, format="png", bbox_inches="tight", dpi=110)
+            figs.append(base64.b64encode(buf.getvalue()).decode("ascii"))
+        plt.close("all")
+    except Exception:
+        traceback.print_exc(file=err)
+        plt.close("all")
+    return out.getvalue(), err.getvalue(), figs
+`;
+
+async function init() {
+  try {
+    pyodide = await loadPyodide();
+    statusEl.textContent = '⏳ 계산 라이브러리 로딩 중...';
+    await pyodide.loadPackage(['numpy', 'matplotlib', 'pandas']);
+    await pyodide.runPythonAsync(BOOTSTRAP);
+    // 한글 폰트 시도 (실패해도 계속 진행)
+    try {
+      await pyodide.loadPackage('micropip');
+      const mp = pyodide.pyimport('micropip');
+      await mp.install('koreanize-matplotlib');
+      await pyodide.runPythonAsync('import koreanize_matplotlib');
+    } catch (e) { console.log('korean font skipped', e); }
+    statusEl.textContent = '✅ 준비 완료! 코드를 붙여넣고 실행을 눌러보세요.';
+    statusEl.classList.add('ready');
+    runBtn.disabled = false;
+  } catch (e) {
+    statusEl.textContent = '❌ 로딩 실패: ' + e.message;
+  }
+}
+
+runBtn.onclick = async () => {
+  if (!pyodide) return;
+  runBtn.disabled = true;
+  outputEl.textContent = '실행 중...';
+  plotsEl.innerHTML = '';
+  try {
+    pyodide.globals.set('__user_code__', codeEl.value);
+    const res = await pyodide.runPythonAsync('__run__(__user_code__)');
+    const [stdout, stderr, figs] = res.toJs();
+    let html = '';
+    if (stdout) html += escapeHtml(stdout);
+    if (stderr) html += '<span class="err">' + escapeHtml(stderr) + '</span>';
+    outputEl.innerHTML = html || '(출력 없음)';
+    figs.forEach(b64 => {
+      const img = document.createElement('img');
+      img.src = 'data:image/png;base64,' + b64;
+      plotsEl.appendChild(img);
+    });
+  } catch (e) {
+    outputEl.innerHTML = '<span class="err">실행기 오류: ' + escapeHtml(String(e)) + '</span>';
+  }
+  runBtn.disabled = false;
+};
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+init();
+</script>
+</body>
+</html>
