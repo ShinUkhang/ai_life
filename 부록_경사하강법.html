@@ -45,15 +45,48 @@
   .point h3 { margin: 0 0 6px; font-size: 16px; color: #333; }
   .point p { margin: 0; font-size: 14.5px; color: #444; }
   .note { font-size: 13px; color: #888; margin-top: 10px; }
+  .topic-head { background: linear-gradient(135deg,#1a73e8,#6c3df0); color:#fff; border-radius:14px;
+                padding:20px 24px; margin:30px 0 18px; }
+  .topic-head h2 { color:#fff; font-size:22px; margin:0; }
+  .topic-head p { margin:6px 0 0; opacity:.92; font-size:14px; }
+  .toc-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+  .toc-grid a { display:block; background:#f0f4ff; border-radius:10px; padding:12px 16px;
+                text-decoration:none; color:#222; font-size:15px; }
+  .toc-grid a b { color:#1a73e8; }
+  .toc-grid a:hover { background:#e2ebff; }
+  @media (max-width:720px){ .toc-grid{ grid-template-columns:1fr; } }
+  .mini-grid { display:grid; gap:3px; }
+  .mini-grid.g6 { grid-template-columns: repeat(6, 42px); }
+  .mini-grid.g3 { grid-template-columns: repeat(3, 42px); }
+  .mini-grid.g4 { grid-template-columns: repeat(4, 42px); }
+  .mcell { width:42px; height:42px; display:flex; align-items:center; justify-content:center;
+           font-family:Consolas,monospace; font-size:11px; border-radius:4px; border:1px solid #ddd; }
 </style>
 </head>
 <body>
 <header>
   <div class="badge">📎 부록 (별도 자료 · 기존 자료는 그대로 유지됩니다)</div>
-  <h1>경사하강법 — 수식으로 보는 AI의 학습</h1>
-  <p>AI가 "공부"한다는 것의 수학적 실체: 오차를 재고, 기울기를 따라 내려가는 알고리즘</p>
+  <h1>AI Life 수학 실험실 — 수식으로 보는 AI 5개 주제</h1>
+  <p>주제별로 핵심 수식 · 직접 돌려보는 시뮬레이션 · 복붙용 파이썬 코드를 담았습니다. 시간에 맞춰 필요한 주제만 골라 천천히 설명하세요.</p>
 </header>
 <main>
+
+<nav class="card">
+  <h2>📑 주제 목차</h2>
+  <div class="toc-grid">
+    <a href="#topic1"><b>주제 1</b> · 선형회귀와 경사하강법</a>
+    <a href="#topic2"><b>주제 2</b> · 컴퓨터비전 — 이미지는 숫자 행렬</a>
+    <a href="#topic3"><b>주제 3</b> · CNN — 합성곱으로 특징 찾기</a>
+    <a href="#topic4"><b>주제 4</b> · 자연어처리 — 코사인 유사도</a>
+    <a href="#topic5"><b>주제 5</b> · 음성인식 — 소리는 사인파</a>
+  </div>
+  <p class="note">각 주제는 독립적입니다. 수업 시간에 맞춰 골라 쓰세요.</p>
+</nav>
+
+<div class="topic-head" id="topic1">
+  <h2>주제 1 · 선형회귀와 경사하강법</h2>
+  <p>AI의 학습 = 오차를 재고 기울기를 따라 내려가기. 분류(로지스틱 회귀)까지 이어집니다.</p>
+</div>
 
 <section class="card">
   <h2>1️⃣ 핵심 수식 세 개</h2>
@@ -246,6 +279,282 @@ correct = 0
 print(<span class="st">f"구분 직선: {w1:.2f}*x1 + {w2:.2f}*x2 + {b:.2f} = 0"</span>)
 print(<span class="st">f"정확도: {correct}/{n} ({correct/n*100:.0f}%)"</span>)</pre>
   <p class="note">💡 수업 흐름: ① 캔버스에서 점 찍기 → ② 학습 시작으로 직선 확인 → ③ CSV 다운로드 → ④ 위 코드를 비상 실행기(또는 Colab)에 붙여넣고, csv_text에 다운로드한 내용으로 교체 후 실행</p>
+</section>
+
+<div class="topic-head" id="topic2">
+  <h2>주제 2 · 컴퓨터비전 — 이미지는 숫자 행렬</h2>
+  <p>컴퓨터에게 그림이란? 0~255 숫자가 빼곡한 행렬입니다. 직접 그려보고 숫자로 확인하세요.</p>
+</div>
+
+<section class="card">
+  <h2>6️⃣ 핵심 수식</h2>
+  <div class="formula">
+    <span class="tag">이미지</span>
+    <span class="math">I[i,j] ∈ {0, 1, …, 255}</span>
+    <small>흑백 이미지 = 숫자 행렬. 0은 검정, 255는 흰색. 컬러 사진은 이런 행렬이 3장(R,G,B).</small>
+  </div>
+  <div class="formula">
+    <span class="tag">이진화</span>
+    <span class="math">B[i,j] = 255 (I[i,j] ≥ T), 0 (그 외)</span>
+    <small>기준값 T를 경계로 나누는 가장 단순한 '판단'. 모든 인식의 출발점.</small>
+  </div>
+</section>
+
+<section class="card">
+  <h2>🖌️ 직접 그려보는 숫자 그림</h2>
+  <p class="sub">칸을 클릭할수록 진해집니다 (0 → 85 → 170 → 255). 오른쪽은 기준값 T로 나눈 결과예요.</p>
+  <div class="controls">
+    <button class="btn-sub" id="heartBtn">♥ 하트</button>
+    <button class="btn-ghost" id="pxClearBtn">지우기</button>
+    <button class="btn-ghost" id="numToggleBtn">숫자 보기</button>
+    <label>기준값 T <span class="val" id="thVal">128</span></label>
+    <input type="range" id="thresh" min="1" max="254" step="1" value="128">
+  </div>
+  <div class="sim-grid">
+    <div><canvas id="drawCanvas" width="320" height="320"></canvas><p class="note" style="text-align:center">그리기 (8×8)</p></div>
+    <div><canvas id="binCanvas" width="320" height="320"></canvas><p class="note" style="text-align:center">이진화 결과</p></div>
+  </div>
+  <div class="point" style="margin-top:12px">
+    <h3>🔹 수학적 특징</h3>
+    <p>① 픽셀 하나 = 숫자 하나 (0 검정 ~ 255 흰색) ② 해상도 = 행렬의 크기 — 8×8은 장난감, 스마트폰 사진은 수백만 개의 숫자 ③ 컴퓨터는 '하트'를 모릅니다. 숫자 패턴으로 모양을 읽어요.</p>
+  </div>
+  <div style="margin-top:16px"><button class="btn-copy" id="copyBtn3">📋 코드 복사</button></div>
+<pre class="code" id="pycode3"><span class="cm"># 이미지는 숫자 행렬! (8x8 하트 그리기)</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># 0 = 검정, 255 = 흰색. 숫자 64개가 모여 그림이 돼요</span>
+heart = np.array([
+    [0,0,0,0,0,0,0,0],
+    [0,255,255,0,0,255,255,0],
+    [255,255,255,255,255,255,255,255],
+    [255,255,255,255,255,255,255,255],
+    [0,255,255,255,255,255,255,0],
+    [0,0,255,255,255,255,0,0],
+    [0,0,0,255,255,0,0,0],
+    [0,0,0,0,0,0,0,0],
+])
+print(<span class="st">"행렬 모양:"</span>, heart.shape)      <span class="cm"># (8, 8): 8행 8열짜리 표!</span>
+print(<span class="st">"3행 3열의 숫자:"</span>, heart[2, 2])  <span class="cm"># 255 → 하트의 흰 부분이에요</span>
+
+<span class="cm"># 이진화: 기준값 T를 경계로 나누는 가장 단순한 '판단'</span>
+T = 128
+binary = np.where(heart >= T, 255, 0)   <span class="cm"># T 이상은 흰색, 미만은 검정</span>
+
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+plt.subplot(1, 2, 1)
+plt.imshow(heart, cmap=<span class="st">"gray"</span>, vmin=0, vmax=255)
+plt.title(<span class="st">"original"</span>)
+plt.subplot(1, 2, 2)
+plt.imshow(binary, cmap=<span class="st">"gray"</span>, vmin=0, vmax=255)
+plt.title(<span class="st">"binary"</span>)</pre>
+</section>
+
+<div class="topic-head" id="topic3">
+  <h2>주제 3 · CNN — 합성곱으로 특징 찾기</h2>
+  <p>커널이라는 작은 틀을 밀어가며 "원하는 모양이 어디 있나"를 재는 것이 합성곱입니다.</p>
+</div>
+
+<section class="card">
+  <h2>7️⃣ 핵심 수식</h2>
+  <div class="formula">
+    <span class="tag">합성곱</span>
+    <span class="math">(I∗K)[i,j] = Σ<sub>m</sub>Σ<sub>n</sub> I[i+m, j+n]·K[m,n]</span>
+    <small>커널 K를 이미지 위에서 한 칸씩 밀어가며, 겹치는 부분의 내적을 구합니다.</small>
+  </div>
+  <div class="formula">
+    <span class="tag">ReLU</span>
+    <span class="math">ReLU(x) = max(0, x)</span>
+    <small>음수는 0으로 지우기. "관심 없는 건 버린다"는 단순한 규칙.</small>
+  </div>
+</section>
+
+<section class="card">
+  <h2>🔍 한 칸씩 따라가는 합성곱</h2>
+  <p class="sub">숫자 1 이미지에서 세로선을 찾는 커널을 밀어봅니다. 파란 테두리가 지금 계산 중인 칸이에요.</p>
+  <div class="controls">
+    <button class="btn-play" id="convNextBtn">▶ 다음 칸</button>
+    <button class="btn-ghost" id="convAutoBtn">자동 재생</button>
+    <button class="btn-ghost" id="convResetBtn">↺ 초기화</button>
+  </div>
+  <div style="display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start;">
+    <div><div class="mini-grid g6" id="imgGrid"></div><p class="note" style="text-align:center">입력 이미지 (6×6)</p></div>
+    <div><div class="mini-grid g3" id="kerGrid"></div><p class="note" style="text-align:center">커널: 세로선 찾기 (3×3)</p></div>
+    <div><div class="mini-grid g4" id="outGrid"></div><p class="note" style="text-align:center">특징맵 (4×4)</p></div>
+  </div>
+  <p id="convCalc" style="font-size:14px; color:#333; min-height:44px; margin-top:12px; font-family:Consolas,monospace;">다음 칸을 눌러보세요.</p>
+  <div class="point">
+    <h3>🔹 수학적 특징</h3>
+    <p>① 내적 = 유사도 재기 — 커널(찾고 싶은 모양)과 겹치는 부분이 닮을수록 큰 값 ② 커널을 밀어가는 이유: "세로선이 어디에 있나" 지도를 만들기 위해 ③ 층을 쌓으면 선 → 모양 → 물체 순으로 점점 복잡한 특징을 찾습니다.</p>
+  </div>
+  <div style="margin-top:16px"><button class="btn-copy" id="copyBtn4">📋 코드 복사</button></div>
+<pre class="code" id="pycode4"><span class="cm"># 합성곱: 커널을 밀어가며 '얼마나 닮았나' 재기</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># 숫자 1 이미지 (6x6): 세로로 긴 흰 막대</span>
+img = np.array([
+    [0,0,255,255,0,0],
+    [0,0,255,255,0,0],
+    [0,0,255,255,0,0],
+    [0,0,255,255,0,0],
+    [0,0,255,255,0,0],
+    [0,0,255,255,0,0],
+], dtype=float)
+
+<span class="cm"># 세로선 찾기 커널 (3x3): 가운데 열만 +2, 양옆은 -1</span>
+<span class="cm"># → 세로선과 겹칠 때만 큰 값이 나와요!</span>
+kernel = np.array([
+    [-1, 2,-1],
+    [-1, 2,-1],
+    [-1, 2,-1],
+], dtype=float)
+
+h, w = img.shape        <span class="cm"># 이미지 크기 (6, 6)</span>
+kh, kw = kernel.shape   <span class="cm"># 커널 크기 (3, 3)</span>
+out = np.zeros((h-kh+1, w-kw+1))   <span class="cm"># 결과가 담길 4x4 바구니</span>
+
+<span class="kw">for</span> i <span class="kw">in</span> range(h-kh+1):      <span class="cm"># 커널을 위에서 아래로 밀기</span>
+    <span class="kw">for</span> j <span class="kw">in</span> range(w-kw+1):  <span class="cm"># 왼쪽에서 오른쪽으로 밀기</span>
+        patch = img[i:i+kh, j:j+kw]   <span class="cm"># 지금 커널이 덮고 있는 3x3 조각</span>
+        out[i, j] = np.sum(patch * kernel)   <span class="cm"># 내적! 닮을수록 큰 값</span>
+
+out = np.maximum(out, 0)   <span class="cm"># ReLU: 음수는 0으로 지우기</span>
+print(<span class="st">"특징맵 (세로선이 있는 곳만 하얗게!):"</span>)
+print(out.astype(int))</pre>
+</section>
+
+<div class="topic-head" id="topic4">
+  <h2>주제 4 · 자연어처리 — 코사인 유사도로 문장 찾기</h2>
+  <p>문장을 화살표(벡터)로 바꾸면, "의미가 비슷한가"는 각도 문제로 바뀝니다.</p>
+</div>
+
+<section class="card">
+  <h2>8️⃣ 핵심 수식</h2>
+  <div class="formula">
+    <span class="tag">코사인 유사도</span>
+    <span class="math">cos θ = (A·B) / (|A||B|)</span>
+    <small>두 화살표가 같은 방향을 볼수록 1에 가까워지는 '관련성 점수'.</small>
+  </div>
+  <div class="formula">
+    <span class="tag">벡터의 길이</span>
+    <span class="math">|A| = √(a₁² + a₂² + … + aₙ²)</span>
+    <small>길이로 나누는 이유: 문장 길이에 속지 않고 '방향'만 보기 위해서.</small>
+  </div>
+</section>
+
+<section class="card">
+  <h2>📐 각도를 돌려보는 유사도</h2>
+  <p class="sub">파란 화살표는 고정, 빨간 화살표의 각도를 바꿔보세요.</p>
+  <div class="controls">
+    <label>빨간 화살표 각도 <span class="val" id="angVal">45°</span></label>
+    <input type="range" id="ang" min="0" max="180" step="1" value="45">
+  </div>
+  <div class="sim-grid">
+    <div><canvas id="vecCanvas" width="440" height="340"></canvas></div>
+    <div>
+      <div class="stat"><span>cos θ <b id="cosVal">0.707</b></span></div>
+      <p id="cosMsg" style="font-size:15px; color:#333; margin-top:8px;"></p>
+      <div class="point" style="margin-top:12px">
+        <h3>🔹 수학적 특징</h3>
+        <p>① 단어를 숫자로 바꾸는 게 출발점 (토큰 → ID → 빈도 벡터) ② 코사인 = 각도의 코사인. 1에 가까울수록 같은 방향 = 비슷한 의미 ③ 길이를 나누는 이유: 문장 길이에 속지 않고 방향만 보기 위해 ④ 이 원리가 검색 AI(RAG)의 핵심입니다.</p>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:16px"><button class="btn-copy" id="copyBtn5">📋 코드 복사</button></div>
+<pre class="code" id="pycode5"><span class="cm"># 문장을 숫자로 바꿔 가장 비슷한 문장 찾기!</span>
+corpus = [
+    <span class="st">"점순이가 나에게 감자를 주었다"</span>,
+    <span class="st">"감자를 받아서 기분이 좋았다"</span>,
+    <span class="st">"학교 규정을 잘 지켜야 한다"</span>,
+]
+
+<span class="cm"># --- 1. 단어 사전 만들기: 처음 보는 단어마다 번호표(ID) 붙이기 ---</span>
+vocab = sorted(set(<span class="st">" "</span>.join(corpus).split()))
+print(<span class="st">"단어 사전:"</span>, vocab)
+
+<span class="cm"># --- 2. 문장을 벡터로: 각 단어가 몇 번 나왔는지 세기 ---</span>
+<span class="kw">def</span> vectorize(text):
+    words = text.split()
+    <span class="kw">return</span> [words.count(w) <span class="kw">for</span> w <span class="kw">in</span> vocab]   <span class="cm"># [0, 1, 0, ...] 빈도표</span>
+
+<span class="cm"># --- 3. 코사인 유사도 = (A·B) / (|A|*|B|) ---</span>
+<span class="kw">import</span> math
+<span class="kw">def</span> cosine(v1, v2):
+    dot = sum(a*b <span class="kw">for</span> a, b <span class="kw">in</span> zip(v1, v2))   <span class="cm"># 분자: 내적 (같은 방향 성분)</span>
+    n1 = math.sqrt(sum(a*a <span class="kw">for</span> a <span class="kw">in</span> v1))      <span class="cm"># 분모: 화살표의 길이</span>
+    n2 = math.sqrt(sum(b*b <span class="kw">for</span> b <span class="kw">in</span> v2))
+    <span class="kw">return</span> dot / (n1 * n2)                    <span class="cm"># -1 ~ 1 사이 값</span>
+
+<span class="cm"># --- 4. 질문과 가장 비슷한 문장 찾기 (미니 AI 에이전트!) ---</span>
+query = <span class="st">"감자를 받은 기분"</span>
+qv = vectorize(query)
+best, best_s = <span class="st">""</span>, -1
+<span class="kw">for</span> s <span class="kw">in</span> corpus:
+    sim = cosine(qv, vectorize(s))
+    print(<span class="st">f"{sim:.3f}  ← {s}"</span>)
+    <span class="kw">if</span> sim > best_s:
+        best, best_s = s, sim
+print(<span class="st">f"\n🤖 에이전트의 답변: '{best}' (유사도 {best_s:.3f})"</span>)</pre>
+</section>
+
+<div class="topic-head" id="topic5">
+  <h2>주제 5 · 음성인식 — 소리는 사인파</h2>
+  <p>마이크가 듣는 소리는 결국 떨림의 기록. 사인파 하나로 음의 높이를 이해합니다.</p>
+</div>
+
+<section class="card">
+  <h2>9️⃣ 핵심 수식</h2>
+  <div class="formula">
+    <span class="tag">소리 파형</span>
+    <span class="math">y(t) = A·sin(2πft)</span>
+    <small>A는 진폭(소리의 크기), f는 진동수(1초에 몇 번 떨리는가 = 음의 높이).</small>
+  </div>
+  <div class="formula">
+    <span class="tag">샘플링</span>
+    <span class="math">1초에 N번 재기 (예: 16,000번)</span>
+    <small>연속인 소리를 숫자로 바꾸는 과정. N이 클수록 원래 소리에 가깝다.</small>
+  </div>
+</section>
+
+<section class="card">
+  <h2>🔊 주파수를 돌려보는 소리</h2>
+  <p class="sub">슬라이더를 움직이면 파형이 바뀌고, 실제 소리도 들을 수 있어요.</p>
+  <div class="controls">
+    <label>진동수 f <span class="val" id="freqVal">440 Hz</span></label>
+    <input type="range" id="freq" min="110" max="880" step="1" value="440">
+    <button class="btn-play" id="toneBtn">🔊 소리 듣기</button>
+  </div>
+  <div class="controls">
+    <button class="btn-sub" data-f="261.63">도</button>
+    <button class="btn-sub" data-f="293.66">레</button>
+    <button class="btn-sub" data-f="329.63">미</button>
+    <button class="btn-sub" data-f="392.00">솔</button>
+    <button class="btn-sub" data-f="440.00">라</button>
+  </div>
+  <canvas id="waveCanvas" width="880" height="260" style="max-width:100%"></canvas>
+  <p class="note" style="text-align:center">y = 0.5·sin(2πft) — 0.02초 구간 확대</p>
+  <div class="point" style="margin-top:12px">
+    <h3>🔹 수학적 특징</h3>
+    <p>① f(진동수) = 1초에 몇 번 떨리는가 → 음의 높이 ② A(진폭) = 얼마나 세게 → 소리의 크기 ③ sin 안의 2πf: 1초에 f바퀴를 돈다는 뜻 ④ 샘플링: 연속인 소리를 숫자로 바꾸는 과정 (CD 음질은 44,100Hz).</p>
+  </div>
+  <div style="margin-top:16px"><button class="btn-copy" id="copyBtn6">📋 코드 복사</button></div>
+<pre class="code" id="pycode6"><span class="cm"># 소리 만들기: y = A * sin(2πft)</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+sr = 16000   <span class="cm"># 샘플링: 1초에 16,000번 소리를 잘게 쪼개 숫자로 기록</span>
+t = np.linspace(0, 1, sr, endpoint=False)   <span class="cm"># 1초간의 시간 눈금 16,000개</span>
+
+f = 440      <span class="cm"># 진동수: 1초에 440번 떨림 = '라(A4)' 음의 높이!</span>
+A = 0.5      <span class="cm"># 진폭: 얼마나 세게 떨리는지 = 소리의 크기</span>
+wave = A * np.sin(2 * np.pi * f * t)   <span class="cm"># 2πf: 1초에 f바퀴 돈다는 뜻</span>
+
+print(<span class="st">"숫자 16,000개로 1초 소리를 표현했어요!"</span>)
+print(<span class="st">"처음 5개 숫자:"</span>, wave[:5].round(3))
+
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+plt.plot(t[:400], wave[:400])   <span class="cm"># 너무 많으니 처음 400개만 확대해서 보기</span>
+plt.xlabel(<span class="st">"time (s)"</span>)
+plt.title(<span class="st">"440 Hz sine wave"</span>)
+plt.grid(alpha=0.3)</pre>
 </section>
 
 </main>
@@ -493,6 +802,237 @@ document.getElementById('copyBtn2').onclick=()=>{
     .then(()=>alert('복사됐어요!'));
 };
 setGroup(0); drawClf(); cStats();
+
+// ---------- 6. 숫자 그림판 ----------
+const HEART = [
+  [0,0,0,0,0,0,0,0],
+  [0,255,255,0,0,255,255,0],
+  [255,255,255,255,255,255,255,255],
+  [255,255,255,255,255,255,255,255],
+  [0,255,255,255,255,255,255,0],
+  [0,0,255,255,255,255,0,0],
+  [0,0,0,255,255,0,0,0],
+  [0,0,0,0,0,0,0,0]
+];
+let px = HEART.map(r=>r.slice());
+let showNums = false;
+const LEVELS = [0, 85, 170, 255];
+const drawC = document.getElementById('drawCanvas');
+const binC = document.getElementById('binCanvas');
+const dctx = drawC.getContext('2d'), bctx = binC.getContext('2d');
+
+function drawPx(){
+  const s = drawC.width/8;
+  for(let i=0;i<8;i++) for(let j=0;j<8;j++){
+    const v = px[i][j];
+    dctx.fillStyle = 'rgb('+v+','+v+','+v+')';
+    dctx.fillRect(j*s, i*s, s, s);
+    dctx.strokeStyle = '#999'; dctx.strokeRect(j*s+.5, i*s+.5, s-1, s-1);
+    if(showNums){
+      dctx.fillStyle = v > 128 ? '#111' : '#eee';
+      dctx.font = '11px monospace'; dctx.textAlign='center'; dctx.textBaseline='middle';
+      dctx.fillText(v, j*s+s/2, i*s+s/2);
+    }
+  }
+  const T = parseInt(document.getElementById('thresh').value);
+  for(let i=0;i<8;i++) for(let j=0;j<8;j++){
+    const v = px[i][j] >= T ? 255 : 0;
+    bctx.fillStyle = 'rgb('+v+','+v+','+v+')';
+    bctx.fillRect(j*s, i*s, s, s);
+    bctx.strokeStyle = '#999'; bctx.strokeRect(j*s+.5, i*s+.5, s-1, s-1);
+  }
+}
+drawC.addEventListener('click', e=>{
+  const r = drawC.getBoundingClientRect();
+  const j = Math.floor((e.clientX-r.left)/(r.width/8));
+  const i = Math.floor((e.clientY-r.top)/(r.height/8));
+  if(i<0||i>7||j<0||j>7) return;
+  px[i][j] = LEVELS[(LEVELS.indexOf(px[i][j])+1)%LEVELS.length];
+  drawPx();
+});
+document.getElementById('heartBtn').onclick=()=>{ px=HEART.map(r=>r.slice()); drawPx(); };
+document.getElementById('pxClearBtn').onclick=()=>{ px=Array.from({length:8},()=>Array(8).fill(0)); drawPx(); };
+document.getElementById('numToggleBtn').onclick=e=>{ showNums=!showNums; e.target.textContent=showNums?'숫자 숨기기':'숫자 보기'; drawPx(); };
+document.getElementById('thresh').oninput=e=>{ document.getElementById('thVal').textContent=e.target.value; drawPx(); };
+document.getElementById('copyBtn3').onclick=()=>{ navigator.clipboard.writeText(document.getElementById('pycode3').innerText).then(()=>alert('복사됐어요!')); };
+drawPx();
+
+// ---------- 7. 합성곱 따라가기 ----------
+const IMG6 = [
+  [0,0,255,255,0,0],
+  [0,0,255,255,0,0],
+  [0,0,255,255,0,0],
+  [0,0,255,255,0,0],
+  [0,0,255,255,0,0],
+  [0,0,255,255,0,0]
+];
+const KER3 = [[-1,2,-1],[-1,2,-1],[-1,2,-1]];
+let convStep = 0, convTimer = null;
+const outVals = Array.from({length:4},()=>Array(4).fill(null));
+
+function buildGrid(el, rows, cols, cls){
+  el.className = 'mini-grid ' + cls;
+  el.innerHTML = '';
+  const cells = [];
+  for(let i=0;i<rows;i++) for(let j=0;j<cols;j++){
+    const d = document.createElement('div');
+    d.className = 'mcell'; el.appendChild(d); cells.push(d);
+  }
+  return cells;
+}
+const imgCells = buildGrid(document.getElementById('imgGrid'), 6, 6, 'g6');
+const kerCells = buildGrid(document.getElementById('kerGrid'), 3, 3, 'g3');
+const outCells = buildGrid(document.getElementById('outGrid'), 4, 4, 'g4');
+
+function paintStatic(){
+  IMG6.forEach((row,i)=>row.forEach((v,j)=>{
+    const c = imgCells[i*6+j];
+    c.style.background = 'rgb('+v+','+v+','+v+')';
+    c.textContent = v; c.style.color = v > 128 ? '#111' : '#eee';
+  }));
+  KER3.forEach((row,i)=>row.forEach((v,j)=>{
+    const c = kerCells[i*3+j];
+    c.style.background = v>0 ? '#c8e6c9' : (v<0 ? '#ffcdd2' : '#f5f5f5');
+    c.textContent = v; c.style.color = '#333';
+  }));
+}
+function paintOut(){
+  outCells.forEach((c,k)=>{
+    const i = Math.floor(k/4), j = k%4;
+    const v = outVals[i][j];
+    if(v===null){ c.style.background='#fafafa'; c.textContent='?'; c.style.color='#bbb'; }
+    else {
+      const g = Math.max(0, Math.min(255, Math.round(v/3)));
+      c.style.background = 'rgb('+g+','+g+','+g+')';
+      c.textContent = v; c.style.color = g > 128 ? '#111' : '#eee';
+    }
+  });
+}
+function paintHi(i0, j0){
+  imgCells.forEach((c,k)=>{
+    const i=Math.floor(k/6), j=k%6;
+    c.style.outline = (i>=i0&&i<i0+3&&j>=j0&&j<j0+3) ? '3px solid #1a73e8' : 'none';
+  });
+}
+function convStepOnce(){
+  if(convStep >= 16){ convStop(); return; }
+  const i0 = Math.floor(convStep/4), j0 = convStep%4;
+  let s = 0; const terms = [];
+  for(let m=0;m<3;m++) for(let n=0;n<3;n++){
+    const iv = IMG6[i0+m][j0+n], kv = KER3[m][n];
+    terms.push('('+iv+'×'+kv+')');
+    s += iv*kv;
+  }
+  const relu = Math.max(0, s);
+  outVals[i0][j0] = relu;
+  paintHi(i0,j0); paintOut();
+  document.getElementById('convCalc').innerHTML =
+    '칸 ('+i0+', '+j0+'): '+terms.join('+')+' = <b>'+s+'</b> → ReLU → <b>'+relu+'</b>';
+  convStep++;
+}
+function convStop(){
+  clearInterval(convTimer); convTimer=null;
+  document.getElementById('convAutoBtn').textContent='자동 재생';
+}
+document.getElementById('convNextBtn').onclick=()=>{ convStop(); convStepOnce(); };
+document.getElementById('convAutoBtn').onclick=e=>{
+  if(convTimer){ convStop(); return; }
+  e.target.textContent='⏸ 정지';
+  convTimer=setInterval(()=>{ if(convStep>=16){convStop();return;} convStepOnce(); },700);
+};
+document.getElementById('convResetBtn').onclick=()=>{
+  convStop(); convStep=0;
+  outVals.forEach(r=>r.fill(null));
+  paintHi(-10,-10); paintOut();
+  document.getElementById('convCalc').textContent='다음 칸을 눌러보세요.';
+};
+document.getElementById('copyBtn4').onclick=()=>{ navigator.clipboard.writeText(document.getElementById('pycode4').innerText).then(()=>alert('복사됐어요!')); };
+paintStatic(); paintOut();
+
+// ---------- 8. 코사인 유사도 ----------
+const vecC = document.getElementById('vecCanvas');
+const vctx = vecC.getContext('2d');
+function arrow(c, x1,y1,x2,y2,color){
+  c.strokeStyle=color; c.fillStyle=color; c.lineWidth=4;
+  c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke();
+  const a=Math.atan2(y2-y1,x2-x1);
+  c.beginPath();
+  c.moveTo(x2,y2);
+  c.lineTo(x2-14*Math.cos(a-0.4), y2-14*Math.sin(a-0.4));
+  c.lineTo(x2-14*Math.cos(a+0.4), y2-14*Math.sin(a+0.4));
+  c.closePath(); c.fill(); c.lineWidth=1;
+}
+function drawVec(){
+  const ang = parseFloat(document.getElementById('ang').value);
+  const cx0=220, cy0=200, L=130;
+  vctx.clearRect(0,0,vecC.width,vecC.height);
+  vctx.strokeStyle='#e0e0e0';
+  vctx.beginPath(); vctx.moveTo(20,cy0); vctx.lineTo(vecC.width-20,cy0);
+  vctx.moveTo(cx0,20); vctx.lineTo(cx0,vecC.height-20); vctx.stroke();
+  arrow(vctx, cx0, cy0, cx0+L, cy0, '#1a73e8');
+  const rad = ang*Math.PI/180;
+  arrow(vctx, cx0, cy0, cx0+L*Math.cos(rad), cy0-L*Math.sin(rad), '#e53935');
+  vctx.strokeStyle='#888'; vctx.lineWidth=1.5;
+  vctx.beginPath(); vctx.arc(cx0,cy0,40,-rad,0); vctx.stroke();
+  const cosv = Math.cos(rad);
+  document.getElementById('angVal').textContent = ang+'°';
+  document.getElementById('cosVal').textContent = cosv.toFixed(3);
+  document.getElementById('cosMsg').textContent =
+    ang < 30 ? '→ 거의 같은 방향! 매우 비슷해요.' :
+    ang < 90 ? '→ 어느 정도 비슷해요.' :
+    ang < 120 ? '→ 별로 관련이 없어요.' : '→ 반대 방향! 정반대 의미에 가까워요.';
+}
+document.getElementById('ang').oninput = drawVec;
+document.getElementById('copyBtn5').onclick=()=>{ navigator.clipboard.writeText(document.getElementById('pycode5').innerText).then(()=>alert('복사됐어요!')); };
+drawVec();
+
+// ---------- 9. 소리 파형 ----------
+const waveC = document.getElementById('waveCanvas');
+const wctx = waveC.getContext('2d');
+function drawWave(){
+  const f = parseFloat(document.getElementById('freq').value);
+  wctx.clearRect(0,0,waveC.width,waveC.height);
+  const W=waveC.width, H=waveC.height, mid=H/2;
+  wctx.strokeStyle='#e0e0e0'; wctx.lineWidth=1;
+  wctx.beginPath(); wctx.moveTo(0,mid); wctx.lineTo(W,mid); wctx.stroke();
+  wctx.strokeStyle='#1a73e8'; wctx.lineWidth=2.5; wctx.beginPath();
+  const dur = 0.02;
+  for(let pxi=0; pxi<=W; pxi++){
+    const t = pxi/W*dur;
+    const y = 0.5*Math.sin(2*Math.PI*f*t);
+    const py = mid - y*(H*0.42);
+    pxi===0 ? wctx.moveTo(pxi,py) : wctx.lineTo(pxi,py);
+  }
+  wctx.stroke(); wctx.lineWidth=1;
+  document.getElementById('freqVal').textContent = Math.round(f)+' Hz';
+  wctx.fillStyle='#666'; wctx.font='13px sans-serif';
+  wctx.fillText('주기 T = 1/'+Math.round(f)+'초 ≈ '+(1000/f).toFixed(2)+'ms', 12, 22);
+}
+let actx = null;
+function playTone(){
+  const f = parseFloat(document.getElementById('freq').value);
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==='suspended') actx.resume();
+    const o=actx.createOscillator(), g=actx.createGain();
+    o.type='sine'; o.frequency.value=f;
+    g.gain.setValueAtTime(0.0001, actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.4, actx.currentTime+0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime+1.0);
+    o.connect(g); g.connect(actx.destination);
+    o.start(); o.stop(actx.currentTime+1.05);
+  }catch(err){ alert('이 브라우저에서는 소리 재생이 안 돼요.'); }
+}
+document.getElementById('freq').oninput = drawWave;
+document.getElementById('toneBtn').onclick = playTone;
+document.querySelectorAll('[data-f]').forEach(b=>{
+  b.onclick = ()=>{
+    document.getElementById('freq').value = b.dataset.f;
+    drawWave(); playTone();
+  };
+});
+document.getElementById('copyBtn6').onclick=()=>{ navigator.clipboard.writeText(document.getElementById('pycode6').innerText).then(()=>alert('복사됐어요!')); };
+drawWave();
 </script>
 </body>
 </html>
