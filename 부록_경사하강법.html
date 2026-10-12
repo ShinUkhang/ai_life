@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>부록 — 경사하강법: 수식으로 보는 AI의 학습</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Malgun Gothic', sans-serif; margin: 0; background: #f7f9fc; color: #222; line-height: 1.7; }
+  header { background: linear-gradient(135deg, #1a73e8, #6c3df0); color: #fff; padding: 30px 24px; }
+  header h1 { margin: 0; font-size: 26px; }
+  header p { margin: 8px 0 0; opacity: .92; font-size: 15px; }
+  .badge { display: inline-block; background: rgba(255,255,255,.25); font-size: 13px; font-weight: bold;
+           padding: 3px 12px; border-radius: 12px; margin-bottom: 10px; }
+  main { max-width: 980px; margin: 0 auto; padding: 24px 16px 60px; }
+  section.card { background: #fff; border-radius: 14px; padding: 24px; margin-bottom: 20px;
+                 box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+  h2 { font-size: 20px; margin: 0 0 6px; color: #1a73e8; }
+  .sub { color: #666; font-size: 14px; margin-bottom: 16px; }
+  .formula { background: #f0f4ff; border-left: 5px solid #1a73e8; border-radius: 0 10px 10px 0;
+             padding: 16px 20px; margin: 14px 0; font-size: 19px; }
+  .formula .tag { display: inline-block; background: #1a73e8; color: #fff; font-size: 12px; font-weight: bold;
+                  border-radius: 8px; padding: 2px 10px; margin-right: 10px; vertical-align: middle; }
+  .formula small { display: block; font-size: 14px; color: #555; margin-top: 6px; }
+  .math { font-family: 'Times New Roman', serif; font-style: italic; }
+  .controls { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; margin: 14px 0; }
+  .controls label { font-size: 14px; font-weight: bold; }
+  .controls input[type=range] { width: 180px; }
+  .controls .val { font-size: 14px; color: #1a73e8; font-weight: bold; min-width: 64px; }
+  button { font-family: inherit; cursor: pointer; border: none; border-radius: 8px; padding: 10px 22px; font-size: 15px; }
+  .btn-play { background: #1a73e8; color: #fff; font-weight: bold; }
+  .btn-ghost { background: #e8eefc; color: #1a73e8; }
+  .btn-copy { background: #f1f3f4; color: #333; font-size: 13px; padding: 6px 14px; }
+  canvas { border: 1px solid #dfe3ea; border-radius: 10px; background: #fff; max-width: 100%; }
+  .sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .sim-grid { grid-template-columns: 1fr; } }
+  .stat { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 12px; font-size: 15px; }
+  .stat b { color: #1a73e8; font-size: 18px; }
+  pre.code { background: #202124; color: #e8eaed; border-radius: 10px; padding: 18px; overflow-x: auto;
+             font-family: 'Consolas','D2Coding',monospace; font-size: 14px; line-height: 1.7; }
+  pre.code .cm { color: #9aa0a6; }
+  pre.code .kw { color: #8ab4f8; }
+  pre.code .st { color: #fdd663; }
+  .point { border: 1px solid #e0e6f0; border-radius: 10px; padding: 14px 18px; margin: 10px 0; background: #fbfcff; }
+  .point h3 { margin: 0 0 6px; font-size: 16px; color: #333; }
+  .point p { margin: 0; font-size: 14.5px; color: #444; }
+  .note { font-size: 13px; color: #888; margin-top: 10px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="badge">📎 부록 (별도 자료 · 기존 자료는 그대로 유지됩니다)</div>
+  <h1>경사하강법 — 수식으로 보는 AI의 학습</h1>
+  <p>AI가 "공부"한다는 것의 수학적 실체: 오차를 재고, 기울기를 따라 내려가는 알고리즘</p>
+</header>
+<main>
+
+<section class="card">
+  <h2>1️⃣ 핵심 수식 세 개</h2>
+  <p class="sub">선생님의 개념·증명 설명을 보조하는 요약 카드입니다.</p>
+
+  <div class="formula">
+    <span class="tag">STEP 1</span>
+    <span class="math">J(W, b) = 1/n · Σ (Wx<sub>i</sub> + b − y<sub>i</sub>)²</span>
+    <small><b>손실함수</b> — AI의 예측이 실제 답과 얼마나 틀렸는지 재는 자. 제곱을 쓰는 이유: 오차의 부호를 없애고, 큰 오차에 더 무거운 벌점을 주기 때문.</small>
+  </div>
+  <div class="formula">
+    <span class="tag">STEP 2</span>
+    <span class="math">∂J/∂W , ∂J/∂b</span>
+    <small><b>기울기(편미분)</b> — "W를 조금 키우면 오차가 늘어날까, 줄어들까?"를 알려주는 나침반. 미분값의 부호가 이동 방향을, 크기가 이동 폭의 단서가 됨.</small>
+  </div>
+  <div class="formula">
+    <span class="tag">STEP 3</span>
+    <span class="math">W ← W − α · ∂J/∂W</span>&nbsp;&nbsp;
+    <span class="math">b ← b − α · ∂J/∂b</span>
+    <small><b>업데이트 규칙</b> — α(학습률)만큼 기울기의 반대 방향으로 이동. 이 한 줄을 수백 번 반복하는 것이 곧 "학습"이다.</small>
+  </div>
+</section>
+
+<section class="card">
+  <h2>2️⃣ 직접 돌려보는 경사하강법</h2>
+  <p class="sub">학습률을 바꿔가며 실행해 보세요. α가 너무 크면 어떻게 되는지 직접 확인할 수 있습니다.</p>
+  <div class="controls">
+    <button class="btn-play" id="playBtn">▶ 학습 시작</button>
+    <button class="btn-ghost" id="resetBtn">↺ 초기화</button>
+    <label>학습률 α <span class="val" id="lrVal">0.01</span></label>
+    <input type="range" id="lr" min="0.001" max="0.12" step="0.001" value="0.01">
+    <label>속도</label>
+    <input type="range" id="speed" min="1" max="20" step="1" value="6">
+  </div>
+  <div class="sim-grid">
+    <div><canvas id="fitCanvas" width="440" height="340"></canvas><p class="note" style="text-align:center">데이터와 AI가 찾은 직선</p></div>
+    <div><canvas id="lossCanvas" width="440" height="340"></canvas><p class="note" style="text-align:center">손실함수 J의 변화</p></div>
+  </div>
+  <div class="stat">
+    <span>에포크 <b id="stEpoch">0</b></span>
+    <span>W <b id="stW">0.00</b></span>
+    <span>b <b id="stB">0.00</b></span>
+    <span>손실 J <b id="stLoss">—</b></span>
+  </div>
+  <p class="note" id="warn"></p>
+</section>
+
+<section class="card">
+  <h2>3️⃣ 파이썬 코드 (복붙용)</h2>
+  <p class="sub">위 시뮬레이션과 정확히 같은 알고리즘입니다. 주석의 [수식] 표시가 각 코드 줄과 대응됩니다.</p>
+  <button class="btn-copy" id="copyBtn">📋 코드 복사</button>
+<pre class="code" id="pycode"><span class="cm"># [수식 STEP 1] 데이터와 손실함수 준비</span>
+x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+y = [2.1, 3.8, 6.2, 7.9, 10.2, 12.1, 13.9, 16.2, 18.0, 20.3]
+n = len(x)
+
+<span class="kw">def</span> loss(W, b):                       <span class="cm"># J(W, b) = 1/n * Σ(Wx + b - y)^2</span>
+    <span class="kw">return</span> sum((W*xi + b - yi)**2 <span class="kw">for</span> xi, yi <span class="kw">in</span> zip(x, y)) / n
+
+<span class="cm"># [수식 STEP 2·3] 기울기를 구해 반대 방향으로 이동</span>
+alpha = 0.01   <span class="cm"># 학습률 α</span>
+W, b = 0.0, 0.0
+<span class="kw">for</span> epoch <span class="kw">in</span> range(500):
+    dW = sum(2*(W*xi + b - yi)*xi <span class="kw">for</span> xi, yi <span class="kw">in</span> zip(x, y)) / n  <span class="cm"># ∂J/∂W</span>
+    db = sum(2*(W*xi + b - yi) <span class="kw">for</span> xi, yi <span class="kw">in</span> zip(x, y)) / n      <span class="cm"># ∂J/∂b</span>
+    W = W - alpha * dW   <span class="cm"># W ← W - α·∂J/∂W</span>
+    b = b - alpha * db   <span class="cm"># b ← b - α·∂J/∂b</span>
+
+print(<span class="st">f"찾은 규칙: y = {W:.2f}x + {b:.2f}"</span>)
+print(<span class="st">f"최종 손실: {loss(W, b):.4f}"</span>)</pre>
+</section>
+
+<section class="card">
+  <h2>4️⃣ 수학적 특징 포인트</h2>
+  <div class="point">
+    <h3>🔹 왜 하필 '제곱' 오차인가?</h3>
+    <p>절댓값도 오차를 잴 수 있지만, 제곱은 <b>미분 가능</b>하고 큰 오차에 <b>제곱으로 벌점</b>을 줍니다. "조금 틀린 건 봐주지만 크게 틀리면 혼난다"는 수학적 표현이죠. 이 선택이 미분 기반 학습을 가능하게 합니다.</p>
+  </div>
+  <div class="point">
+    <h3>🔹 미분은 '나침반'이다</h3>
+    <p>∂J/∂W &gt; 0 이면 W를 줄여야 손실이 줄고, &lt; 0 이면 늘려야 합니다. 미분은 단순한 계산이 아니라 <b>"어느 쪽으로 가야 하는가"에 대한 답</b>입니다. 기울기가 0이 되는 지점이 바로 최적점입니다.</p>
+  </div>
+  <div class="point">
+    <h3>🔹 학습률 α의 딜레마</h3>
+    <p>α가 너무 작으면 수렴이 느리고, 너무 크면 최적점을 지나쳐 <b>발산</b>합니다. 위 시뮬레이션에서 α를 0.1 이상으로 올려보면 손실이 폭발하는 것을 확인할 수 있어요. 하이퍼파라미터 조율이 곧 이 균형 잡기입니다.</p>
+  </div>
+  <div class="point">
+    <h3>🔹 반복이 곧 학습이다</h3>
+    <p>에포크(epoch)는 "문제집 전체를 몇 번 풀었는가"입니다. 한 번의 업데이트는 미미하지만, 수백 번의 반복이 직선을 데이터에 밀착시킵니다. AI의 학습은 마법이 아니라 <b>반복된 미세 조정</b>입니다.</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+// ---------- 데이터 ----------
+const DX = [1,2,3,4,5,6,7,8,9,10];
+const DY = [2.1,3.8,6.2,7.9,10.2,12.1,13.9,16.2,18.0,20.3];
+const N = DX.length;
+let W = 0, b = 0, epoch = 0, playing = false, timer = null;
+let lossHist = [];
+
+function loss(w, bb) {
+  let s = 0;
+  for (let i = 0; i < N; i++) { const e = w*DX[i] + bb - DY[i]; s += e*e; }
+  return s / N;
+}
+function grads(w, bb) {
+  let dW = 0, db = 0;
+  for (let i = 0; i < N; i++) {
+    const e = w*DX[i] + bb - DY[i];
+    dW += 2*e*DX[i]; db += 2*e;
+  }
+  return [dW/N, db/N];
+}
+
+const fitC = document.getElementById('fitCanvas'), lossC = document.getElementById('lossCanvas');
+const fx = fitC.getContext('2d'), lx = lossC.getContext('2d');
+
+function drawFit() {
+  const w = fitC.width, h = fitC.height, pad = 40;
+  fx.clearRect(0,0,w,h);
+  const X = v => pad + (v-0)/(11-0)*(w-2*pad);
+  const Y = v => h-pad - (v-0)/(22-0)*(h-2*pad);
+  fx.strokeStyle = '#e0e0e0';
+  fx.beginPath(); fx.moveTo(pad,pad); fx.lineTo(pad,h-pad); fx.lineTo(w-pad,h-pad); fx.stroke();
+  // 데이터 점
+  fx.fillStyle = '#1a73e8';
+  for (let i = 0; i < N; i++) { fx.beginPath(); fx.arc(X(DX[i]), Y(DY[i]), 6, 0, 7); fx.fill(); }
+  // 현재 직선
+  fx.strokeStyle = '#e53935'; fx.lineWidth = 3; fx.beginPath();
+  fx.moveTo(X(0), Y(b)); fx.lineTo(X(11), Y(W*11+b)); fx.stroke(); fx.lineWidth = 1;
+  fx.fillStyle = '#666'; fx.font = '12px sans-serif';
+  fx.fillText('공부 시간 →', w-90, h-12);
+}
+
+function drawLoss() {
+  const w = lossC.width, h = lossC.height, pad = 40;
+  lx.clearRect(0,0,w,h);
+  lx.strokeStyle = '#e0e0e0';
+  lx.beginPath(); lx.moveTo(pad,pad); lx.lineTo(pad,h-pad); lx.lineTo(w-pad,h-pad); lx.stroke();
+  if (lossHist.length < 2) return;
+  const mx = Math.max(...lossHist, 1);
+  lx.strokeStyle = '#6c3df0'; lx.lineWidth = 2.5; lx.beginPath();
+  lossHist.forEach((v,i) => {
+    const px = pad + i/Math.max(lossHist.length-1,1)*(w-2*pad);
+    const py = h-pad - Math.min(v/mx,1)*(h-2*pad);
+    i ? lx.lineTo(px,py) : lx.moveTo(px,py);
+  });
+  lx.stroke(); lx.lineWidth = 1;
+  lx.fillStyle = '#666'; lx.font = '12px sans-serif';
+  lx.fillText('에포크 →', w-80, h-12);
+}
+
+function stats() {
+  document.getElementById('stEpoch').textContent = epoch;
+  document.getElementById('stW').textContent = W.toFixed(3);
+  document.getElementById('stB').textContent = b.toFixed(3);
+  const L = loss(W,b);
+  document.getElementById('stLoss').textContent = isFinite(L) ? L.toFixed(3) : '발산!';
+  document.getElementById('warn').textContent =
+    !isFinite(L) ? '⚠️ 손실이 발산했습니다 — 학습률 α를 낮춰보세요.' : '';
+}
+
+function step() {
+  const alpha = parseFloat(document.getElementById('lr').value);
+  const [dW, db] = grads(W, b);
+  W -= alpha * dW; b -= alpha * db;
+  epoch++;
+  const L = loss(W,b);
+  lossHist.push(isFinite(L) ? L : lossHist[lossHist.length-1]*2);
+  if (lossHist.length > 400) lossHist.shift();
+  drawFit(); drawLoss(); stats();
+  if (!isFinite(L)) stop();
+}
+
+function play() {
+  if (playing) return;
+  playing = true;
+  document.getElementById('playBtn').textContent = '⏸ 일시정지';
+  const speed = parseInt(document.getElementById('speed').value);
+  timer = setInterval(() => { for (let i=0;i<speed;i++) step(); }, 60);
+}
+function stop() {
+  playing = false; clearInterval(timer);
+  document.getElementById('playBtn').textContent = '▶ 학습 시작';
+}
+document.getElementById('playBtn').onclick = () => playing ? stop() : play();
+document.getElementById('resetBtn').onclick = () => {
+  stop(); W = 0; b = 0; epoch = 0; lossHist = [];
+  drawFit(); drawLoss(); stats();
+};
+document.getElementById('lr').oninput = e => {
+  document.getElementById('lrVal').textContent = parseFloat(e.target.value).toFixed(3);
+};
+document.getElementById('copyBtn').onclick = () => {
+  navigator.clipboard.writeText(document.getElementById('pycode').innerText)
+    .then(() => alert('복사됐어요!'));
+};
+
+drawFit(); drawLoss(); stats();
+</script>
+</body>
+</html>
