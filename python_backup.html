@@ -45,6 +45,7 @@
     <div class="row">
       <button class="btn-sub" id="exBasic">📝 기본 예제</button>
       <button class="btn-sub" id="exReg">📈 선형회귀 맛보기</button>
+      <button class="btn-sub" id="exClf">🎯 로지스틱 회귀</button>
       <span id="status">⏳ 파이썬 준비 중... (첫 로딩에 20~30초 걸려요)</span>
     </div>
     <textarea id="code" spellcheck="false" placeholder="여기에 파이썬 코드를 붙여넣으세요"></textarea>
@@ -104,6 +105,76 @@ plt.ylabel("score")
 plt.title("Linear Regression")
 plt.legend()
 plt.grid(alpha=0.3)
+`,
+clf: `# 로지스틱 회귀: 두 그룹을 직선 하나로 구분하기
+# CSV로 다운받은 내용을 아래 csv_text에 붙여넣으세요!
+
+csv_text = """x1,x2,label
+1.0,1.0,0
+2.0,1.5,0
+1.5,2.5,0
+2.5,2.0,0
+3.0,1.0,0
+6.0,6.0,1
+7.0,5.5,1
+5.5,7.0,1
+7.0,7.0,1
+6.0,5.0,1
+"""
+
+# 1. CSV 문자열을 숫자 표로 바꾸기
+lines = csv_text.strip().split("\\n")
+data = []
+for row in lines[1:]:
+    if row.strip():
+        x1, x2, y = row.split(",")
+        data.append([float(x1), float(x2), int(y)])
+n = len(data)
+print(f"점 {n}개를 읽었어요!")
+
+# 2. 시그모이드: 어떤 숫자든 0~1 사이 확률로 눌러주기
+import math
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+# 3. 경사하강법으로 구분 직선 찾기 (회귀 때와 같은 구조!)
+w1, w2, b = 0.0, 0.0, 0.0
+alpha = 0.1
+for epoch in range(2000):
+    dw1 = dw2 = db = 0.0
+    for x1, x2, y in data:
+        yhat = sigmoid(w1*x1 + w2*x2 + b)
+        err = yhat - y
+        dw1 += err * x1
+        dw2 += err * x2
+        db += err
+    w1 -= alpha * dw1 / n
+    w2 -= alpha * dw2 / n
+    b -= alpha * db / n
+
+# 4. 결과 확인
+correct = 0
+for x1, x2, y in data:
+    pred = 1 if sigmoid(w1*x1 + w2*x2 + b) >= 0.5 else 0
+    if pred == y:
+        correct += 1
+print(f"구분 직선: {w1:.2f}*x1 + {w2:.2f}*x2 + {b:.2f} = 0")
+print(f"정확도: {correct}/{n} ({correct/n*100:.0f}%)")
+
+# 5. 그래프로 확인
+import matplotlib.pyplot as plt
+import numpy as np
+for x1, x2, y in data:
+    if y == 0:
+        plt.scatter(x1, x2, c='blue', s=60)
+    else:
+        plt.scatter(x1, x2, c='red', marker='^', s=60)
+xs = np.linspace(0, 8, 100)
+plt.plot(xs, -(w1*xs + b)/w2, 'k--', linewidth=2)
+plt.xlabel("x1")
+plt.ylabel("x2")
+plt.title("Logistic Regression")
+plt.grid(alpha=0.3)
 `
 };
 
@@ -116,6 +187,7 @@ const plotsEl = document.getElementById('plots');
 codeEl.value = EXAMPLES.basic;
 document.getElementById('exBasic').onclick = () => codeEl.value = EXAMPLES.basic;
 document.getElementById('exReg').onclick = () => codeEl.value = EXAMPLES.reg;
+document.getElementById('exClf').onclick = () => codeEl.value = EXAMPLES.clf;
 document.getElementById('clearBtn').onclick = () => { codeEl.value = ''; outputEl.textContent = '(아직 실행하지 않았어요)'; plotsEl.innerHTML = ''; };
 
 // Tab 키 들여쓰기
