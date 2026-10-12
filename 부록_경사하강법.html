@@ -516,6 +516,31 @@ print(<span class="st">f"\n🤖 에이전트의 답변: '{best}' (유사도 {bes
 </section>
 
 <section class="card">
+  <h2>🗺️ 소리가 글자가 되기까지 — 5단계</h2>
+  <p class="sub">교재의 "소리가 글자가 되는 마법"이 실제로 일어나는 순서입니다.</p>
+  <div class="point">
+    <h3>1️⃣ 마이크 — 공기의 떨림을 전압의 떨림으로</h3>
+    <p>목소리는 공기를 떨리게 하고, 마이크는 그 떨림을 전압 파형으로 바꿉니다. 아직은 연속적인 아날로그 신호예요.</p>
+  </div>
+  <div class="point">
+    <h3>2️⃣ 샘플링 — 파형을 1초에 16,000번 재기</h3>
+    <p>연속인 파형을 잘게 쪼개 숫자로 기록합니다. 이 숫자 나열이 컴퓨터가 보는 '소리'의 실체예요.</p>
+  </div>
+  <div class="point">
+    <h3>3️⃣ 주파수 분석 (FFT) — "지금 이 순간, 어떤 음높이가 얼마나 섞여 있나?"</h3>
+    <p>짧게 자른 구간마다 소리를 사인파들로 분해합니다. 시간 순서대로 늘어놓으면 <b>스펙트로그램</b>(소리의 지문)이 돼요. 아래 '푸리에 맛보기'에서 직접 확인해 보세요.</p>
+  </div>
+  <div class="point">
+    <h3>4️⃣ 음향 모델 — 소리 조각을 음소로</h3>
+    <p>"ㅇ ㅏ" 같은 소리의 최소 단위(음소)로 분류합니다. 딥러닝이 스펙트로그램을 보고 어떤 음소인지 맞혀요.</p>
+  </div>
+  <div class="point">
+    <h3>5️⃣ 언어 모델 — 음소 나열을 단어·문장으로</h3>
+    <p>"ㅂ ㅏ ㅁ"이 '밤'인지 '밤(夜)'인지 문맥으로 고릅니다. "오늘 밤이 깊었네"처럼요. AI 비서가 대답하는 것도 이 다음 단계예요.</p>
+  </div>
+</section>
+
+<section class="card">
   <h2>🔊 주파수를 돌려보는 소리</h2>
   <p class="sub">슬라이더를 움직이면 파형이 바뀌고, 실제 소리도 들을 수 있어요.</p>
   <div class="controls">
@@ -555,6 +580,19 @@ plt.plot(t[:400], wave[:400])   <span class="cm"># 너무 많으니 처음 400�
 plt.xlabel(<span class="st">"time (s)"</span>)
 plt.title(<span class="st">"440 Hz sine wave"</span>)
 plt.grid(alpha=0.3)</pre>
+</section>
+
+<section class="card">
+  <h2>➕ 푸리에 맛보기 — 복잡한 소리도 사인파들의 합</h2>
+  <p class="sub">두 사인파를 합쳐보세요. 어떤 복잡한 소리도 이렇게 쪼갤 수 있다는 게 FFT(3단계)의 아이디어예요.</p>
+  <div class="controls">
+    <label>y1 진동수 <span class="val" id="ff1Val">220 Hz</span></label>
+    <input type="range" id="ff1" min="110" max="440" step="1" value="220">
+    <label>y2 진동수 <span class="val" id="ff2Val">330 Hz</span></label>
+    <input type="range" id="ff2" min="110" max="880" step="1" value="330">
+  </div>
+  <canvas id="fourierCanvas" width="880" height="260" style="max-width:100%"></canvas>
+  <p class="note" style="text-align:center">위: y1, y2 — 아래: 합성된 소리 (보라색)</p>
 </section>
 
 </main>
@@ -1033,6 +1071,49 @@ document.querySelectorAll('[data-f]').forEach(b=>{
 });
 document.getElementById('copyBtn6').onclick=()=>{ navigator.clipboard.writeText(document.getElementById('pycode6').innerText).then(()=>alert('복사됐어요!')); };
 drawWave();
+
+// ---------- 9b. 푸리에 맛보기 ----------
+const fyC = document.getElementById('fourierCanvas');
+const fyx = fyC.getContext('2d');
+function drawFourier(){
+  const f1 = parseFloat(document.getElementById('ff1').value);
+  const f2 = parseFloat(document.getElementById('ff2').value);
+  document.getElementById('ff1Val').textContent = Math.round(f1)+' Hz';
+  document.getElementById('ff2Val').textContent = Math.round(f2)+' Hz';
+  const W=fyC.width, H=fyC.height, dur=0.02;
+  fyx.clearRect(0,0,W,H);
+  const parts=[{f:f1,a:0.5,c:'#1a73e8',label:'y1'},{f:f2,a:0.3,c:'#e53935',label:'y2'}];
+  parts.forEach((r,ri)=>{
+    const mid=H*(0.20+ri*0.27);
+    fyx.strokeStyle='#e0e0e0'; fyx.lineWidth=1;
+    fyx.beginPath(); fyx.moveTo(0,mid); fyx.lineTo(W,mid); fyx.stroke();
+    fyx.strokeStyle=r.c; fyx.globalAlpha=0.5; fyx.lineWidth=1.5; fyx.beginPath();
+    for(let pxi=0;pxi<=W;pxi++){
+      const t=pxi/W*dur;
+      const py=mid-r.a*Math.sin(2*Math.PI*r.f*t)*H*0.16;
+      pxi===0?fyx.moveTo(pxi,py):fyx.lineTo(pxi,py);
+    }
+    fyx.stroke(); fyx.globalAlpha=1; fyx.lineWidth=1;
+    fyx.fillStyle='#666'; fyx.font='12px sans-serif';
+    fyx.fillText(r.label+' = '+Math.round(r.f)+'Hz', 8, mid-H*0.13);
+  });
+  const mid=H*0.84;
+  fyx.strokeStyle='#e0e0e0'; fyx.lineWidth=1;
+  fyx.beginPath(); fyx.moveTo(0,mid); fyx.lineTo(W,mid); fyx.stroke();
+  fyx.strokeStyle='#6c3df0'; fyx.lineWidth=2.5; fyx.beginPath();
+  for(let pxi=0;pxi<=W;pxi++){
+    const t=pxi/W*dur;
+    const y=0.5*Math.sin(2*Math.PI*f1*t)+0.3*Math.sin(2*Math.PI*f2*t);
+    const py=mid-y*H*0.16;
+    pxi===0?fyx.moveTo(pxi,py):fyx.lineTo(pxi,py);
+  }
+  fyx.stroke(); fyx.lineWidth=1;
+  fyx.fillStyle='#666'; fyx.font='12px sans-serif';
+  fyx.fillText('y1 + y2 (합성된 소리)', 8, mid-H*0.17);
+}
+document.getElementById('ff1').oninput = drawFourier;
+document.getElementById('ff2').oninput = drawFourier;
+drawFourier();
 </script>
 </body>
 </html>
