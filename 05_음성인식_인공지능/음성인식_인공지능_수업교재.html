@@ -1346,6 +1346,79 @@ ipd.Audio("response.mp3", autoplay=True)</pre>
     let featA = [0.320, 0.140, 0.450, 0.760, 0.330];
     let featB = [0.300, 0.160, 0.380, 0.790, 0.360];
     let isOverlay = false;
+    // 실제 녹음 파형 저장소 (null이면 가상 합성 파형 표시)
+    let realWave = { A: null, B: null };
+
+    // ---- FFT (고속 푸리에 변환): 소리를 주파수별로 분해 ----
+    function fftMagnitude(input) {
+      const n = input.length;
+      const re = new Float64Array(n), im = new Float64Array(n);
+      for (let i = 0; i < n; i++) re[i] = input[i];
+      for (let i = 1, j = 0; i < n; i++) {
+        let bit = n >> 1;
+        for (; j & bit; bit >>= 1) j ^= bit;
+        j ^= bit;
+        if (i < j) {
+          let t = re[i]; re[i] = re[j]; re[j] = t;
+          t = im[i]; im[i] = im[j]; im[j] = t;
+        }
+      }
+      for (let len = 2; len <= n; len <<= 1) {
+        const ang = -2 * Math.PI / len;
+        const wr = Math.cos(ang), wi = Math.sin(ang);
+        for (let i = 0; i < n; i += len) {
+          let cwr = 1, cwi = 0;
+          for (let k = 0; k < len / 2; k++) {
+            const ur = re[i+k], ui = im[i+k];
+            const vr = re[i+k+len/2]*cwr - im[i+k+len/2]*cwi;
+            const vi = re[i+k+len/2]*cwi + im[i+k+len/2]*cwr;
+            re[i+k] = ur+vr; im[i+k] = ui+vi;
+            re[i+k+len/2] = ur-vr; im[i+k+len/2] = ui-vi;
+            const nwr = cwr*wr - cwi*wi;
+            cwi = cwr*wi + cwi*wr; cwr = nwr;
+          }
+        }
+      }
+      const mag = new Float64Array(n/2);
+      for (let i = 0; i < n/2; i++) mag[i] = Math.sqrt(re[i]*re[i] + im[i]*im[i]);
+      return mag;
+    }
+
+    // 녹음된 음성 → 5차원 특징 벡터 [RMS, ZCR, Low, Mid, High]
+    function analyzeAudio(samples, sampleRate) {
+      const n = samples.length;
+      let sum = 0;
+      for (let i = 0; i < n; i++) sum += samples[i] * samples[i];
+      const rms = Math.sqrt(sum / n);
+      let zc = 0;
+      for (let i = 1; i < n; i++) if ((samples[i-1] >= 0) !== (samples[i] >= 0)) zc++;
+      const zcr = zc / (n - 1);
+      const N = 8192;
+      const seg = new Float64Array(N);
+      const start = Math.max(0, Math.floor((n - N) / 2));
+      for (let i = 0; i < N; i++) {
+        const s = (start + i < n) ? samples[start + i] : 0;
+        seg[i] = s * (0.5 - 0.5 * Math.cos(2 * Math.PI * i / N));
+      }
+      const mag = fftMagnitude(seg);
+      const binHz = sampleRate / N;
+      const band = (f0, f1) => {
+        let e = 0;
+        const b0 = Math.max(1, Math.floor(f0 / binHz));
+        const b1 = Math.min(mag.length - 1, Math.ceil(f1 / binHz));
+        for (let b = b0; b <= b1; b++) e += mag[b] * mag[b];
+        return e;
+      };
+      const eLow = band(80, 500), eMid = band(500, 2000), eHigh = band(2000, 8000);
+      const eTot = eLow + eMid + eHigh + 1e-9;
+      return [rms, zcr, eLow/eTot, eMid/eTot, eHigh/eTot];
+    }
+
+    function downsample(samples, target) {
+      const out = new Float32Array(target);
+      for (let i = 0; i < target; i++) out[i] = samples[Math.floor(i / target * samples.length)];
+      return out;
+    }
 
     function renderWaveforms() {
       drawTrackCanvas('canvasWaveA', featA, '#4F46E5');
@@ -1369,22 +1442,57 @@ ipd.Audio("response.mp3", autoplay=True)</pre>
       ctx.lineTo(w, h / 2);
       ctx.stroke();
 
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      const n = w;
-      for (let x = 0; x < n; x++) {
-        // 특징 벡터 반영한 가상 합성 파형
-        const t = (x / n) * 14 * Math.PI;
-        const low = feat[2] * Math.sin(t * 0.4);
-        const mid = feat[3] * Math.sin(t * 1.8);
-        const high = feat[4] * Math.sin(t * 4.5);
-        const env = Math.sin((x / n) * Math.PI); // 엔벨로프
-        const y = (low + mid + high) * env * 0.5;
+      const track = canvasId === 'canvasWaveA' ? 'A' : 'B';
+      const samples = realWave[track];
 
-        const py = h / 2 - y * (h * 0.42);
-        if (x === 0) ctx.moveTo(x, py);
-        else ctx.lineTo(x, py);
+      ctx.strokeStyle = color;
+      ctx.beginPath();
+      if (samples) {
+        // 실제 녹음된 파형
+        ctx.lineWidth = 1.5;
+        for (let x = 0; x < w; x++) {
+          const v = samples[Math.floor(x / w * samples.length)];
+          const py = h / 2 - v * h * 0.45;
+          if (x === 0) ctx.moveTo(x, py);
+          else ctx.lineTo(x, py);
+        }
+      } else {
+        // 특징 벡터 반영한 가상 합성 파형 (프리셋용)
+        ctx.lineWidth = 2;
+        const n = w;
+        for (let x = 0; x < n; x++) {
+          const t = (x / n) * 14 * Math.PI;
+          const low = feat[2] * Math.sin(t * 0.4);
+          const mid = feat[3] * Math.sin(t * 1.8);
+          const high = feat[4] * Math.sin(t * 4.5);
+          const env = Math.sin((x / n) * Math.PI); // 엔벨로프
+          const y = (low + mid + high) * env * 0.5;
+
+          const py = h / 2 - y * (h * 0.42);
+          if (x === 0) ctx.moveTo(x, py);
+          else ctx.lineTo(x, py);
+        }
+      }
+      ctx.stroke();
+    }
+
+    function drawOverlayWave(ctx, track, waveColor, w, h) {
+      const samples = realWave[track];
+      const f = track === 'A' ? featA : featB;
+      ctx.strokeStyle = waveColor;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        let py;
+        if (samples) {
+          const v = samples[Math.floor(x / w * samples.length)];
+          py = h / 2 - v * h * 0.4;
+        } else {
+          const t = (x / w) * 14 * Math.PI;
+          const y = (f[2] * Math.sin(t * 0.4) + f[3] * Math.sin(t * 1.8) + f[4] * Math.sin(t * 4.5)) * Math.sin((x / w) * Math.PI) * 0.5;
+          py = h / 2 - y * (h * 0.4);
+        }
+        if (x === 0) ctx.moveTo(x, py); else ctx.lineTo(x, py);
       }
       ctx.stroke();
     }
@@ -1398,34 +1506,16 @@ ipd.Audio("response.mp3", autoplay=True)</pre>
       ctx.clearRect(0, 0, w, h);
 
       ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(0, h / 2);
       ctx.lineTo(w, h / 2);
       ctx.stroke();
 
       // 파형 A (Indigo 반투명)
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.85)';
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      for (let x = 0; x < w; x++) {
-        const t = (x / w) * 14 * Math.PI;
-        const y = (featA[2] * Math.sin(t * 0.4) + featA[3] * Math.sin(t * 1.8) + featA[4] * Math.sin(t * 4.5)) * Math.sin((x / w) * Math.PI) * 0.5;
-        const py = h / 2 - y * (h * 0.4);
-        if (x === 0) ctx.moveTo(x, py); else ctx.lineTo(x, py);
-      }
-      ctx.stroke();
-
+      drawOverlayWave(ctx, 'A', 'rgba(99, 102, 241, 0.85)', w, h);
       // 파형 B (Emerald 반투명)
-      ctx.strokeStyle = 'rgba(52, 211, 153, 0.85)';
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      for (let x = 0; x < w; x++) {
-        const t = (x / w) * 14 * Math.PI;
-        const y = (featB[2] * Math.sin(t * 0.4) + featB[3] * Math.sin(t * 1.8) + featB[4] * Math.sin(t * 4.5)) * Math.sin((x / w) * Math.PI) * 0.5;
-        const py = h / 2 - y * (h * 0.4);
-        if (x === 0) ctx.moveTo(x, py); else ctx.lineTo(x, py);
-      }
-      ctx.stroke();
+      drawOverlayWave(ctx, 'B', 'rgba(52, 211, 153, 0.85)', w, h);
     }
 
     function toggleOverlayView() {
@@ -1468,6 +1558,11 @@ ipd.Audio("response.mp3", autoplay=True)</pre>
         document.getElementById(`featA_${i}`).innerText = featA[i].toFixed(2);
         document.getElementById(`featB_${i}`).innerText = featB[i].toFixed(2);
       }
+      // 프리셋 선택 시 실제 녹음 파형은 초기화 (가상 파형으로 복귀)
+      realWave.A = null;
+      realWave.B = null;
+      document.getElementById('statusA').innerText = '프리셋 적용됨';
+      document.getElementById('statusB').innerText = '프리셋 적용됨';
       renderWaveforms();
     }
 
@@ -1523,31 +1618,103 @@ ipd.Audio("response.mp3", autoplay=True)</pre>
       }
     }
 
-    // 마이크 녹음 시뮬레이션 (학생 A/B)
-    function toggleRecordStudent(track) {
-      initAudio();
+    // 실제 마이크 녹음 (학생 A/B) — 2.5초 녹음 후 특징 분석
+    let isRecording = { A: false, B: false };
+    async function toggleRecordStudent(track) {
+      if (isRecording[track]) return;
       const btnText = document.getElementById(`btnTextRec${track}`);
       const status = document.getElementById(`status${track}`);
+      const canvasId = track === 'A' ? 'canvasWaveA' : 'canvasWaveB';
+      const color = track === 'A' ? '#4F46E5' : '#10B981';
 
-      btnText.innerText = '녹음 중...';
-      status.innerText = '● 마이크 음성 분석 중';
-      status.className = 'text-rose-400 font-bold animate-pulse';
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        status.innerText = '❌ 이 브라우저는 마이크를 지원하지 않아요 (크롬 권장)';
+        status.className = 'text-rose-500 font-bold';
+        return;
+      }
 
-      setTimeout(() => {
-        btnText.innerText = '녹음 완료!';
-        status.innerText = '분석 완료';
-        status.className = 'text-emerald-400 font-bold';
-        // 가상 무작위 음성 특징 약간 변형하여 부여
-        const base = track === 'A' ? featA : featB;
-        const newFeat = base.map(v => Math.max(0.1, v + (Math.random() - 0.5) * 0.08));
-        if (track === 'A') featA = newFeat;
-        else featB = newFeat;
+      let stream = null;
+      try {
+        status.innerText = '● 마이크 권한 요청 중...';
+        status.className = 'text-amber-500 font-bold animate-pulse';
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (err) {
+        status.innerText = '❌ 마이크 허용이 필요해요 (주소창 자물쇠 → 마이크 허용)';
+        status.className = 'text-rose-500 font-bold';
+        return;
+      }
+
+      isRecording[track] = true;
+      try {
+        initAudio();
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+        const src = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 2048;
+        src.connect(analyser);
+
+        const recorder = new MediaRecorder(stream);
+        const chunks = [];
+        recorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+        const stopped = new Promise(res => { recorder.onstop = res; });
+        recorder.start();
+
+        btnText.innerText = '🔴 녹음 중...';
+        status.innerText = '● 녹음 중... "안녕하세요"라고 말씀하세요!';
+        status.className = 'text-rose-500 font-bold animate-pulse';
+
+        // 실시간 파형 표시
+        const cvs = document.getElementById(canvasId);
+        const ctx = cvs.getContext('2d');
+        const data = new Uint8Array(analyser.fftSize);
+        let live = true;
+        (function drawLive() {
+          if (!live) return;
+          analyser.getByteTimeDomainData(data);
+          ctx.clearRect(0, 0, cvs.width, cvs.height);
+          ctx.strokeStyle = '#1E293B'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(0, cvs.height/2); ctx.lineTo(cvs.width, cvs.height/2); ctx.stroke();
+          ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
+          const step = cvs.width / data.length;
+          for (let i = 0; i < data.length; i++) {
+            const py = cvs.height/2 - ((data[i]-128)/128) * cvs.height * 0.42;
+            if (i === 0) ctx.moveTo(0, py); else ctx.lineTo(i*step, py);
+          }
+          ctx.stroke();
+          requestAnimationFrame(drawLive);
+        })();
+
+        await new Promise(r => setTimeout(r, 2500));
+        live = false;
+        recorder.stop();
+        await stopped;
+        stream.getTracks().forEach(t => t.stop());
+        src.disconnect();
+
+        status.innerText = '● 음성 분석 중...';
+        status.className = 'text-amber-500 font-bold animate-pulse';
+        const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+        const audioBuf = await audioCtx.decodeAudioData(await blob.arrayBuffer());
+        const samples = audioBuf.getChannelData(0);
+
+        const feat = analyzeAudio(samples, audioBuf.sampleRate);
+        if (track === 'A') { featA = feat; realWave.A = downsample(samples, 1200); }
+        else { featB = feat; realWave.B = downsample(samples, 1200); }
+
         for (let i = 0; i < 5; i++) {
-          document.getElementById(`feat${track}_${i}`).innerText = newFeat[i].toFixed(2);
+          document.getElementById(`feat${track}_${i}`).innerText = feat[i].toFixed(2);
         }
         renderWaveforms();
-        setTimeout(() => { btnText.innerText = '마이크 녹음'; }, 1500);
-      }, 1800);
+        status.innerText = '분석 완료';
+        status.className = 'text-emerald-500 font-bold';
+      } catch (err) {
+        status.innerText = '❌ 오류: ' + err.message;
+        status.className = 'text-rose-500 font-bold';
+        if (stream) stream.getTracks().forEach(t => t.stop());
+      } finally {
+        btnText.innerText = '마이크 녹음';
+        isRecording[track] = false;
+      }
     }
 
     // ==========================================
