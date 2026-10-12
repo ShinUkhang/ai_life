@@ -606,6 +606,10 @@ import numpy as np</pre>
               <i data-lucide="mic" class="w-3.5 h-3.5"></i>
               <span id="btnTextRecA">마이크 녹음</span>
             </button>
+            <button onclick="downloadWav('A')" id="btnDlA" style="display:none" class="px-3 py-1.5 rounded-xl bg-white border border-indigo-300 hover:bg-indigo-50 text-indigo-700 font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>WAV 저장</span>
+            </button>
           </div>
 
           <!-- 파형 캔버스 A -->
@@ -655,6 +659,10 @@ import numpy as np</pre>
             <button onclick="toggleRecordStudent('B')" id="btnRecB" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
               <i data-lucide="mic" class="w-3.5 h-3.5"></i>
               <span id="btnTextRecB">마이크 녹음</span>
+            </button>
+            <button onclick="downloadWav('B')" id="btnDlB" style="display:none" class="px-3 py-1.5 rounded-xl bg-white border border-emerald-300 hover:bg-emerald-50 text-emerald-700 font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>WAV 저장</span>
             </button>
           </div>
 
@@ -1420,6 +1428,51 @@ ipd.Audio("response.mp3", autoplay=True)</pre>
       return out;
     }
 
+    // 녹음 원본 저장소 (WAV 다운로드용)
+    let recordedAudio = { A: null, B: null };
+
+    // PCM 샘플 → 16bit WAV 인코딩
+    function encodeWav(samples, sampleRate) {
+      const n = samples.length;
+      const buffer = new ArrayBuffer(44 + n * 2);
+      const view = new DataView(buffer);
+      const writeStr = (off, s) => { for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); };
+      writeStr(0, 'RIFF');
+      view.setUint32(4, 36 + n * 2, true);
+      writeStr(8, 'WAVE');
+      writeStr(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeStr(36, 'data');
+      view.setUint32(40, n * 2, true);
+      for (let i = 0; i < n; i++) {
+        const s = Math.max(-1, Math.min(1, samples[i]));
+        view.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      }
+      return new Blob([buffer], { type: 'audio/wav' });
+    }
+
+    function downloadWav(track) {
+      const rec = recordedAudio[track];
+      if (!rec) return;
+      const blob = encodeWav(rec.samples, rec.sampleRate);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const d = new Date();
+      const ts = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}${String(d.getSeconds()).padStart(2,'0')}`;
+      a.download = `voice_${track}_${ts}.wav`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
+
     function renderWaveforms() {
       drawTrackCanvas('canvasWaveA', featA, '#4F46E5');
       drawTrackCanvas('canvasWaveB', featB, '#10B981');
@@ -1561,6 +1614,10 @@ ipd.Audio("response.mp3", autoplay=True)</pre>
       // 프리셋 선택 시 실제 녹음 파형은 초기화 (가상 파형으로 복귀)
       realWave.A = null;
       realWave.B = null;
+      recordedAudio.A = null;
+      recordedAudio.B = null;
+      document.getElementById('btnDlA').style.display = 'none';
+      document.getElementById('btnDlB').style.display = 'none';
       document.getElementById('statusA').innerText = '프리셋 적용됨';
       document.getElementById('statusB').innerText = '프리셋 적용됨';
       renderWaveforms();
@@ -1700,6 +1757,8 @@ ipd.Audio("response.mp3", autoplay=True)</pre>
         const feat = analyzeAudio(samples, audioBuf.sampleRate);
         if (track === 'A') { featA = feat; realWave.A = downsample(samples, 1200); }
         else { featB = feat; realWave.B = downsample(samples, 1200); }
+        recordedAudio[track] = { samples: samples, sampleRate: audioBuf.sampleRate };
+        document.getElementById(`btnDl${track}`).style.display = '';
 
         for (let i = 0; i < 5; i++) {
           document.getElementById(`feat${track}_${i}`).innerText = feat[i].toFixed(2);
