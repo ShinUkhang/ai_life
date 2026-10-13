@@ -169,12 +169,13 @@ const SWEET_MIN = 15, SWEET_MAX = 21;  // 암호 정답 범위
 
 // 사용자 제공 이미지에서 추출한 마스크 (base64, 48x48 비트)
 const IMG_MASKS = {
-  pikachu: "ACwAAIAIADYAAYAIAB8AAwAIAAcABgB4AAWADABYAAeACABYAALAGABYwALgEADwQAN/+ACwQAHASAGwYAAAeAFgIAAAAANgIAAAAAbANwAAAA3AFQAAABmAHwAAABMAGgAAABsAHgAAAAsAEAAAAA8AEAAAAAEAEAAAAAcAEAAAAAUAMAAAAAUAIAAAAAUAMAAAAAUAEAAAAAUAEAAAAAcAEAAAAAEAEAAAAA8AGAAAAAoACAAAAB4ADAAAABYAB8AAAB2AA0AAAPfgA8AAA5awAgAABh2YAgAABYMcAgAABgYWAgAAAgQeAgAAAgwHAgAAApgFAgAAAjAHAgAAA6AHAwAAAOAFAQAAAAAfAQAAAAA2AYAAAAAsAIAAAAA4",
-  mario: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8IAAAAAOGeAAAAAYD7gAAAAQAogAAAAwA4wAAABgAfwAAADAAxgAAACAAnAAAACAA+AAAADAAYAAAABAAQAAAABgAwAAAB4gBgAAAD/gBAAAAEEADAAAAEEACAAAAGEACAAAAG3wDAAAADsQBAAAAB4QBAAAAAAwBgAAAAAgA3gAAAAgAcwAAAAgAAQAAAfgAAwAAAwAABgAAAgA+BAAAAgBjDAAABgDBmAAABAOA8AAABB4AMAAABHAAAAAABEAAAAAAB8AAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-  heart: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAeAAAD/wD/wAAH/8P/4AAf/+f/+AA/z//z/AB+Af+AfgB8AH4APgD4ADwAHwDwADwADwDwADwADwDwABgADwDwABgADwDwAAAADwD4AAAAHwB4AAAAHgB8AAAAPgA8AAAAPAA/AAAA/AAfAAAA+AAPwAAD8AAH4AAH4AAD8AAPwAAB+AAfgAAAfgB+AAAAPwD8AAAAHwD4AAAAD4HwAAAAB8PgAAAAA+fAAAAAAf+AAAAAAP8AAAAAAH4AAAAAAH4AAAAAAH4AAAAAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  pikachu: "AAAAAAAAZ4AAAB5gZwgAAB5gbgQAAAdgfAIAAANgPAIABANgPAMABANgNAEACAPAEAEAAAPAAAD/wALAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA4AAAAACB8ACAAACBuAPAAACBmAdgAACA8AZgAACAYAfAAACAAAOAAADAAAAAAABAAAAAAABgAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAIAMAAAAAAAQAAAAAAAgYQAQAAAgwAAQAAAAgAAQAAABAAAYAAADAAAYAAAyACAIAAAcACAIAABAACAAAADAAEAAAADAAIAAAADAAAAAAAAAAA",
+  mario: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4AAAAAAH8AAAAAAeAAAAAAAYAAAAAAAwAAAAAABwBgAAAABgAwAAAADBwwAAAADCAQAAAADSAYAAAAAeAIAAAAAMAYAAAAAAkQAAAAB4wAAAAADsRgAAAADHDAAAAADBiAAAAADAGAAAAABgDAAAAAAwDAAAAAAwDgAAAAAwDzAAAAAwB/wAAABwAcwAAAfwAAQAAA/gAAwAAAzAABwAABgA+BgAABgB/DAAABgHj3AAADAfB+AAADD8AcAAADHwAAAAABmAAAAAAB8AAAAAAA4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   turing: "AAAAAAAAAAEAAAAAAAMAAAAAAAMAAB8AAAIAAP8AAAAH//4AAAA//gBAAAB/wABgAAA8AABwAAAAAABwAAAAAABwAAAAAABwAAA+AABwAAA/A/AwAAAPh+AwAAABgAAAAAABxAAAAAAJzgAAAAAfx8AAAAAAg8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAABwAGAAAAA+AGAAABgMAGAAABgAAOAAABjAAOAAABxwAMAAABwwwcAAABwBwcAAAA4Z4cAAAA444YAAAAAAAAA",
+  heart: null,
 };
 function decodeMask(b64) {
+  if (!b64) return null;
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -198,7 +199,7 @@ const ANIMALS = {
   dog:    { name: '🐶 강아지', draw: drawDog },
   mario:  { name: '🍄 슈퍼마리오', imgMask: 'mario' },
   pikachu:{ name: '⚡ 피카츄', imgMask: 'pikachu' },
-  heart:  { name: '❤️ 하트', imgMask: 'heart' },
+  heart:  { name: '❤️ 하트', draw: drawHeartLine, lineArt: true },
   turing: { name: '👨‍🔬 앨런 튜링', imgMask: 'turing' },
 };
 // 문제별: [진짜, 미끼1, 미끼2] — 위치와 크기 다르게
@@ -440,6 +441,20 @@ function drawTuringLine(g) {
   g.lineWidth = 2;
   g.beginPath(); g.moveTo(22, 36); g.lineTo(26, 36); g.lineTo(24, 44); g.closePath(); g.stroke();
 }
+// 하트 선화 (파라메트릭 곡선)
+function drawHeartLine(g) {
+  g.strokeStyle = '#fff'; g.lineCap = 'round'; g.lineJoin = 'round';
+  g.lineWidth = 4;
+  g.beginPath();
+  for (let deg = 0; deg <= 360; deg += 3) {
+    const t = deg * Math.PI / 180;
+    const x = 16 * Math.pow(Math.sin(t), 3);
+    const y = 13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t);
+    const px = 24 + x * 1.1, py = 24 - y * 1.1;
+    if (deg === 0) g.moveTo(px, py); else g.lineTo(px, py);
+  }
+  g.closePath(); g.stroke();
+}
 // (구) 실루엣 보관
 // 앨런 튜링 얼굴 (초상 실루엣)
 function drawTuringFace(g, cx, cy, s) {
@@ -461,6 +476,12 @@ function drawTuringFace(g, cx, cy, s) {
 
 // 윤곽선 마스크 (NxN)
 function makeContour(kind, cx, cy, s) {
+  // 이미지 마스크는 디코딩해서 그대로 사용 (그리기 불필요)
+  if (ANIMALS[kind].imgMask) {
+    const decoded = decodeMask(IMG_MASKS[ANIMALS[kind].imgMask]);
+    if (decoded) return decoded;
+    // heart처럼 imgMask 키는 있지만 null이면 선화로 폴백
+  }
   const off = document.createElement('canvas');
   off.width = N; off.height = N;
   const g = off.getContext('2d');
@@ -473,8 +494,6 @@ function makeContour(kind, cx, cy, s) {
     H[j] = [];
     for (let i = 0; i < N; i++) H[j][i] = d[(j * N + i) * 4] > 128 ? 1 : 0;
   }
-  // 이미지 마스크는 디코딩해서 그대로 사용
-  if (ANIMALS[kind].imgMask) return decodeMask(IMG_MASKS[ANIMALS[kind].imgMask]);
   // 선화는 그린 픽셀 자체가 신호 (윤곽선 추출 불필요)
   if (ANIMALS[kind].lineArt) return H;
   const contour = [];
