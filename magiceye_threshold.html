@@ -212,6 +212,7 @@ const $ = id => document.getElementById(id);
 let round = 0, viewMode = 'both', tries = 0, solved = false;
 let bright = null;
 let realContour = null;  // 수학 뷰용: 진짜 동물의 윤곽선
+let zoomBox = null;      // 수학 뷰 확대 영역 {si, sj}
 
 // ── 동물 실루엣 ──
 function drawCat(g, cx, cy, s) {
@@ -320,6 +321,7 @@ function makeRound(r) {
   mctx.putImageData(img, 0, 0);
   tries = 0; solved = false;
   realContour = conts[0].contour;  // 첫 번째가 진짜 동물
+  zoomBox = null;
   $('tryCount').textContent = '0';
   $('success').style.display = 'none';
   $('mathView').style.display = 'none';
@@ -402,6 +404,12 @@ function showMathView() {
   const [ci, cj] = pts[Math.floor(pts.length / 2)];
   const si = Math.max(0, Math.min(N - ZW, ci - Math.floor(ZW / 2)));
   const sj = Math.max(0, Math.min(N - ZW, cj - Math.floor(ZW / 2)));
+  zoomBox = { si, sj };
+
+  // 위 모자이크에 빨간 상자로 확대 영역 표시
+  mctx.strokeStyle = '#ef4444';
+  mctx.lineWidth = 4;
+  mctx.strokeRect(si * CELL + 2, sj * CELL + 2, ZW * CELL - 4, ZW * CELL - 4);
 
   g.fillStyle = '#fff';
   g.fillRect(0, 0, mc.width, mc.height);
