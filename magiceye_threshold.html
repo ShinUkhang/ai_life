@@ -134,6 +134,23 @@
       <button class="btn btn-answer" id="ansBtn">👁️ 정답 보기 (선생님용)</button>
     </div>
     <div id="answer"></div>
+
+    <div id="quizBox" style="margin-top:14px; background:#0f172a; border-radius:12px; padding:14px; text-align:center;">
+      <p style="margin:0 0 10px; font-size:14px; font-weight:800;">✏️ 진짜 동물은? (주관식)</p>
+      <div style="display:flex; gap:8px; justify-content:center;">
+        <input type="text" id="ansInput" placeholder="예: 고양이"
+          style="flex:1; max-width:220px; padding:11px; border-radius:10px; border:2px solid #334155; background:#1e293b; color:#fff; font-size:15px; text-align:center;">
+        <button id="ansSubmit" class="btn" style="flex:0 0 auto; background:#7c3aed; color:#fff; padding:11px 20px;">제출</button>
+      </div>
+      <p id="quizMsg" style="margin:10px 0 0; font-size:14px; min-height:20px;"></p>
+    </div>
+
+    <div id="mathView" style="display:none; margin-top:14px; background:#0f172a; border-radius:12px; padding:16px; text-align:center;">
+      <h3 style="margin:0 0 8px; color:#c4b5fd;">🔢 수학으로 보기 — 픽셀은 숫자!</h3>
+      <p style="font-size:12.5px; color:#94a3b8; margin:0 0 10px;">윤곽선 부분(빨간색)의 숫자가 옆 셀과 많이 차이나요.<br>이 차이를 임계값과 비교하는 게 엣지 검출!</p>
+      <canvas id="mathCanvas" width="440" height="440" style="width:100%; max-width:440px; margin:0 auto;"></canvas>
+      <p id="mathCalc" style="font-size:15px; font-weight:800; margin:12px 0 0; background:#1e293b; border-radius:10px; padding:12px;"></p>
+    </div>
   </div>
 
   <div class="howto">
@@ -194,6 +211,7 @@ const $ = id => document.getElementById(id);
 
 let round = 0, viewMode = 'both', tries = 0, solved = false;
 let bright = null;
+let realContour = null;  // 수학 뷰용: 진짜 동물의 윤곽선
 
 // ── 동물 실루엣 ──
 function drawCat(g, cx, cy, s) {
@@ -301,8 +319,12 @@ function makeRound(r) {
   }
   mctx.putImageData(img, 0, 0);
   tries = 0; solved = false;
+  realContour = conts[0].contour;  // 첫 번째가 진짜 동물
   $('tryCount').textContent = '0';
   $('success').style.display = 'none';
+  $('mathView').style.display = 'none';
+  $('ansInput').value = '';
+  $('quizMsg').textContent = '';
 }
 
 // ── 엣지 검출 ──
@@ -346,6 +368,81 @@ function saveImage() {
   a.click();
 }
 
+// ── 주관식 정답 체크 ──
+const ANSWER_MAP = {
+  dog: ['개', '강아지', '멍멍이', '댕댕이'],
+  cat: ['고양이', '고양', '야옹이', '냥이'],
+  rabbit: ['토끼', '토깽이'],
+};
+function checkAnswer() {
+  const input = $('ansInput').value.replace(/\s/g, '');
+  const real = PROBLEMS[round].real;
+  const correct = (ANSWER_MAP[real] || []).includes(input);
+  const msg = $('quizMsg');
+  if (correct) {
+    msg.style.color = '#10b981';
+    msg.textContent = '⭕ 정답! 아래에서 숫자로 확인해봐요 👇';
+    showMathView();
+  } else {
+    msg.style.color = '#f87171';
+    msg.textContent = '❌ 땡! 다시 생각해봐요.';
+  }
+}
+
+// ── 수학 뷰: 픽셀 숫자 + 윤곽선 색상 ──
+function showMathView() {
+  const ZW = 10, ZCELL = 44;  // 10x10 확대
+  const mc = $('mathCanvas');
+  const g = mc.getContext('2d');
+
+  // 진짜 윤곽선 셀 중 하나를 찾아 중심에
+  const pts = [];
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++)
+    if (realContour[j][i]) pts.push([i, j]);
+  const [ci, cj] = pts[Math.floor(pts.length / 2)];
+  const si = Math.max(0, Math.min(N - ZW, ci - Math.floor(ZW / 2)));
+  const sj = Math.max(0, Math.min(N - ZW, cj - Math.floor(ZW / 2)));
+
+  g.fillStyle = '#fff';
+  g.fillRect(0, 0, mc.width, mc.height);
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+
+  let exPair = null;
+  for (let j = 0; j < ZW; j++) {
+    for (let i = 0; i < ZW; i++) {
+      const gi = si + i, gj = sj + j;
+      const v = Math.round(bright[gj][gi]);
+      const isEdge = realContour[gj][gi];
+      g.fillStyle = isEdge ? '#fecaca' : '#f8fafc';
+      g.fillRect(i * ZCELL, j * ZCELL, ZCELL, ZCELL);
+      g.strokeStyle = '#cbd5e1';
+      g.lineWidth = 1;
+      g.strokeRect(i * ZCELL + 0.5, j * ZCELL + 0.5, ZCELL - 1, ZCELL - 1);
+      g.fillStyle = isEdge ? '#b91c1c' : '#334155';
+      g.font = 'bold 13px sans-serif';
+      g.fillText(v, i * ZCELL + ZCELL / 2, j * ZCELL + ZCELL / 2);
+      // 예시 계산용: 윤곽선-일반 인접 쌍 찾기
+      if (!exPair && isEdge && i + 1 < ZW && !realContour[gj][gi + 1]) {
+        exPair = [v, Math.round(bright[gj][gi + 1])];
+      }
+    }
+  }
+  if (exPair) {
+    const T = +$('th').value;
+    const diff = Math.abs(exPair[0] - exPair[1]);
+    $('mathCalc').innerHTML =
+      `🔢 <b style="color:#f87171">${exPair[0]}</b>(빨간 윤곽선) − ${exPair[1]}(옆 셀) = <b>${diff}</b><br>` +
+      `${diff} ${diff >= T ? '≥' : '<'} ${T}(임계값) → ${diff >= T ? '✅ 엣지!' : '⬜ 엣지 아님'}`;
+  }
+  $('mathView').style.display = 'block';
+  $('mathView').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+$('ansSubmit').onclick = checkAnswer;
+$('ansInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkAnswer();
+});
 // ── 이벤트 ──
 const thInput = $('th');
 thInput.addEventListener('input', applyEdge);
