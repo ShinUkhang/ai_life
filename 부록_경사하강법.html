@@ -115,6 +115,15 @@
 <section class="card">
   <h2>2️⃣ 직접 돌려보는 경사하강법</h2>
   <p class="sub">학습률을 바꿔가며 실행해 보세요. α가 너무 크면 어떻게 되는지 직접 확인할 수 있습니다.</p>
+  <div style="margin:0 0 14px; cursor:pointer;" id="fogThumbWrap" title="클릭하면 크게 보기">
+    <img src="fog_mountain.jpg" alt="안개 낀 산을 내려오는 등산객" id="fogThumb"
+         style="width:100%; max-height:220px; object-fit:cover; border-radius:12px; border:1px solid #e5e7eb;">
+    <p class="note" style="text-align:center; margin-top:6px;">🌫️ 안개 낀 산에서 내려오기 — 클릭하면 크게 보여집니다</p>
+  </div>
+  <div id="fogOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:9999; cursor:zoom-out; align-items:center; justify-content:center;">
+    <img src="fog_mountain.jpg" alt="안개 낀 산을 내려오는 등산객 크게 보기"
+         style="max-width:94vw; max-height:92vh; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.5);">
+  </div>
   <div class="controls">
     <button class="btn-play" id="playBtn">▶ 학습 시작</button>
     <button class="btn-ghost" id="resetBtn">↺ 초기화</button>
@@ -693,6 +702,17 @@ function stop() {
   document.getElementById('playBtn').textContent = '▶ 학습 시작';
 }
 document.getElementById('playBtn').onclick = () => playing ? stop() : play();
+// 🌫️ 안개산 사진 클릭 확대
+(function(){
+  const wrap = document.getElementById('fogThumbWrap');
+  const overlay = document.getElementById('fogOverlay');
+  if (!wrap || !overlay) return;
+  wrap.addEventListener('click', () => { overlay.style.display = 'flex'; });
+  overlay.addEventListener('click', () => { overlay.style.display = 'none'; });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') overlay.style.display = 'none';
+  });
+})();
 document.getElementById('resetBtn').onclick = () => {
   stop(); W = 0; b = 0; epoch = 0; lossHist = [];
   drawFit(); drawLoss(); stats();
