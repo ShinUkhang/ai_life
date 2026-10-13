@@ -167,13 +167,37 @@
 const N = 48, CELL = 9, S = N * CELL;
 const SWEET_MIN = 15, SWEET_MAX = 21;  // 암호 정답 범위
 
+// 사용자 제공 이미지에서 추출한 마스크 (base64, 48x48 비트)
+const IMG_MASKS = {
+  pikachu: "ACwAAIAIADYAAYAIAB8AAwAIAAcABgB4AAWADABYAAeACABYAALAGABYwALgEADwQAN/+ACwQAHASAGwYAAAeAFgIAAAAANgIAAAAAbANwAAAA3AFQAAABmAHwAAABMAGgAAABsAHgAAAAsAEAAAAA8AEAAAAAEAEAAAAAcAEAAAAAUAMAAAAAUAIAAAAAUAMAAAAAUAEAAAAAUAEAAAAAcAEAAAAAEAEAAAAA8AGAAAAAoACAAAAB4ADAAAABYAB8AAAB2AA0AAAPfgA8AAA5awAgAABh2YAgAABYMcAgAABgYWAgAAAgQeAgAAAgwHAgAAApgFAgAAAjAHAgAAA6AHAwAAAOAFAQAAAAAfAQAAAAA2AYAAAAAsAIAAAAA4",
+  mario: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8IAAAAAOGeAAAAAYD7gAAAAQAogAAAAwA4wAAABgAfwAAADAAxgAAACAAnAAAACAA+AAAADAAYAAAABAAQAAAABgAwAAAB4gBgAAAD/gBAAAAEEADAAAAEEACAAAAGEACAAAAG3wDAAAADsQBAAAAB4QBAAAAAAwBgAAAAAgA3gAAAAgAcwAAAAgAAQAAAfgAAwAAAwAABgAAAgA+BAAAAgBjDAAABgDBmAAABAOA8AAABB4AMAAABHAAAAAABEAAAAAAB8AAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  turing: "AAAAAAAAAAEAAAAAAAMAAAAAAAMAAB8AAAIAAP8AAAAH//4AAAA//gBAAAB/wABgAAA8AABwAAAAAABwAAAAAABwAAAAAABwAAA+AABwAAA/A/AwAAAPh+AwAAABgAAAAAABxAAAAAAJzgAAAAAfx8AAAAAAg8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAABwAGAAAAA+AGAAABgMAGAAABgAAOAAABjAAOAAABxwAMAAABwwwcAAABwBwcAAAA4Z4cAAAA444YAAAAAAAAA",
+};
+function decodeMask(b64) {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const mask = [];
+  let bit = 0;
+  for (let j = 0; j < N; j++) {
+    mask[j] = [];
+    for (let i = 0; i < N; i++) {
+      const byteIdx = Math.floor(bit / 8);
+      const bitIdx = 7 - (bit % 8);
+      mask[j][i] = (bytes[byteIdx] >> bitIdx) & 1;
+      bit++;
+    }
+  }
+  return mask;
+}
+
 const ANIMALS = {
   cat:    { name: '🐱 고양이', draw: drawCat },
   rabbit: { name: '🐰 토끼',   draw: drawRabbit },
   dog:    { name: '🐶 강아지', draw: drawDog },
-  mario:  { name: '🍄 슈퍼마리오', draw: drawMarioLine, lineArt: true },
-  pikachu:{ name: '⚡ 피카츄', draw: drawPikachuLine, lineArt: true },
-  turing: { name: '👨‍🔬 앨런 튜링', draw: drawTuringLine, lineArt: true },
+  mario:  { name: '🍄 슈퍼마리오', imgMask: 'mario' },
+  pikachu:{ name: '⚡ 피카츄', imgMask: 'pikachu' },
+  turing: { name: '👨‍🔬 앨런 튜링', imgMask: 'turing' },
 };
 // 문제별: [진짜, 미끼1, 미끼2] — 위치와 크기 다르게
 // 5 스테이지: 클리어하며 잠금 해제
@@ -441,6 +465,8 @@ function makeContour(kind, cx, cy, s) {
     H[j] = [];
     for (let i = 0; i < N; i++) H[j][i] = d[(j * N + i) * 4] > 128 ? 1 : 0;
   }
+  // 이미지 마스크는 디코딩해서 그대로 사용
+  if (ANIMALS[kind].imgMask) return decodeMask(IMG_MASKS[ANIMALS[kind].imgMask]);
   // 선화는 그린 픽셀 자체가 신호 (윤곽선 추출 불필요)
   if (ANIMALS[kind].lineArt) return H;
   const contour = [];
