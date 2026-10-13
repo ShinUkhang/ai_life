@@ -366,16 +366,20 @@ function drawMario(g, cx, cy, s) {
   g.beginPath(); g.ellipse(cx, cy + 28 * s, 36 * s, 13 * s, 0, 0, Math.PI * 2); g.fill();
 }
 // 피카츄 (뾰족 귀+둥근 얼굴)
-// 피카츄 선화 (뾰족 귀+둥근 얼굴)
+// 피카츄 선화 (참고 이미지 기반: 긴 귀+볼+번개꼬리)
 function drawPikachuLine(g) {
-  g.strokeStyle = '#fff'; g.fillStyle = '#fff'; g.lineCap = 'round';
+  g.strokeStyle = '#fff'; g.fillStyle = '#fff'; g.lineCap = 'round'; g.lineJoin = 'round';
   g.lineWidth = 4;
-  g.beginPath(); g.moveTo(18, 14); g.lineTo(8, 2); g.stroke();
-  g.beginPath(); g.moveTo(30, 14); g.lineTo(40, 2); g.stroke();
-  g.lineWidth = 5;
-  g.beginPath(); g.ellipse(24, 28, 14, 14, 0, 0, Math.PI * 2); g.stroke();
-  g.beginPath(); g.arc(14.5, 28.5, 2.5, 0, Math.PI * 2); g.fill();
-  g.beginPath(); g.arc(33.5, 28.5, 2.5, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.moveTo(17, 15); g.lineTo(5, 2); g.stroke(); // 왼쪽 귀
+  g.beginPath(); g.moveTo(31, 15); g.lineTo(43, 2); g.stroke(); // 오른쪽 귀
+  g.beginPath(); g.ellipse(24, 27, 14, 13, 0, 0, Math.PI * 2); g.stroke(); // 얼굴
+  g.lineWidth = 3;
+  g.beginPath(); g.ellipse(14, 31, 3, 3, 0, 0, Math.PI * 2); g.stroke(); // 왼쪽 볼
+  g.beginPath(); g.ellipse(34, 31, 3, 3, 0, 0, Math.PI * 2); g.stroke(); // 오른쪽 볼
+  g.beginPath(); g.arc(19.5, 24.5, 1.8, 0, Math.PI * 2); g.fill(); // 왼쪽 눈
+  g.beginPath(); g.arc(28.5, 24.5, 1.8, 0, Math.PI * 2); g.fill(); // 오른쪽 눈
+  g.beginPath(); g.ellipse(24, 42, 9, 5, 0, 0, Math.PI * 2); g.stroke(); // 몸
+  g.beginPath(); g.moveTo(36, 38); g.lineTo(44, 32); g.lineTo(40, 32); g.lineTo(46, 24); g.stroke(); // 번개꼬리
 }
 // (구) 실루엣 보관
 function drawPikachu(g, cx, cy, s) {
