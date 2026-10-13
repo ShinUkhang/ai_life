@@ -745,6 +745,15 @@
         · <b>손실(MSE)</b>이란? AI의 예측이 정답과 얼마나 다른지 재는 '틀린 정도 점수'예요.<br>
         · <b>경사하강법</b>이란? '틀린 정도'를 조금씩 줄여나가는 AI의 공부법이에요. <b>안개 낀 산에서 가장 낮은 골짜기를 찾아 내려가는 것</b>과 같아요!
       </div>
+      <div style="margin-top:10px; cursor:pointer;" id="fogThumbWrap2" title="클릭하면 크게 보기">
+        <img src="../fog_mountain.jpg" alt="안개 낀 산을 내려오는 등산객"
+             style="width:100%; max-height:230px; object-fit:cover; border-radius:10px; border:1px solid #fde68a;">
+        <p style="font-size:12px; color:#92400e; text-align:center; margin:6px 0 0;">🌫️ 안개 낀 산에서 내려오기 — 클릭하면 크게 보여집니다</p>
+      </div>
+      <div id="fogOverlay2" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:9999; cursor:zoom-out; align-items:center; justify-content:center;">
+        <img src="../fog_mountain.jpg" alt="안개 낀 산 크게 보기"
+             style="max-width:94vw; max-height:92vh; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.5);">
+      </div>
 
       <div style="font-size: 12.5px; color: var(--text-gray);">
         🗺️ <b style="color: var(--text-main);">학습 순서:</b> ① 비유로 이해하기 (지금!) → ② 시뮬레이터로 체험하기 → ③ 파이썬 코드로 확인하기
@@ -1920,6 +1929,18 @@ plt.legend(); plt.grid(True, alpha=0.3); plt.show()</pre>
     triggerPulseAnimation();
     requestAnimationFrame(neuronLoop);
     drawLossCurve();
+
+    // 🌫️ 안개산 사진 클릭 확대
+    (function(){
+      var wrap = document.getElementById('fogThumbWrap2');
+      var overlay = document.getElementById('fogOverlay2');
+      if (!wrap || !overlay) return;
+      wrap.addEventListener('click', function(){ overlay.style.display = 'flex'; });
+      overlay.addEventListener('click', function(){ overlay.style.display = 'none'; });
+      document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape') overlay.style.display = 'none';
+      });
+    })();
   </script>
 </body>
 </html>
