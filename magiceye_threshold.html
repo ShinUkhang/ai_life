@@ -87,14 +87,10 @@
 </header>
 <main>
   <div class="card">
-    <div class="rounds">
-      <button class="r-btn active" data-r="0">문제 1</button>
-      <button class="r-btn" data-r="1">문제 2</button>
-      <button class="r-btn" data-r="2">문제 3</button>
+    <div class="rounds" id="stageBtns">
+      <!-- 스테이지 버튼은 JS로 생성 -->
     </div>
-    <div class="mission">
-      🔐 세 마리 동물이 숨어 있어. 진짜는 한 마리!<br>
-      <small>임계값을 업·다운 하며 진짜만 선명해지는 암호를 찾아라 (너무 낮으면 3마리 다, 너무 높으면 아무것도 안 보여요)</small>
+    <div class="mission" id="stageTitle">
     </div>
     <div class="two">
       <div class="pane">
@@ -121,6 +117,8 @@
       <h2>🎉 암호 해제!</h2>
       <p id="successMsg"></p>
       <p>이 동물은 무엇일까요? 🙋</p>
+    </div>
+    <div id="stageClear" style="display:none; text-align:center; margin-top:12px; padding:18px; background:#3b0764; border:2px solid #a78bfa; border-radius:12px;">
     </div>
 
     <div class="view-btns">
@@ -154,12 +152,12 @@
   </div>
 
   <div class="howto">
-    <b>🎮 수업 진행법</b><br>
-    ① "세 마리가 숨어 있는데 진짜는 한 마리! 임계값 암호를 풀어봐!"<br>
-    ② 학생들이 슬라이더를 업·다운하며 시도 (시도 횟수 카운트!)<br>
-    ③ 너무 낮으면 3마리 다 보여서 헷갈림 → 올려야 함<br>
-    ④ 너무 높이면 아무것도 안 보임 → 내려야 함<br>
-    ⑤ 딱 맞는 값에서 진짜 한 마리만 선명! "몇 회 만에 성공?" 🙋<br>
+    <b>🎮 수업 진행법 (5 스테이지)</b><br>
+    ① 1단계: 미끼 없이 임계값 암호 푸는 법 익히기<br>
+    ② 2~3단계: 미끼가 등장! 진짜만 선명해지는 값을 찾아라<br>
+    ③ 4~5단계: 미끼가 강해진다! 최종 보스 도전 👑<br>
+    ④ 클리어 조건: <b>임계값 암호 해제 + 동물 이름 맞히기</b> 둘 다!<br>
+    ⑤ "누가 제일 적은 시도로 5단계까지 가나?" 대결 🙋<br>
     ⑥ <b>핵심:</b> "컴퓨터도 이렇게 임계값 하나로 신호와 노이즈를 갈라요!"
   </div>
 </main>
@@ -167,7 +165,6 @@
 <script>
 // ── 설정 ──
 const N = 48, CELL = 9, S = N * CELL;
-const REAL_AMP = 26, DECOY_AMP = 12;   // 진짜 신호 vs 미끼 신호
 const SWEET_MIN = 15, SWEET_MAX = 21;  // 암호 정답 범위
 
 const ANIMALS = {
@@ -176,26 +173,41 @@ const ANIMALS = {
   dog:    { name: '🐶 강아지', draw: drawDog },
 };
 // 문제별: [진짜, 미끼1, 미끼2] — 위치와 크기 다르게
-const PROBLEMS = [
-  { real: 'cat',
+// 5 스테이지: 클리어하며 잠금 해제
+const CENTER = { cx: 24, cy: 26, s: 0.135 };
+const TL = { cx: 11, cy: 11, s: 0.08 };
+const TR = { cx: 37, cy: 11, s: 0.08 };
+const BL = { cx: 11, cy: 37, s: 0.08 };
+const BR = { cx: 37, cy: 37, s: 0.08 };
+const STAGES = [
+  { real: 'cat', title: '1단계 · 처음 만나는 암호', realAmp: 26,
+    animals: [ { kind: 'cat', ...CENTER, amp: 26 } ] },
+  { real: 'rabbit', title: '2단계 · 미끼가 나타났다!', realAmp: 26,
     animals: [
-      { kind: 'cat',    cx: 24, cy: 26, s: 0.135, amp: REAL_AMP },
-      { kind: 'rabbit', cx: 12, cy: 12, s: 0.085, amp: DECOY_AMP },
-      { kind: 'dog',    cx: 36, cy: 36, s: 0.085, amp: DECOY_AMP },
+      { kind: 'rabbit', ...CENTER, amp: 26 },
+      { kind: 'dog', ...BR, amp: 12 },
     ] },
-  { real: 'rabbit',
+  { real: 'dog', title: '3단계 · 셋 중 진짜는?', realAmp: 26,
     animals: [
-      { kind: 'rabbit', cx: 24, cy: 26, s: 0.135, amp: REAL_AMP },
-      { kind: 'dog',    cx: 12, cy: 12, s: 0.085, amp: DECOY_AMP },
-      { kind: 'cat',    cx: 36, cy: 36, s: 0.085, amp: DECOY_AMP },
+      { kind: 'dog', ...CENTER, amp: 26 },
+      { kind: 'cat', ...TL, amp: 12 },
+      { kind: 'rabbit', ...TR, amp: 12 },
     ] },
-  { real: 'dog',
+  { real: 'cat', title: '4단계 · 미끼가 강해졌다!', realAmp: 26,
     animals: [
-      { kind: 'dog',    cx: 24, cy: 26, s: 0.135, amp: REAL_AMP },
-      { kind: 'cat',    cx: 12, cy: 12, s: 0.085, amp: DECOY_AMP },
-      { kind: 'rabbit', cx: 36, cy: 36, s: 0.085, amp: DECOY_AMP },
+      { kind: 'cat', ...CENTER, amp: 26 },
+      { kind: 'rabbit', ...TL, amp: 16 },
+      { kind: 'dog', ...BR, amp: 16 },
+    ] },
+  { real: 'rabbit', title: '5단계 · 최종 보스 👑', realAmp: 24,
+    animals: [
+      { kind: 'rabbit', ...CENTER, amp: 24 },
+      { kind: 'dog', ...TL, amp: 16 },
+      { kind: 'cat', ...TR, amp: 16 },
+      { kind: 'dog', ...BL, amp: 14 },
     ] },
 ];
+const PROBLEMS = STAGES;  // 하위 호환
 const BLOBS = [
   { x: 10, y: 12, r: 32, c: [37, 99, 235] },
   { x: 36, y: 10, r: 30, c: [245, 158, 11] },
@@ -209,10 +221,72 @@ const mctx = mosaicCv.getContext('2d');
 const ectx = edgeCv.getContext('2d');
 const $ = id => document.getElementById(id);
 
-let round = 0, viewMode = 'both', tries = 0, solved = false;
+let stage = 0, viewMode = 'both', tries = 0, solved = false;
 let bright = null;
 let realContour = null;  // 수학 뷰용: 진짜 동물의 윤곽선
 let zoomBox = null;      // 수학 뷰 확대 영역 {si, sj}
+let answerOk = false, stageDone = false;
+
+// 스테이지 진행 저장
+let unlocked = parseInt(localStorage.getItem('magiceye_unlocked') || '1');
+unlocked = Math.max(1, Math.min(5, unlocked));
+
+function renderStageBtns() {
+  const box = $('stageBtns');
+  box.innerHTML = '';
+  STAGES.forEach((st, i) => {
+    const b = document.createElement('button');
+    b.className = 'r-btn' + (i === stage ? ' active' : '');
+    if (i + 1 > unlocked) {
+      b.textContent = `🔒 ${i + 1}단계`;
+      b.disabled = true;
+      b.style.opacity = '0.45';
+      b.style.cursor = 'default';
+    } else {
+      b.textContent = `${i + 1}단계`;
+      b.onclick = () => setStage(i);
+    }
+    box.appendChild(b);
+  });
+  $('stageTitle').innerHTML =
+    `🔐 ${STAGES[stage].title}<br>` +
+    `<small>임계값 암호를 풀고, 진짜 동물을 맞혀보세요! (너무 낮으면 다 보이고, 너무 높이면 안 보여요)</small>`;
+}
+
+function setStage(i) {
+  if (i + 1 > unlocked) return;
+  stage = i;
+  renderStageBtns();
+  $('answer').style.display = 'none';
+  $('ansBtn').textContent = '👁️ 정답 보기 (선생님용)';
+  $('stageClear').style.display = 'none';
+  makeRound(stage);
+  applyEdge();
+}
+
+function tryStageClear() {
+  if (stageDone || !solved || !answerOk) return;
+  stageDone = true;
+  if (stage + 1 < 5) {
+    unlocked = Math.max(unlocked, stage + 2);
+    localStorage.setItem('magiceye_unlocked', String(unlocked));
+  } else {
+    localStorage.setItem('magiceye_unlocked', '5');
+  }
+  renderStageBtns();
+  const sc = $('stageClear');
+  if (stage + 1 < 5) {
+    sc.innerHTML = `<h2>🏆 ${stage + 1}단계 클리어!</h2>
+      <p>${tries}회 만에 암호 해제 + 정답!</p>
+      <button id="nextBtn" class="btn" style="background:#10b981; color:#fff; margin-top:8px; padding:12px 28px;">➡️ ${stage + 2}단계로 가기</button>`;
+    $('nextBtn').onclick = () => setStage(stage + 1);
+  } else {
+    sc.innerHTML = `<h2>👑 전 스테이지 클리어!</h2>
+      <p>당신은 임계값 마스터! 🎓</p>`;
+  }
+  sc.style.display = 'block';
+  sc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
 
 // ── 동물 실루엣 ──
 function drawCat(g, cx, cy, s) {
@@ -320,6 +394,7 @@ function makeRound(r) {
   }
   mctx.putImageData(img, 0, 0);
   tries = 0; solved = false;
+  answerOk = false; stageDone = false;
   realContour = conts[0].contour;  // 첫 번째가 진짜 동물
   zoomBox = null;
   $('tryCount').textContent = '0';
@@ -357,6 +432,7 @@ function applyEdge() {
     solved = true;
     $('successMsg').textContent = `${tries}회 만에 임계값 암호를 찾았어요!`;
     $('success').style.display = 'block';
+    tryStageClear();
   } else if (solved && (T < SWEET_MIN || T > SWEET_MAX)) {
     solved = false;
     $('success').style.display = 'none';
@@ -378,13 +454,15 @@ const ANSWER_MAP = {
 };
 function checkAnswer() {
   const input = $('ansInput').value.replace(/\s/g, '');
-  const real = PROBLEMS[round].real;
+  const real = STAGES[stage].real;
   const correct = (ANSWER_MAP[real] || []).includes(input);
   const msg = $('quizMsg');
   if (correct) {
     msg.style.color = '#10b981';
     msg.textContent = '⭕ 정답! 아래에서 숫자로 확인해봐요 👇';
+    answerOk = true;
     showMathView();
+    tryStageClear();
   } else {
     msg.style.color = '#f87171';
     msg.textContent = '❌ 땡! 다시 생각해봐요.';
@@ -465,7 +543,7 @@ $('ansBtn').onclick = () => {
   const el = $('answer');
   const show = el.style.display !== 'block';
   el.style.display = show ? 'block' : 'none';
-  el.textContent = '정답: ' + ANIMALS[PROBLEMS[round].real].name;
+  el.textContent = '정답: ' + ANIMALS[STAGES[stage].real].name;
   $('ansBtn').textContent = show ? '🙈 정답 숨기기' : '👁️ 정답 보기 (선생님용)';
 };
 document.querySelectorAll('.v-btn').forEach(b => {
@@ -476,20 +554,9 @@ document.querySelectorAll('.v-btn').forEach(b => {
     applyEdge();
   };
 });
-document.querySelectorAll('.r-btn').forEach(b => {
-  b.onclick = () => {
-    round = +b.dataset.r;
-    document.querySelectorAll('.r-btn').forEach(x =>
-      x.classList.toggle('active', x === b));
-    $('answer').style.display = 'none';
-    $('ansBtn').textContent = '👁️ 정답 보기 (선생님용)';
-    makeRound(round);
-    applyEdge();
-  };
-});
-
-makeRound(0);
+makeRound(stage);
 applyEdge();
+renderStageBtns();
 </script>
 </body>
 </html>
