@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🙈 매직아이 — 임계값으로 동물을 찾아라!</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    margin: 0; background: #0f172a; color: #e2e8f0;
+    word-break: keep-all;
+  }
+  header { text-align: center; padding: 24px 16px 6px; }
+  header h1 { margin: 0 0 8px; font-size: 26px; }
+  header p { margin: 0; font-size: 14px; color: #94a3b8; }
+  main { max-width: 640px; margin: 0 auto; padding: 12px 16px 40px; }
+  .card {
+    background: #1e293b; border-radius: 18px;
+    padding: 18px; margin-top: 14px; box-shadow: 0 8px 30px rgba(0,0,0,.4);
+  }
+  #eye {
+    width: 100%; height: auto; display: block; border-radius: 12px;
+    cursor: pointer; background: #000; image-rendering: pixelated;
+  }
+  .caption { text-align: center; font-size: 12px; color: #64748b; margin-top: 8px; }
+  .rounds { display: flex; gap: 8px; justify-content: center; margin-bottom: 14px; }
+  .r-btn {
+    border: 2px solid #334155; background: #0f172a; color: #cbd5e1;
+    border-radius: 10px; padding: 9px 18px; font-size: 14px; font-weight: 800; cursor: pointer;
+  }
+  .r-btn.active { border-color: #a78bfa; background: #2e1065; color: #fff; }
+  .slider-wrap { margin: 16px 0 6px; }
+  .slider-wrap label { font-size: 14px; font-weight: 800; display: flex; justify-content: space-between; }
+  #thVal { color: #a78bfa; font-size: 18px; }
+  input[type=range] { width: 100%; accent-color: #a78bfa; height: 32px; }
+  .scale { display: flex; justify-content: space-between; font-size: 11px; color: #64748b; }
+  .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+  .btn {
+    flex: 1; border: none; border-radius: 12px; padding: 13px;
+    font-size: 15px; font-weight: 800; cursor: pointer;
+  }
+  .btn-save { background: #7c3aed; color: #fff; }
+  .btn-answer { background: #334155; color: #e2e8f0; }
+  #answer {
+    display: none; text-align: center; font-size: 30px; font-weight: 900;
+    margin-top: 14px; padding: 14px; background: #2e1065; border-radius: 12px;
+  }
+  .howto {
+    background: #1e293b; border: 2px dashed #7c3aed; border-radius: 12px;
+    padding: 14px 16px; margin-top: 14px; font-size: 13.5px; line-height: 1.8; color: #cbd5e1;
+  }
+  .howto b { color: #c4b5fd; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🙈 매직아이</h1>
+  <p>임계값으로 숨은 동물을 찾아라! 그냥 봐선 안 보여요 👀</p>
+</header>
+<main>
+  <div class="card">
+    <div class="rounds">
+      <button class="r-btn active" data-r="0">문제 1</button>
+      <button class="r-btn" data-r="1">문제 2</button>
+      <button class="r-btn" data-r="2">문제 3</button>
+    </div>
+    <canvas id="eye" width="420" height="420" title="클릭하면 이미지 저장"></canvas>
+    <p class="caption">📸 화면을 클릭하면 지금 보이는 그대로 이미지로 저장됩니다</p>
+    <div class="slider-wrap">
+      <label><span>🔍 임계값 (Threshold)</span><span id="thVal">128</span></label>
+      <input type="range" id="th" min="0" max="255" value="128">
+      <div class="scale"><span>0 (전부 흰색)</span><span>255 (전부 검정)</span></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-save" id="saveBtn">📸 화면 저장하기</button>
+      <button class="btn btn-answer" id="ansBtn">👁️ 정답 보기 (선생님용)</button>
+    </div>
+    <div id="answer"></div>
+  </div>
+  <div class="howto">
+    <b>🎮 수업 진행법</b><br>
+    ① "여기에 동물이 숨어 있어요. 근데 그냥 봐선 안 보여요!"<br>
+    ② 학생들이 임계값 슬라이더를 좌우로 움직여 보기<br>
+    ③ 어딘가에서 동물이 짜잔! 가장 먼저 맞힌 학생 정답 🙋<br>
+    ④ <b>핵심 질문:</b> "왜 임계값을 바꾸니까 보이는 게 달라질까요?"<br>
+    → 컴퓨터는 사진을 <b>숫자(행렬)</b>로 보고, 임계값으로 0과 1을 가르는 게 <b>이진화</b>!
+  </div>
+</main>
+
+<script>
+// ── 문제 정의: 숨은 동물 3마리 ──
+const ANIMALS = [
+  { name: '🐱 고양이', draw: drawCat, hidden: 152 },
+  { name: '🐰 토끼',   draw: drawRabbit, hidden: 148 },
+  { name: '🐶 강아지', draw: drawDog, hidden: 156 },
+];
+
+const cv = document.getElementById('eye');
+const ctx = cv.getContext('2d');
+const S = cv.width;
+const $ = id => document.getElementById(id);
+
+let round = 0;
+let baseData = null;  // 노이즈+숨은동물의 원본 픽셀
+
+// ── 동물 실루엣 그리기 (밝기 bright로) ──
+function gray(g, v) { return `rgb(${v},${v},${v})`; }
+
+function drawCat(g, cx, cy, s, b) {
+  g.fillStyle = gray(g, b);
+  g.beginPath(); g.ellipse(cx, cy + 45 * s, 58 * s, 48 * s, 0, 0, Math.PI * 2); g.fill(); // 몸
+  g.beginPath(); g.arc(cx, cy - 32 * s, 40 * s, 0, Math.PI * 2); g.fill();               // 머리
+  g.beginPath();  // 왼쪽 귀
+  g.moveTo(cx - 34 * s, cy - 55 * s); g.lineTo(cx - 26 * s, cy - 98 * s); g.lineTo(cx - 8 * s, cy - 62 * s);
+  g.closePath(); g.fill();
+  g.beginPath();  // 오른쪽 귀
+  g.moveTo(cx + 34 * s, cy - 55 * s); g.lineTo(cx + 26 * s, cy - 98 * s); g.lineTo(cx + 8 * s, cy - 62 * s);
+  g.closePath(); g.fill();
+  g.strokeStyle = gray(g, b); g.lineWidth = 17 * s; g.lineCap = 'round';                 // 꼬리
+  g.beginPath(); g.moveTo(cx + 52 * s, cy + 65 * s);
+  g.quadraticCurveTo(cx + 115 * s, cy + 45 * s, cx + 105 * s, cy - 25 * s); g.stroke();
+}
+
+function drawRabbit(g, cx, cy, s, b) {
+  g.fillStyle = gray(g, b);
+  g.beginPath(); g.ellipse(cx, cy + 50 * s, 55 * s, 45 * s, 0, 0, Math.PI * 2); g.fill(); // 몸
+  g.beginPath(); g.arc(cx, cy - 25 * s, 36 * s, 0, Math.PI * 2); g.fill();               // 머리
+  g.beginPath(); g.ellipse(cx - 18 * s, cy - 105 * s, 13 * s, 48 * s, -0.12, 0, Math.PI * 2); g.fill(); // 왼쪽 귀
+  g.beginPath(); g.ellipse(cx + 18 * s, cy - 105 * s, 13 * s, 48 * s, 0.12, 0, Math.PI * 2); g.fill();  // 오른쪽 귀
+  g.beginPath(); g.arc(cx - 42 * s, cy + 78 * s, 16 * s, 0, Math.PI * 2); g.fill();       // 뒷발
+  g.beginPath(); g.arc(cx + 42 * s, cy + 78 * s, 16 * s, 0, Math.PI * 2); g.fill();
+}
+
+function drawDog(g, cx, cy, s, b) {
+  g.fillStyle = gray(g, b);
+  g.beginPath(); g.ellipse(cx, cy + 48 * s, 60 * s, 46 * s, 0, 0, Math.PI * 2); g.fill(); // 몸
+  g.beginPath(); g.arc(cx, cy - 30 * s, 38 * s, 0, Math.PI * 2); g.fill();               // 머리
+  g.beginPath(); g.ellipse(cx - 38 * s, cy - 28 * s, 12 * s, 30 * s, 0.35, 0, Math.PI * 2); g.fill(); // 처진 귀
+  g.beginPath(); g.ellipse(cx + 38 * s, cy - 28 * s, 12 * s, 30 * s, -0.35, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.ellipse(cx, cy - 12 * s, 16 * s, 12 * s, 0, 0, Math.PI * 2); g.fill(); // 주둥이
+  g.strokeStyle = gray(g, b); g.lineWidth = 14 * s; g.lineCap = 'round';                 // 꼬리
+  g.beginPath(); g.moveTo(cx - 55 * s, cy + 55 * s);
+  g.quadraticCurveTo(cx - 95 * s, cy + 30 * s, cx - 85 * s, cy - 5 * s); g.stroke();
+}
+
+// ── 문제 생성: 노이즈 배경 + 숨은 동물 ──
+function makeRound(r) {
+  const off = document.createElement('canvas');
+  off.width = S; off.height = S;
+  const g = off.getContext('2d');
+
+  // 배경: 중간 밝기
+  g.fillStyle = gray(g, 112);
+  g.fillRect(0, 0, S, S);
+
+  // 숨은 동물 (배경보다 살짝 밝게)
+  ANIMALS[r].draw(g, S / 2, S / 2 - 10, 1.15, ANIMALS[r].hidden);
+
+  // 노이즈 뿌리기 (가로·세로 픽셀마다)
+  const img = g.getImageData(0, 0, S, S);
+  const d = img.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const noise = (Math.random() - 0.5) * 44;  // ±22
+    d[i] += noise; d[i + 1] += noise; d[i + 2] += noise;
+  }
+  g.putImageData(img, 0, 0);
+  baseData = g.getImageData(0, 0, S, S);
+}
+
+// ── 임계값 적용 (이진화!) ──
+function applyThreshold() {
+  const T = +$('th').value;
+  $('thVal').textContent = T;
+  const out = ctx.createImageData(S, S);
+  const src = baseData.data, dst = out.data;
+  for (let i = 0; i < src.length; i += 4) {
+    // 그레이스케일 밝기 (가로·세로 모든 픽셀을 하나씩 검사)
+    const v = (src[i] + src[i + 1] + src[i + 2]) / 3;
+    const b = v >= T ? 255 : 0;
+    dst[i] = dst[i + 1] = dst[i + 2] = b;
+    dst[i + 3] = 255;
+  }
+  ctx.putImageData(out, 0, 0);
+}
+
+// ── 저장 ──
+function saveImage() {
+  const a = document.createElement('a');
+  a.download = 'magiceye_reveal.png';
+  a.href = cv.toDataURL('image/png');
+  a.click();
+}
+
+// ── 이벤트 ──
+$('th').addEventListener('input', applyThreshold);
+$('saveBtn').onclick = saveImage;
+cv.onclick = saveImage;
+$('ansBtn').onclick = () => {
+  const el = $('answer');
+  const show = el.style.display !== 'block';
+  el.style.display = show ? 'block' : 'none';
+  el.textContent = '정답: ' + ANIMALS[round].name;
+  $('ansBtn').textContent = show ? '🙈 정답 숨기기' : '👁️ 정답 보기 (선생님용)';
+};
+document.querySelectorAll('.r-btn').forEach(b => {
+  b.onclick = () => {
+    round = +b.dataset.r;
+    document.querySelectorAll('.r-btn').forEach(x =>
+      x.classList.toggle('active', x === b));
+    $('answer').style.display = 'none';
+    $('ansBtn').textContent = '👁️ 정답 보기 (선생님용)';
+    makeRound(round);
+    applyThreshold();
+  };
+});
+
+makeRound(0);
+applyThreshold();
+</script>
+</body>
+</html>
