@@ -58,6 +58,13 @@
       box-shadow: 0 16px 36px rgba(49, 130, 246, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
       border-color: rgba(49, 130, 246, 0.3);
     }
+    @keyframes submitPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45); transform: scale(1); }
+      50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); transform: scale(1.02); }
+    }
+    .submit-notice {
+      animation: submitPulse 2.4s ease-in-out infinite;
+    }
     .toss-btn {
       transition: all 0.18s ease;
     }
@@ -130,6 +137,11 @@
       </p>
 
       <!-- CTA Buttons -->
+      <div class="flex flex-col items-center justify-center gap-4">
+        <div class="submit-notice inline-flex items-center gap-2 bg-emerald-50 border-2 border-emerald-300 text-emerald-800 px-6 py-3 rounded-full text-sm sm:text-base font-bold">
+          <span>📢</span>
+          <span>실습 결과물은 아래 초록색 <b>제출하기</b> 버튼으로 올려주세요! (파일명: 학번_이름)</span>
+        </div>
       <div class="flex flex-wrap items-center justify-center gap-3.5">
         <a href="01_머신러닝_선형회귀/linear_regression_simulator.html" class="toss-btn inline-flex items-center gap-2 bg-toss-blue text-white hover:bg-toss-blueHover px-6 py-3.5 rounded-2xl text-base font-bold shadow-lg shadow-blue-500/25">
           <span>01. 선형회귀부터 시작하기</span>
@@ -143,6 +155,7 @@
           <span>📤 실습 결과물 제출하기</span>
           <i data-lucide="upload" class="w-4 h-4"></i>
         </a>
+      </div>
       </div>
 
       <!-- Quick Metrics Bar -->
