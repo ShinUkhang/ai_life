@@ -171,6 +171,7 @@ const ANIMALS = {
   cat:    { name: '🐱 고양이', draw: drawCat },
   rabbit: { name: '🐰 토끼',   draw: drawRabbit },
   dog:    { name: '🐶 강아지', draw: drawDog },
+  turing: { name: '🖥️ 튜링 머신', draw: drawTuringMachine },
 };
 // 문제별: [진짜, 미끼1, 미끼2] — 위치와 크기 다르게
 // 5 스테이지: 클리어하며 잠금 해제
@@ -206,6 +207,12 @@ const STAGES = [
       { kind: 'cat', ...TR, amp: 16 },
       { kind: 'dog', ...BL, amp: 14 },
     ] },
+  { real: 'turing', title: '보너스 · 앨런 튜링 🖥️', realAmp: 26,
+    animals: [
+      { kind: 'turing', cx: 24, cy: 26, s: 1.0, amp: 26 },
+      { kind: 'cat', ...BL, amp: 14 },
+      { kind: 'dog', ...TR, amp: 14 },
+    ] },
 ];
 const PROBLEMS = STAGES;  // 하위 호환
 const BLOBS = [
@@ -229,7 +236,7 @@ let answerOk = false, stageDone = false;
 
 // 스테이지 진행 저장
 let unlocked = parseInt(localStorage.getItem('magiceye_unlocked') || '1');
-unlocked = Math.max(1, Math.min(5, unlocked));
+unlocked = Math.max(1, Math.min(6, unlocked));
 
 function renderStageBtns() {
   const box = $('stageBtns');
@@ -237,13 +244,14 @@ function renderStageBtns() {
   STAGES.forEach((st, i) => {
     const b = document.createElement('button');
     b.className = 'r-btn' + (i === stage ? ' active' : '');
+    const label = i === 5 ? '보너스' : `${i + 1}단계`;
     if (i + 1 > unlocked) {
-      b.textContent = `🔒 ${i + 1}단계`;
+      b.textContent = `🔒 ${label}`;
       b.disabled = true;
       b.style.opacity = '0.45';
       b.style.cursor = 'default';
     } else {
-      b.textContent = `${i + 1}단계`;
+      b.textContent = label;
       b.onclick = () => setStage(i);
     }
     box.appendChild(b);
@@ -267,22 +275,25 @@ function setStage(i) {
 function tryStageClear() {
   if (stageDone || !solved || !answerOk) return;
   stageDone = true;
-  if (stage + 1 < 5) {
+  const isLast = stage + 1 >= STAGES.length;
+  if (!isLast) {
     unlocked = Math.max(unlocked, stage + 2);
     localStorage.setItem('magiceye_unlocked', String(unlocked));
-  } else {
-    localStorage.setItem('magiceye_unlocked', '5');
   }
   renderStageBtns();
   const sc = $('stageClear');
-  if (stage + 1 < 5) {
-    sc.innerHTML = `<h2>🏆 ${stage + 1}단계 클리어!</h2>
-      <p>${tries}회 만에 암호 해제 + 정답!</p>
-      <button id="nextBtn" class="btn" style="background:#10b981; color:#fff; margin-top:8px; padding:12px 28px;">➡️ ${stage + 2}단계로 가기</button>`;
+  const isTuring = STAGES[stage].real === 'turing';
+  if (!isLast) {
+    const curLabel = stage === 5 ? '보너스' : `${stage + 1}단계`;
+    sc.innerHTML = `<h2>🏆 ${curLabel} 클리어!</h2>
+      <p>${tries}회 만에 암호 해제 + 정답!</p>` +
+      (isTuring ? `<p style="font-size:13px; color:#c4b5fd; margin-top:8px;">앨런 튜링(1912–1954) — 컴퓨터 과학의 아버지.<br>튜링 머신으로 '계산이란 무엇인가'를 정의하고,<br>튜링 테스트로 인공지능의 꿈을 열었어요. 🖥️</p>` : ``) +
+      `<button id="nextBtn" class="btn" style="background:#10b981; color:#fff; margin-top:8px; padding:12px 28px;">➡️ 다음 단계로 가기</button>`;
     $('nextBtn').onclick = () => setStage(stage + 1);
   } else {
     sc.innerHTML = `<h2>👑 전 스테이지 클리어!</h2>
-      <p>당신은 임계값 마스터! 🎓</p>`;
+      <p>당신은 임계값 마스터! 🎓</p>
+      <p style="font-size:13px; color:#c4b5fd; margin-top:8px;">앨런 튜링(1912–1954) — 컴퓨터 과학의 아버지.<br>튜링 머신으로 '계산이란 무엇인가'를 정의하고,<br>튜링 테스트로 인공지능의 꿈을 열었어요. 🖥️</p>`;
   }
   sc.style.display = 'block';
   sc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -319,6 +330,17 @@ function drawDog(g, cx, cy, s) {
   g.lineWidth = 14 * s; g.lineCap = 'round';
   g.beginPath(); g.moveTo(cx - 55 * s, cy + 55 * s);
   g.quadraticCurveTo(cx - 95 * s, cy + 30 * s, cx - 85 * s, cy - 5 * s); g.stroke();
+}
+// 튜링 머신: 테이프 + 읽기 헤드 (앨런 튜링 보너스 스테이지)
+function drawTuringMachine(g, cx, cy, s) {
+  const w = 30 * s, h = 5 * s;
+  g.fillRect(cx - w / 2, cy - h / 2, w, h);  // 테이프
+  const hs = 9 * s;
+  g.beginPath();  // 읽기 헤드 (삼각형)
+  g.moveTo(cx - hs / 2, cy - h / 2 - hs);
+  g.lineTo(cx + hs / 2, cy - h / 2 - hs);
+  g.lineTo(cx, cy - h / 2 - 1);
+  g.closePath(); g.fill();
 }
 
 // 윤곽선 마스크 (NxN)
@@ -451,6 +473,7 @@ const ANSWER_MAP = {
   dog: ['개', '강아지', '멍멍이', '댕댕이'],
   cat: ['고양이', '고양', '야옹이', '냥이'],
   rabbit: ['토끼', '토깽이'],
+  turing: ['튜링', '튜링머신', '앨런튜링', 'turing', 'turingmachine', '컴퓨터'],
 };
 function checkAnswer() {
   const input = $('ansInput').value.replace(/\s/g, '');
