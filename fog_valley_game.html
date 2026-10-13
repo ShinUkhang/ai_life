@@ -8,48 +8,48 @@
   * { box-sizing: border-box; }
   body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    margin: 0; color: #1f2937; background: #0f172a;
+    margin: 0; color: #1f2937; background: #dbeafe;
     word-break: keep-all;
   }
-  body::before {
-    content: ''; position: fixed; inset: 0; z-index: -1;
-    background: url('fog_mountain.jpg') center/cover no-repeat;
-    opacity: 0.25; filter: blur(2px);
-  }
-  header { text-align: center; color: #fff; padding: 26px 16px 6px; }
-  header h1 { margin: 0 0 8px; font-size: 26px; }
-  header p { margin: 0; font-size: 14px; color: #cbd5e1; }
-  main { max-width: 980px; margin: 0 auto; padding: 12px 16px 40px; }
+  header { text-align: center; padding: 22px 16px 4px; }
+  header h1 { margin: 0 0 6px; font-size: 26px; color: #1e3a5f; }
+  header p { margin: 0; font-size: 14px; color: #475569; }
+  main { max-width: 980px; margin: 0 auto; padding: 10px 16px 40px; }
   .card {
-    background: rgba(255,255,255,.96); border-radius: 16px;
-    padding: 16px; margin-top: 14px; box-shadow: 0 8px 30px rgba(0,0,0,.25);
+    background: #fff; border-radius: 18px;
+    padding: 16px; margin-top: 14px; box-shadow: 0 8px 30px rgba(30,58,95,.12);
   }
-  #game { width: 100%; height: auto; display: block; border-radius: 12px; background: #0b1220; }
-  .levels { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  #game { width: 100%; height: auto; display: block; border-radius: 14px; }
+  .levels { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
   .lv-btn {
-    border: 2px solid #e5e7eb; background: #fff; border-radius: 10px;
-    padding: 8px 14px; font-size: 14px; font-weight: 700; cursor: pointer; color: #374151;
+    border: 2px solid #e5e7eb; background: #fff; border-radius: 12px;
+    padding: 9px 15px; font-size: 14px; font-weight: 800; cursor: pointer; color: #374151;
   }
   .lv-btn.active { border-color: #1a73e8; background: #eff6ff; color: #1a73e8; }
-  .lv-desc { font-size: 13px; color: #6b7280; margin: -4px 0 12px; }
-  .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-  .btn {
-    border: none; border-radius: 10px; padding: 12px 18px;
-    font-size: 15px; font-weight: 800; cursor: pointer;
+  .lv-desc { font-size: 13px; color: #6b7280; margin: 0 0 14px; }
+  .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  /* 포트리스식 파워 게이지 */
+  .power-wrap { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 800; }
+  .power-track {
+    width: 220px; height: 22px; border-radius: 12px; background: #e5e7eb;
+    position: relative; overflow: hidden;
   }
-  .btn-step { background: #1a73e8; color: #fff; }
-  .btn-auto { background: #10b981; color: #fff; }
+  .power-fill {
+    height: 100%; border-radius: 12px; width: 27%;
+    background: linear-gradient(90deg, #4ade80, #facc15 55%, #f87171);
+    transition: width .1s;
+  }
+  #alphaVal { color: #1a73e8; font-size: 18px; min-width: 54px; }
+  .btn {
+    border: none; border-radius: 12px; padding: 13px 26px;
+    font-size: 16px; font-weight: 900; cursor: pointer;
+  }
+  .btn-fire { background: linear-gradient(135deg, #f97316, #ef4444); color: #fff; box-shadow: 0 4px 14px rgba(239,68,68,.35); }
   .btn-reset { background: #e5e7eb; color: #374151; }
   .btn:disabled { opacity: .45; cursor: default; }
-  .slider-wrap { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; }
-  input[type=range] { width: 170px; accent-color: #1a73e8; }
-  #alphaVal { color: #1a73e8; font-size: 17px; min-width: 52px; }
-  .stats { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; font-size: 14px; }
-  .stats b { font-size: 17px; }
-  #result {
-    display: none; border-radius: 12px; padding: 18px; margin-top: 12px;
-    text-align: center;
-  }
+  .stats { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 12px; font-size: 14px; color: #475569; }
+  .stats b { font-size: 18px; color: #1e3a5f; }
+  #result { display: none; border-radius: 12px; padding: 18px; margin-top: 12px; text-align: center; }
   #result.win { display: block; background: #ecfdf5; border: 2px solid #10b981; }
   #result.fail { display: block; background: #fef2f2; border: 2px solid #ef4444; }
   #result h2 { margin: 0 0 6px; font-size: 20px; }
@@ -60,20 +60,20 @@
   }
   .mission {
     background: #fffbeb; border: 2px dashed #f59e0b; border-radius: 12px;
-    padding: 14px 16px; margin-top: 14px; font-size: 14px;
+    padding: 14px 16px; margin-top: 14px; font-size: 14px; line-height: 1.7;
   }
   .mission b { color: #b45309; }
-  .note { font-size: 12px; color: #9ca3af; margin-top: 10px; text-align: center; }
+  .note { font-size: 12px; color: #94a3b8; margin-top: 10px; text-align: center; }
 </style>
 </head>
 <body>
 <header>
   <h1>🌫️ 안개 계곡 탈출</h1>
-  <p>경사하강법 게임 — 보폭(학습률)을 조절해 깃발 지점에 정확히 내려가세요!</p>
+  <p>포트리스처럼 보폭(파워)을 정하고 발사! 깃발에 정확히 착지하면 성공 🎯</p>
 </header>
 <main>
   <div class="card">
-    <canvas id="game" width="940" height="500"></canvas>
+    <canvas id="game" width="940" height="520"></canvas>
     <div id="result"></div>
   </div>
 
@@ -84,46 +84,45 @@
     </div>
     <p class="lv-desc" id="lvDesc"></p>
     <div class="controls">
-      <div class="slider-wrap">
-        <span>🥾 보폭(학습률 α)</span>
-        <input type="range" id="alpha" min="0.05" max="1.5" step="0.05" value="0.4">
+      <div class="power-wrap">
+        <span>🥾 보폭 파워</span>
+        <div class="power-track"><div class="power-fill" id="powerFill"></div></div>
+        <input type="range" id="alpha" min="0.05" max="1.5" step="0.05" value="0.4" style="display:none">
         <span id="alphaVal">0.40</span>
       </div>
-      <button class="btn btn-step" id="stepBtn">🥾 한 걸음</button>
-      <button class="btn btn-auto" id="autoBtn">▶ 자동 진행</button>
+      <button class="btn btn-fire" id="fireBtn">🚀 출발!</button>
       <button class="btn btn-reset" id="resetBtn">↺ 다시 시작</button>
     </div>
     <div class="stats">
+      <span>도전 <b id="stTry">0</b>번째</span>
       <span>에포크 <b id="stEpoch">0</b></span>
-      <span>현재 손실 J <b id="stLoss">—</b></span>
-      <span>깃발까지 거리 <b id="stDist">—</b></span>
+      <span>최고 기록 <b id="stBest">—</b></span>
     </div>
   </div>
 
   <div class="mission">
     <b>🏆 도전 과제</b><br>
-    ① 가장 적은 에포크로 깃발에 도착해 보세요 &nbsp; ② 2단계 웅덩이에 갇히면? 보폭을 키워 점프!<br>
+    ① 포트리스처럼 보폭을 정하고 한 방에 깃발에 착지해 보세요 &nbsp; ② 2단계 웅덩이에 빠지면? 파워를 올려 점프!<br>
     성공하면 결과 화면을 캡처해서 드라이브에 올려주세요. (파일명: 학번_이름)
   </div>
-  <p class="note">💡 이 게임 = 경사하강법 그 자체! 한 걸음마다 <b>w ← w − α·(기울기)</b> 로 이동합니다.</p>
+  <p class="note">💡 이 게임 = 경사하강법! 출발하면 캐릭터가 <b>w ← w − α·(기울기)</b> 를 반복하며 내려갑니다.</p>
 </main>
 
 <script>
 // ── 레벨 정의 ──
-// J: 손실함수(계곡 모양), dJ: 기울기, target: 깃발 위치(전역 최소점)
 const LEVELS = [
   {
     name: '1단계 · 매끈한 계곡',
-    desc: '울퉁불퉁한 곳이 없는 매끈한 계곡이에요. 어떤 보폭이 가장 빠른지 찾아보세요!',
+    desc: '울퉁불퉁한 곳이 없는 매끈한 계곡! 한 방에 착지할 파워를 찾아보세요.',
     J: w => w * w,
     dJ: w => 2 * w,
-    w0: () => 4.3 + Math.random() * 0.6,  // 시작 위치 (조금씩 랜덤)
+    w0: () => 4.3 + Math.random() * 0.6,
     target: 0, eps: 0.12,
     bound: 10, maxEpoch: 80, wrange: [-6, 6]
   },
   {
     name: '2단계 · 안개 웅덩이 계곡',
-    desc: '중간에 웅덩이(극소점)가 숨어 있어요! 보폭이 작으면 웅덩이에 갇혀요. 크게 점프해 보세요!',
+    desc: '중간에 웅덩이(극소점)가 숨어 있어요! 약한 파워로는 갇혀요. 세게 점프!',
     J: w => 0.3 * w * w + 2 * Math.sin(w),
     dJ: w => 0.6 * w + 2 * Math.cos(w),
     w0: () => 4.3 + Math.random() * 0.6,
@@ -135,14 +134,18 @@ const LEVELS = [
 const cv = document.getElementById('game');
 const ctx = cv.getContext('2d');
 const W = cv.width, H = cv.height;
-
-let lv = 0, w = 0, epoch = 0, trail = [], stuckCount = 0;
-let playing = false, autoTimer = null, animating = false;
-let charW = 0, charY = 0;  // 캐릭터 애니메이션용 표시 위치
-
 const $ = id => document.getElementById(id);
+const L = () => LEVELS[lv];
 
-function L() { return LEVELS[lv]; }
+let lv = 0, wStart = 0, tries = 0, flying = false;
+let path = [], pathIdx = 0, animT = 0;
+let particles = [], clouds = [];
+let best = JSON.parse(localStorage.getItem('valleyBest') || '{}');
+
+// 구름 초기화
+for (let i = 0; i < 5; i++) {
+  clouds.push({ x: Math.random() * W, y: 30 + Math.random() * 90, s: 0.6 + Math.random() * 0.8, v: 0.2 + Math.random() * 0.3 });
+}
 
 // ── 좌표 변환 ──
 let yMin = 0, yMax = 1;
@@ -154,182 +157,362 @@ function rescale() {
     if (y < yMin) yMin = y;
     if (y > yMax) yMax = y;
   }
-  const pad = (yMax - yMin) * 0.25;
+  const pad = (yMax - yMin) * 0.3;
   yMin -= pad; yMax += pad;
 }
 const X = wv => 40 + (wv - L().wrange[0]) / (L().wrange[1] - L().wrange[0]) * (W - 80);
-const Y = jv => H - 50 - (jv - yMin) / (yMax - yMin) * (H - 130);
+const Y = jv => H - 60 - (jv - yMin) / (yMax - yMin) * (H - 200);
 
-// ── 그리기 ──
-function draw() {
+function rr(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+// ── 귀여운 등산 캐릭터 ──
+function drawHiker(px, py, phase, faceDir, sliding) {
+  ctx.save();
+  ctx.translate(px, py);
+  ctx.scale(faceDir, 1);  // 진행 방향 보기
+  if (sliding) ctx.rotate(-0.12);  // 미끄러질 땐 살짝 뒤로 젖히기
+
+  const swing = Math.sin(phase) * 8;
+  const bob = Math.abs(Math.cos(phase)) * 2.5;
+
+  // 그림자
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  ctx.beginPath(); ctx.ellipse(0, 2, 15, 5, 0, 0, Math.PI * 2); ctx.fill();
+
+  ctx.translate(0, -bob);
+  // 다리
+  ctx.strokeStyle = '#334155'; ctx.lineWidth = 7; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(-4, -14); ctx.lineTo(-4 + swing, 0); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(4, -14); ctx.lineTo(4 - swing, 0); ctx.stroke();
+  // 신발
+  ctx.fillStyle = '#f59e0b';
+  ctx.beginPath(); ctx.arc(-4 + swing, -1, 4.5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4 - swing, -1, 4.5, 0, Math.PI * 2); ctx.fill();
+  // 배낭 (뒤)
+  ctx.fillStyle = '#14b8a6';
+  rr(-17, -32, 8, 17, 4); ctx.fill();
+  ctx.fillStyle = '#0d9488';
+  rr(-17, -32, 8, 5, 4); ctx.fill();
+  // 몸통 (재킷)
+  ctx.fillStyle = '#fb7185';
+  rr(-10, -34, 20, 22, 8); ctx.fill();
+  ctx.fillStyle = '#f43f5e';
+  rr(-10, -20, 20, 8, 4); ctx.fill();
+  // 팔 (앞으로 휘적)
+  ctx.strokeStyle = '#fb7185'; ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.moveTo(6, -28); ctx.lineTo(6 + swing * 0.7, -16); ctx.stroke();
+  // 머리
+  ctx.fillStyle = '#ffdfba';
+  ctx.beginPath(); ctx.arc(2, -42, 10, 0, Math.PI * 2); ctx.fill();
+  // 등산모자
+  ctx.fillStyle = '#2563eb';
+  ctx.beginPath(); ctx.arc(2, -44, 10, Math.PI, 0); ctx.fill();
+  ctx.fillStyle = '#1d4ed8';
+  rr(-6, -46, 20, 4, 2); ctx.fill();  // 챙
+  // 얼굴
+  ctx.fillStyle = '#1f2937';
+  ctx.beginPath(); ctx.arc(5, -41, 1.8, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(10.5, -41, 1.8, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#1f2937'; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.arc(7.5, -38.5, 3.5, 0.3, Math.PI - 0.3); ctx.stroke();
+  // 볼터치
+  ctx.fillStyle = 'rgba(251,113,133,0.5)';
+  ctx.beginPath(); ctx.arc(1, -37.5, 2.5, 0, Math.PI * 2); ctx.fill();
+
+  ctx.restore();
+}
+
+// ── 배경 그리기 ──
+function drawBG() {
+  // 하늘
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, '#bae6fd');
+  sky.addColorStop(0.55, '#e0f2fe');
+  sky.addColorStop(1, '#fef3c7');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+
+  // 태양
+  ctx.fillStyle = '#fde68a';
+  ctx.beginPath(); ctx.arc(W - 110, 80, 34, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(253,230,138,0.35)';
+  ctx.beginPath(); ctx.arc(W - 110, 80, 52, 0, Math.PI * 2); ctx.fill();
+
+  // 구름
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  for (const c of clouds) {
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, 22 * c.s, 0, Math.PI * 2);
+    ctx.arc(c.x + 24 * c.s, c.y - 8 * c.s, 17 * c.s, 0, Math.PI * 2);
+    ctx.arc(c.x + 48 * c.s, c.y, 20 * c.s, 0, Math.PI * 2);
+    ctx.fill();
+    c.x += c.v;
+    if (c.x > W + 60) c.x = -60;
+  }
+
+  // 먼 산
+  ctx.fillStyle = '#cbd5e1';
+  ctx.beginPath();
+  ctx.moveTo(0, 300);
+  const peaks = [[120, 180], [260, 260], [420, 160], [600, 250], [760, 190], [940, 270]];
+  for (const [x, y] of peaks) ctx.lineTo(x, y);
+  ctx.lineTo(W, 300); ctx.lineTo(W, H); ctx.lineTo(0, H);
+  ctx.closePath(); ctx.fill();
+
+  // 안개帯
+  const fog = ctx.createLinearGradient(0, 130, 0, 260);
+  fog.addColorStop(0, 'rgba(241,245,249,0.75)');
+  fog.addColorStop(1, 'rgba(241,245,249,0)');
+  ctx.fillStyle = fog;
+  ctx.fillRect(0, 130, W, 130);
+}
+
+function drawValley() {
   const { J, target, eps, wrange } = L();
-  ctx.clearRect(0, 0, W, H);
 
-  // 계곡 채우기
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#1e3a5f');
-  grad.addColorStop(1, '#0b1220');
+  // 계곡 채우기 (초록)
+  const g = ctx.createLinearGradient(0, 200, 0, H);
+  g.addColorStop(0, '#86efac');
+  g.addColorStop(1, '#166534');
   ctx.beginPath();
   ctx.moveTo(X(wrange[0]), H);
   for (let x = wrange[0]; x <= wrange[1]; x += 0.05) ctx.lineTo(X(x), Y(J(x)));
   ctx.lineTo(X(wrange[1]), H);
   ctx.closePath();
-  ctx.fillStyle = grad;
+  ctx.fillStyle = g;
   ctx.fill();
 
-  // 계곡 선
+  // 능선 라인
   ctx.beginPath();
   for (let x = wrange[0]; x <= wrange[1]; x += 0.05) {
     const px = X(x), py = Y(J(x));
     x === wrange[0] ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
   }
-  ctx.strokeStyle = '#7dd3fc';
-  ctx.lineWidth = 3;
+  ctx.strokeStyle = '#15803d';
+  ctx.lineWidth = 4;
   ctx.stroke();
 
-  // 목표 구간 (깃발 존) 하이라이트
+  // 목표 구간 하이라이트
   ctx.beginPath();
   for (let x = target - eps; x <= target + eps; x += 0.02) {
     const px = X(x), py = Y(J(x));
     x === target - eps ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
   }
   ctx.strokeStyle = '#fbbf24';
-  ctx.lineWidth = 8;
+  ctx.lineWidth = 10;
+  ctx.lineCap = 'round';
   ctx.stroke();
 
-  // 안개
-  const fog = ctx.createLinearGradient(0, 0, 0, H * 0.45);
-  fog.addColorStop(0, 'rgba(226,232,240,0.55)');
-  fog.addColorStop(1, 'rgba(226,232,240,0)');
-  ctx.fillStyle = fog;
-  ctx.fillRect(0, 0, W, H * 0.45);
-
-  // 이동 궤적
-  ctx.fillStyle = 'rgba(125,211,252,0.7)';
-  for (const p of trail) {
-    ctx.beginPath();
-    ctx.arc(X(p.w), Y(J(p.w)), 3.5, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // 깃발
+  // 깃발 (흔들림)
   const fy = Y(J(target));
-  ctx.font = '34px serif';
-  ctx.fillText('🚩', X(target) - 14, fy - 12);
+  const wave = Math.sin(Date.now() / 300) * 3;
+  ctx.strokeStyle = '#92400e'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(X(target), fy); ctx.lineTo(X(target), fy - 52); ctx.stroke();
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath();
+  ctx.moveTo(X(target), fy - 52);
+  ctx.lineTo(X(target) + 30 + wave, fy - 44);
+  ctx.lineTo(X(target), fy - 36);
+  ctx.closePath(); ctx.fill();
 
-  // 시작 지점
-  ctx.font = '22px serif';
-  ctx.fillText('🏁', X(trail.length ? trail[0].w : w) - 11, Y(J(trail.length ? trail[0].w : w)) - 30);
-
-  // 캐릭터 (등산객)
-  const bounce = animating ? Math.abs(Math.sin(Date.now() / 90)) * 8 : 0;
-  ctx.font = '36px serif';
-  ctx.fillText('🧗', charW - 18, charY - 14 - bounce);
+  // 지나온 궤적
+  for (let i = 0; i < trailPts.length; i++) {
+    const p = trailPts[i];
+    ctx.fillStyle = `rgba(30,58,95,${0.25 + 0.5 * i / trailPts.length})`;
+    ctx.beginPath(); ctx.arc(X(p), Y(J(p)), 4, 0, Math.PI * 2); ctx.fill();
+  }
 }
 
-function syncChar() {
-  charW = X(w);
-  charY = Y(L().J(w));
+let trailPts = [];
+
+// ── 파티클 ──
+function spawnDust(px, py) {
+  particles.push({ x: px, y: py, vx: (Math.random() - 0.5) * 2, vy: -Math.random() * 2 - 0.5, r: 3 + Math.random() * 4, life: 1, color: '200,180,150' });
+}
+function spawnConfetti() {
+  const colors = ['239,68,68', '245,158,11', '16,185,129', '59,130,246', '168,85,247'];
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: X(L().target) + (Math.random() - 0.5) * 120, y: Y(L().J(L().target)) - 60,
+      vx: (Math.random() - 0.5) * 6, vy: -Math.random() * 6 - 2,
+      r: 3 + Math.random() * 4, life: 1.4, color: colors[i % colors.length], grav: 0.25, rect: true,
+      rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.3
+    });
+  }
+}
+function drawParticles(dt) {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx; p.y += p.vy;
+    p.vy += (p.grav || 0.05);
+    if (p.rot !== undefined) p.rot += p.vr;
+    p.life -= dt * 0.9;
+    if (p.life <= 0) { particles.splice(i, 1); continue; }
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, p.life);
+    ctx.fillStyle = `rgb(${p.color})`;
+    if (p.rect) {
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r);
+    } else {
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+  }
 }
 
-// ── 상태 표시 ──
-function updateStats() {
-  const { J, target } = L();
-  $('stEpoch').textContent = epoch;
-  $('stLoss').textContent = J(w).toFixed(3);
-  $('stDist').textContent = Math.abs(w - target).toFixed(3);
+// ── 시뮬레이션 (경로 미리 계산) ──
+function simulate(alpha) {
+  const { dJ, target, eps, bound, maxEpoch } = L();
+  let w = wStart;
+  const pts = [w];
+  let stuck = 0, result = null;
+  for (let i = 0; i < maxEpoch; i++) {
+    const nw = w - alpha * dJ(w);   // ★ 경사하강법!
+    if (Math.abs(nw - w) < 1e-4) stuck++; else stuck = 0;
+    w = nw; pts.push(w);
+    if (Math.abs(w - target) <= eps) { result = 'win'; break; }
+    if (Math.abs(w) > bound) { result = 'diverge'; break; }
+    if (stuck >= 5) { result = 'trapped'; break; }
+  }
+  if (!result) result = 'timeout';
+  return { pts, result, epochs: pts.length - 1 };
 }
 
-// ── 결과 ──
-function endGame(type) {
-  stopAuto();
-  $('stepBtn').disabled = true;
-  $('autoBtn').disabled = true;
+// ── 발사! ──
+let lastTime = 0;
+function fire() {
+  if (flying) return;
+  const alpha = parseFloat($('alpha').value);
+  tries++;
+  $('stTry').textContent = tries;
+  const sim = simulate(alpha);
+  path = sim.pts;
+  path.result = sim.result;
+  path.epochs = sim.epochs;
+  pathIdx = 0; animT = 0;
+  trailPts = [path[0]];
+  flying = true;
+  $('fireBtn').disabled = true;
+  $('result').style.display = 'none';
+  lastTime = performance.now();
+  requestAnimationFrame(tick);
+}
+
+let phase = 0;
+let celebrating = false;
+function tick(now) {
+  if (!flying || path.length === 0) return;
+  const dt = Math.min(0.05, (now - lastTime) / 1000);
+  lastTime = now;
+
+  drawBG();
+  drawValley();
+
+  // 경로 따라 이동 (에포크당 약 90ms)
+  animT += dt;
+  const stepDur = 0.09;
+  while (animT >= stepDur && pathIdx < path.length - 1) {
+    animT -= stepDur;
+    pathIdx++;
+    trailPts.push(path[pathIdx]);
+    $('stEpoch').textContent = pathIdx;
+  }
+  const done = pathIdx >= path.length - 1;
+
+  // 캐릭터 위치 (보간)
+  const wv = path[Math.min(pathIdx, path.length - 1)];
+  const wNext = path[Math.min(pathIdx + 1, path.length - 1)];
+  const frac = Math.min(1, animT / stepDur);
+  const wCur = wv + (wNext - wv) * (done ? 1 : frac);
+  const px = X(wCur), py = Y(L().J(wCur));
+
+  // 이동 속도 → 먼지
+  const speed = Math.abs(wNext - wv);
+  if (!done && speed > 0.02 && Math.random() < 0.5) spawnDust(px - 8, py);
+
+  phase += dt * (4 + speed * 30);
+  const faceDir = wNext <= wv ? 1 : -1;  // 왼쪽으로 가면 정면
+  drawHiker(px, py, phase, faceDir, !done && speed > 0.01);
+  drawParticles(dt);
+
+  if (!done) {
+    requestAnimationFrame(tick);
+  } else {
+    flying = false;
+    $('fireBtn').disabled = false;
+    finish(path.result, path.epochs);
+  }
+}
+
+function finish(result, epochs) {
   const r = $('result');
   const alpha = parseFloat($('alpha').value).toFixed(2);
-  if (type === 'win') {
+  if (result === 'win') {
+    celebrating = true;
+    spawnConfetti();
+    (function confettiTick() {
+      if (particles.length === 0) { celebrating = false; return; }
+      drawBG(); drawValley();
+      const wv = path[path.length - 1];
+      drawHiker(X(wv), Y(L().J(wv)), phase, 1, false);
+      drawParticles(0.016);
+      requestAnimationFrame(confettiTick);
+    })();
+    const key = 'lv' + lv;
+    if (!best[key] || tries < best[key]) {
+      best[key] = tries;
+      localStorage.setItem('valleyBest', JSON.stringify(best));
+    }
+    updateBest();
     r.className = 'win';
     r.innerHTML = `<h2>🎉 성공!</h2>
-      <p><b>${epoch}번</b> 만에 깃발에 도착했어요! (보폭 α = ${alpha})</p>
-      <p>더 적은 에포크로도 가능할까요? 보폭을 바꿔 다시 도전해 보세요!</p>
+      <p><b>${tries}번째 도전</b> 만에 깃발에 착지! (보폭 ${alpha}, 에포크 ${epochs})</p>
       <button id="copyBtn">📋 결과 복사하기</button>`;
     $('copyBtn').onclick = () => {
-      const t = `안개계곡 ${lv + 1}단계: ${epoch}번, 보폭 ${alpha}`;
-      navigator.clipboard.writeText(t).then(() => {
-        $('copyBtn').textContent = '✅ 복사됨! 드라이브에 붙여넣으세요';
+      navigator.clipboard.writeText(`안개계곡 ${lv + 1}단계: ${tries}번째 시도, 보폭 ${alpha}로 성공!`).then(() => {
+        $('copyBtn').textContent = '✅ 복사됨!';
       });
     };
   } else {
-    r.className = 'fail';
     const msg = {
-      diverge: '💥 발산! 보폭이 너무 커서 계곡 밖으로 날아갔어요. 보폭을 줄여보세요.',
-      timeout: '⏱️ 시간 초과! 80번 안에 도착하지 못했어요. 보폭을 키워보세요.',
-      trapped: '😵 웅덩이에 갇혔어요! (극소점) 작은 보폭으론 절대 못 나와요. ↺ 다시 시작해서 처음부터 큰 보폭으로 점프해 보세요!'
-    }[type];
-    r.innerHTML = `<h2>실패</h2><p>${msg}</p>`;
+      diverge: '💥 계곡 밖으로 날아갔어요! 파워가 너무 세요. 줄여보세요.',
+      timeout: '⏱️ 80번 안에 도착 못 했어요. 파워를 올려보세요.',
+      trapped: '😵 웅덩이에 빠졌어요! (극소점) 약한 파워론 절대 못 나와요. 파워를 확 올려 점프!'
+    }[result];
+    r.className = 'fail';
+    r.innerHTML = `<h2>${tries}번째 도전 실패</h2><p>${msg}</p>`;
   }
+  r.style.display = 'block';
 }
 
-// ── 한 걸음 (경사하강법!) ──
-function step(done) {
-  if (animating) { if (done) done(false); return; }
-  const { dJ, target, eps, bound, maxEpoch } = L();
-  const alpha = parseFloat($('alpha').value);
-  const wOld = w;
-  const wNew = wOld - alpha * dJ(wOld);  // ★ 경사하강법 업데이트!
-  epoch++;
-
-  if (Math.abs(wNew - wOld) < 1e-4) stuckCount++; else stuckCount = 0;
-
-  // 애니메이션
-  animating = true;
-  const t0 = Date.now(), dur = 320;
-  (function anim() {
-    const t = Math.min(1, (Date.now() - t0) / dur);
-    const we = wOld + (wNew - wOld) * t;
-    charW = X(we); charY = Y(L().J(we));
-    draw();
-    if (t < 1) requestAnimationFrame(anim);
-    else {
-      animating = false;
-      w = wNew;
-      trail.push({ w });
-      syncChar(); draw(); updateStats();
-      // 종료 판정
-      let end = null;
-      if (Math.abs(w - target) <= eps) end = 'win';
-      else if (Math.abs(w) > bound) end = 'diverge';
-      else if (epoch >= maxEpoch) end = 'timeout';
-      else if (stuckCount >= 5) end = 'trapped';
-      if (end) endGame(end);
-      if (done) done(!end);
-    }
-  })();
-}
-
-function stopAuto() {
-  playing = false;
-  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
-  $('autoBtn').textContent = '▶ 자동 진행';
-}
-function startAuto() {
-  playing = true;
-  $('autoBtn').textContent = '⏸ 정지';
-  autoTimer = setInterval(() => {
-    step(cont => { if (!cont) stopAuto(); });
-  }, 420);
+function updateBest() {
+  const b = best['lv' + lv];
+  $('stBest').textContent = b ? b + '번째 도전' : '—';
 }
 
 // ── 리셋 / 레벨 ──
 function reset() {
-  stopAuto();
-  w = L().w0();
-  epoch = 0; trail = [{ w }]; stuckCount = 0;
-  rescale(); syncChar(); draw(); updateStats();
-  $('result').className = '';
+  flying = false;
+  celebrating = false;
+  wStart = L().w0();
+  tries = 0; path = []; trailPts = [wStart]; particles = [];
+  rescale();
+  $('stTry').textContent = '0';
+  $('stEpoch').textContent = '0';
   $('result').style.display = 'none';
-  $('stepBtn').disabled = false;
-  $('autoBtn').disabled = false;
+  $('fireBtn').disabled = false;
+  updateBest();
+  drawBG(); drawValley();
+  drawHiker(X(wStart), Y(L().J(wStart)), 0, 1, false);
 }
 function setLevel(i) {
   lv = i;
@@ -339,13 +522,38 @@ function setLevel(i) {
   reset();
 }
 
-$('stepBtn').onclick = () => step();
-$('autoBtn').onclick = () => playing ? stopAuto() : startAuto();
+// 파워 슬라이더 → 게이지
+const alphaInput = $('alpha');
+function syncPower() {
+  const v = parseFloat(alphaInput.value);
+  $('alphaVal').textContent = v.toFixed(2);
+  $('powerFill').style.width = ((v - 0.05) / (1.5 - 0.05) * 100) + '%';
+}
+$('powerFill').parentElement.style.cursor = 'pointer';
+document.querySelector('.power-track').addEventListener('click', e => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+  alphaInput.value = (0.05 + ratio * (1.5 - 0.05)).toFixed(2);
+  syncPower();
+});
+alphaInput.addEventListener('input', syncPower);
+
+$('fireBtn').onclick = fire;
 $('resetBtn').onclick = reset;
-$('alpha').oninput = e => { $('alphaVal').textContent = parseFloat(e.target.value).toFixed(2); };
 document.querySelectorAll('.lv-btn').forEach(b =>
   b.onclick = () => setLevel(+b.dataset.lv));
 
+// 대기 화면 애니메이션
+(function idle() {
+  if (!flying && !celebrating) {
+    drawBG(); drawValley();
+    drawHiker(X(wStart), Y(L().J(wStart)), Date.now() / 500, 1, false);
+    drawParticles(0.016);
+  }
+  requestAnimationFrame(idle);
+})();
+
+syncPower();
 setLevel(0);
 </script>
 </body>
