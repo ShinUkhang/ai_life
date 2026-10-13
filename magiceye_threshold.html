@@ -171,6 +171,7 @@ const SWEET_MIN = 15, SWEET_MAX = 21;  // 암호 정답 범위
 const IMG_MASKS = {
   pikachu: "ACwAAIAIADYAAYAIAB8AAwAIAAcABgB4AAWADABYAAeACABYAALAGABYwALgEADwQAN/+ACwQAHASAGwYAAAeAFgIAAAAANgIAAAAAbANwAAAA3AFQAAABmAHwAAABMAGgAAABsAHgAAAAsAEAAAAA8AEAAAAAEAEAAAAAcAEAAAAAUAMAAAAAUAIAAAAAUAMAAAAAUAEAAAAAUAEAAAAAcAEAAAAAEAEAAAAA8AGAAAAAoACAAAAB4ADAAAABYAB8AAAB2AA0AAAPfgA8AAA5awAgAABh2YAgAABYMcAgAABgYWAgAAAgQeAgAAAgwHAgAAApgFAgAAAjAHAgAAA6AHAwAAAOAFAQAAAAAfAQAAAAA2AYAAAAAsAIAAAAA4",
   mario: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8IAAAAAOGeAAAAAYD7gAAAAQAogAAAAwA4wAAABgAfwAAADAAxgAAACAAnAAAACAA+AAAADAAYAAAABAAQAAAABgAwAAAB4gBgAAAD/gBAAAAEEADAAAAEEACAAAAGEACAAAAG3wDAAAADsQBAAAAB4QBAAAAAAwBgAAAAAgA3gAAAAgAcwAAAAgAAQAAAfgAAwAAAwAABgAAAgA+BAAAAgBjDAAABgDBmAAABAOA8AAABB4AMAAABHAAAAAABEAAAAAAB8AAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  heart: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAeAAAD/wD/wAAH/8P/4AAf/+f/+AA/z//z/AB+Af+AfgB8AH4APgD4ADwAHwDwADwADwDwADwADwDwABgADwDwABgADwDwAAAADwD4AAAAHwB4AAAAHgB8AAAAPgA8AAAAPAA/AAAA/AAfAAAA+AAPwAAD8AAH4AAH4AAD8AAPwAAB+AAfgAAAfgB+AAAAPwD8AAAAHwD4AAAAD4HwAAAAB8PgAAAAA+fAAAAAAf+AAAAAAP8AAAAAAH4AAAAAAH4AAAAAAH4AAAAAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   turing: "AAAAAAAAAAEAAAAAAAMAAAAAAAMAAB8AAAIAAP8AAAAH//4AAAA//gBAAAB/wABgAAA8AABwAAAAAABwAAAAAABwAAAAAABwAAA+AABwAAA/A/AwAAAPh+AwAAABgAAAAAABxAAAAAAJzgAAAAAfx8AAAAAAg8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAABwAGAAAAA+AGAAABgMAGAAABgAAOAAABjAAOAAABxwAMAAABwwwcAAABwBwcAAAA4Z4cAAAA444YAAAAAAAAA",
 };
 function decodeMask(b64) {
@@ -197,6 +198,7 @@ const ANIMALS = {
   dog:    { name: '🐶 강아지', draw: drawDog },
   mario:  { name: '🍄 슈퍼마리오', imgMask: 'mario' },
   pikachu:{ name: '⚡ 피카츄', imgMask: 'pikachu' },
+  heart:  { name: '❤️ 하트', imgMask: 'heart' },
   turing: { name: '👨‍🔬 앨런 튜링', imgMask: 'turing' },
 };
 // 문제별: [진짜, 미끼1, 미끼2] — 위치와 크기 다르게
@@ -233,6 +235,12 @@ const STAGES = [
       { kind: 'cat', ...TR, amp: 16 },
       { kind: 'dog', ...BL, amp: 14 },
     ] },
+  { real: 'heart', title: '6단계 · 하트! ❤️', realAmp: 26,
+    animals: [
+      { kind: 'heart', amp: 26 },
+      { kind: 'cat', ...TL, amp: 14 },
+      { kind: 'dog', ...BR, amp: 14 },
+    ] },
   { real: 'turing', title: '보너스 · 앨런 튜링 👨‍🔬', realAmp: 26,
     animals: [
       { kind: 'turing', cx: 24, cy: 20, s: 0.32, amp: 26 },
@@ -262,7 +270,7 @@ let answerOk = false, stageDone = false;
 
 // 스테이지 진행 저장
 let unlocked = parseInt(localStorage.getItem('magiceye_unlocked') || '1');
-unlocked = Math.max(1, Math.min(6, unlocked));
+unlocked = Math.max(1, Math.min(7, unlocked));
 
 function renderStageBtns() {
   const box = $('stageBtns');
@@ -270,7 +278,7 @@ function renderStageBtns() {
   STAGES.forEach((st, i) => {
     const b = document.createElement('button');
     b.className = 'r-btn' + (i === stage ? ' active' : '');
-    const label = i === 5 ? '보너스' : `${i + 1}단계`;
+    const label = i === 6 ? '보너스' : `${i + 1}단계`;
     if (i + 1 > unlocked) {
       b.textContent = `🔒 ${label}`;
       b.disabled = true;
@@ -310,7 +318,7 @@ function tryStageClear() {
   const sc = $('stageClear');
   const isTuring = STAGES[stage].real === 'turing';
   if (!isLast) {
-    const curLabel = stage === 5 ? '보너스' : `${stage + 1}단계`;
+    const curLabel = stage === 6 ? '보너스' : `${stage + 1}단계`;
     sc.innerHTML = `<h2>🏆 ${curLabel} 클리어!</h2>
       <p>${tries}회 만에 암호 해제 + 정답!</p>` +
       (isTuring ? `<p style="font-size:13px; color:#c4b5fd; margin-top:8px;">앨런 튜링(1912–1954) — 컴퓨터 과학의 아버지.<br>튜링 머신으로 '계산이란 무엇인가'를 정의하고,<br>튜링 테스트로 인공지능의 꿈을 열었어요. 🖥️</p>` : ``) +
@@ -587,6 +595,7 @@ const ANSWER_MAP = {
   rabbit: ['토끼', '토깽이'],
   mario: ['마리오', '슈퍼마리오', 'mario'],
   pikachu: ['피카츄', '피카추', 'pikachu', '피카츄우'],
+  heart: ['하트', 'heart', '사랑', '마음'],
   turing: ['튜링', '앨런튜링', '앨런튜링', 'turing', '사람', '아저씨'],
 };
 function checkAnswer() {
