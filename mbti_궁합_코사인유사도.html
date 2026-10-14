@@ -82,6 +82,8 @@
 
   <div class="card">
     <button class="calc-btn" onclick="calculate()">💜 코사인 유사도 계산하기</button>
+    <button class="calc-btn" onclick="showRanking()" style="background:linear-gradient(135deg,#f59e0b,#ef4444); margin-top:10px;">🏆 나와 잘 맞는 MBTI 순위 보기</button>
+    <div id="ranking" style="display:none; margin-top:16px;"></div>
     <div id="result">
       <div class="score-big">
         <div class="score-num" id="scoreNum">0%</div>
@@ -194,6 +196,53 @@ function updateVectors() {
 }
 
 function sgn(n) { return (n > 0 ? "+" : "") + n; }
+
+function cosineSim(a, b) {
+  let dot = 0;
+  for (let i = 0; i < 4; i++) dot += a[i] * b[i];
+  const normA = Math.sqrt(a.reduce((s,x) => s + x*x, 0));
+  const normB = Math.sqrt(b.reduce((s,x) => s + x*x, 0));
+  const denom = normA * normB;
+  return denom === 0 ? 0 : dot / denom;
+}
+
+function showRanking() {
+  const a = valsA.slice();
+  const results = [];
+  for (const type in MBTI_BASE) {
+    const b = MBTI_BASE[type];
+    const cos = cosineSim(a, b);
+    const pct = Math.max(0, Math.min(100, Math.round(((cos + 1) / 2) * 100)));
+    results.push({ type, pct, cos, info: MBTI_INFO[type] });
+  }
+  results.sort((x, y) => y.pct - x.pct);
+  
+  let html = '<div style="background:rgba(255,255,255,0.08); border-radius:12px; padding:16px;">';
+  html += '<h3 style="text-align:center; margin-bottom:12px;">🏆 나와 잘 맞는 MBTI 순위</h3>';
+  html += '<p style="text-align:center; font-size:12px; color:#c4b5fd; margin-bottom:12px;">내 슬라이더 값(사람 A 기준)으로 16개 유형과 계산했어요!</p>';
+  
+  const medals = ['🥇', '🥈', '🥉'];
+  results.forEach((r, i) => {
+    const medal = i < 3 ? medals[i] : (i+1) + '위';
+    const color = r.pct >= 80 ? '#4ade80' : r.pct >= 60 ? '#a855f7' : r.pct >= 40 ? '#f59e0b' : '#ef4444';
+    html += '<div style="display:flex; align-items:center; gap:10px; padding:8px; margin:4px 0; background:rgba(255,255,255,0.05); border-radius:8px;">';
+    html += '<span style="font-size:18px; min-width:36px; text-align:center;">' + medal + '</span>';
+    html += '<span style="font-size:24px;">' + r.info.emoji + '</span>';
+    html += '<div style="flex:1;">';
+    html += '<div style="font-weight:bold;">' + r.type + ' <span style="font-size:12px; color:#c4b5fd;">' + r.info.nickname + '</span></div>';
+    html += '<div style="background:rgba(255,255,255,0.1); border-radius:6px; height:8px; margin-top:4px;"><div style="height:100%; width:' + r.pct + '%; background:' + color + '; border-radius:6px;"></div></div>';
+    html += '</div>';
+    html += '<span style="font-weight:bold; color:' + color + '; font-size:16px;">' + r.pct + '%</span>';
+    html += '</div>';
+  });
+  html += '<p style="text-align:center; font-size:11px; color:#94a3b8; margin-top:10px;">💡 코사인 유사도를 0~100%로 변환한 점수예요 (놀이용!)</p>';
+  html += '</div>';
+  
+  const div = document.getElementById('ranking');
+  div.innerHTML = html;
+  div.style.display = 'block';
+  div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
 
 function calculate() {
   const a = valsA.slice(), b = valsB.slice();
