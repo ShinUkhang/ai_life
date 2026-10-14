@@ -33,6 +33,8 @@
   .btn-danger { background: #e74c3c; color: white; }
   .btn:hover { opacity: 0.88; }
   .preset-btns { text-align: center; margin: 12px 0; }
+  .digit-btn { min-width: 52px; font-size: 20px; padding: 8px 10px; }
+  .digit-btn:not(.btn-success) { background: #ecf0f1; color: #2c3e50; }
   .result-box { background: #1a1a2e; color: #eee; border-radius: 12px; padding: 24px; text-align: center; margin-top: 16px; }
   .result-digit { font-size: 72px; font-weight: bold; margin: 10px 0; }
   .result-bar { display: flex; align-items: center; margin: 8px 0; font-size: 14px; }
@@ -63,10 +65,12 @@
 
   <div class="card">
     <h2>1️⃣ 숫자 그리기 (6×6)</h2>
-    <p style="font-size:14px;">칸을 클릭해서 숫자 '1'이나 '2'를 그려보세요!</p>
+    <p style="font-size:14px;">칸을 클릭해서 숫자를 직접 그려보세요! 아래에서 분류할 숫자 후보를 선택하세요.</p>
+    <h3>🎯 분류할 숫자 선택 (2~5개)</h3>
+    <div class="preset-btns" id="digitSelect"></div>
+    <p style="font-size:12px; color:#888; text-align:center;" id="digitCount"></p>
+    <p style="font-size:12px; color:#888; text-align:center;">💡 숫자 버튼 클릭: 분류 후보 선택/해제 · 더블클릭: 그리기에 불러오기</p>
     <div class="preset-btns">
-      <button class="btn btn-primary" onclick="loadPreset('one')">숫자 1 불러오기</button>
-      <button class="btn btn-primary" onclick="loadPreset('two')">숫자 2 불러오기</button>
       <button class="btn btn-warning" onclick="clearGrid()">지우기</button>
     </div>
     <div class="grid-section">
@@ -94,7 +98,7 @@
 
   <div class="card">
     <h2>3️⃣ 가중치 조절하기</h2>
-    <div class="tip">💡 <strong>가중치란?</strong> 각 필터가 찾은 특징이 "숫자 1 판단에 얼마나 중요한지"를 나타내는 숫자예요. 슬라이더를 움직여보세요!</div>
+    <div class="tip">💡 <strong>가중치란?</strong> 각 필터가 찾은 특징에 얼마나 가중치를 둘지를 정하는 숫자예요. 코사인 유사도를 계산하기 전에 특징값에 곱해져요. 슬라이더를 움직여보세요!</div>
     <div id="weightSection"></div>
     <div class="weight-row">
       <label><strong>편향 (b)</strong></label>
@@ -123,8 +127,9 @@
       <tr><th>단계</th><th>이름</th><th>하는 일</th></tr>
       <tr><td>1</td><td>합성곱</td><td>필터를 이미지 위에서 밀면서 특징 찾기</td></tr>
       <tr><td>2</td><td>풀링</td><td>가장 큰 값만 남기기 (크기 절반)</td></tr>
-      <tr><td>3</td><td>가중치 곱</td><td>각 특징의 중요도를 곱해서 점수 계산</td></tr>
-      <tr><td>4</td><td>시그모이드</td><td>점수를 0~100% 확률로 변환</td></tr>
+      <tr><td>3</td><td>가중치 적용</td><td>특징값에 가중치를 곱해 중요도 조절</td></tr>
+      <tr><td>4</td><td>코사인 유사도</td><td>입력과 각 숫자 템플릿의 특징이 얼마나 비슷한지 계산</td></tr>
+      <tr><td>5</td><td>소프트맥스</td><td>각 숫자의 점수를 확률로 변환 (합계 100%)</td></tr>
     </table>
   </div>
 
@@ -140,26 +145,27 @@ let filters = [
 ];
 let weights = [3, -3];
 let bias = 0;
+let selectedDigits = [1, 2];  // 분류 후보 숫자 (2~5개)
 
-// 프리셋
-const PRESETS = {
-  one: [
-    0,0,1,1,0,0,
-    0,0,1,1,0,0,
-    0,0,1,1,0,0,
-    0,0,1,1,0,0,
-    0,0,1,1,0,0,
-    0,0,1,1,0,0
-  ],
-  two: [
-    0,1,1,1,1,0,
-    0,0,0,0,1,0,
-    0,0,1,1,0,0,
-    0,1,0,0,0,0,
-    0,1,1,1,1,0,
-    0,1,1,1,1,0
-  ]
+// 0-9 숫자 템플릿 (6x6, .=0, X=1)
+const DIGIT_ART = {
+  0: [".XXX.","X...X","X...X","X...X","X...X",".XXX."],
+  1: ["..XX.","..XX.","..XX.","..XX.","..XX.","..XX."],
+  2: [".XXXX","....X","..XX.",".X...",".XXXX",".XXXX"],
+  3: [".XXXX","....X","..XXX","....X","....X",".XXXX"],
+  4: ["...X.","..XX.",".X.X.","XXXXX","...X.","...X."],
+  5: [".XXXX",".X...",".XXXX","....X","....X",".XXXX"],
+  6: [".XXXX",".X...",".XXXX",".X..X",".X..X",".XXX."],
+  7: [".XXXX","....X","...X.","..X..","..X..","..X.."],
+  8: [".XXX.","X...X",".XXX.","X...X","X...X",".XXX."],
+  9: [".XXX.","X...X","X..XX",".XXXX","...X.",".XXX."],
 };
+function parseArt(rows) {
+  // 각 행을 6열로 패딩 (.XXX. → .XXX..)
+  return rows.map(r => (r + '.').slice(0, 6)).join('').split('').map(ch => ch === 'X' ? 1 : 0);
+}
+const DIGIT_TEMPLATES = {};
+for (const d in DIGIT_ART) DIGIT_TEMPLATES[d] = parseArt(DIGIT_ART[d]);
 
 const FILTER_PRESETS = {
   vertical: [[0,1,0],[0,1,0],[0,1,0]],
@@ -182,9 +188,38 @@ function buildInputGrid() {
   }
 }
 
-function loadPreset(name) {
-  inputData = [...PRESETS[name]];
+function loadDigitToGrid(d) {
+  inputData = [...DIGIT_TEMPLATES[d]];
   buildInputGrid();
+}
+
+// 분류 후보 숫자 선택 UI
+function buildDigitButtons() {
+  const wrap = document.getElementById('digitSelect');
+  wrap.innerHTML = '';
+  for (let d = 0; d <= 9; d++) {
+    const b = document.createElement('button');
+    b.className = 'btn digit-btn ' + (selectedDigits.includes(d) ? 'btn-success' : '');
+    b.textContent = d;
+    b.title = '클릭: 분류 후보 선택/해제 · 더블클릭: 그리기에 불러오기';
+    b.onclick = () => toggleDigit(d);
+    b.ondblclick = () => loadDigitToGrid(d);
+    wrap.appendChild(b);
+  }
+  document.getElementById('digitCount').textContent = `선택됨: ${selectedDigits.length}개 (2~5개 선택 가능)`;
+}
+
+function toggleDigit(d) {
+  const i = selectedDigits.indexOf(d);
+  if (i >= 0) {
+    if (selectedDigits.length <= 2) { alert('분류할 숫자는 최소 2개 필요해요!'); return; }
+    selectedDigits.splice(i, 1);
+  } else {
+    if (selectedDigits.length >= 5) { alert('분류할 숫자는 최대 5개까지!'); return; }
+    selectedDigits.push(d);
+    selectedDigits.sort((a, b) => a - b);
+  }
+  buildDigitButtons();
 }
 
 function clearGrid() {
@@ -295,61 +330,86 @@ function maxPool(fmap) {
   return out;
 }
 
-function sigmoid(x) {
-  return 1 / (1 + Math.exp(-Math.max(-15, Math.min(15, x))));
+// 특징 추출: 합성곱 → 풀링 → 특징 벡터 (필터당 2개 값)
+function extractFeatures(img6x6) {
+  const feats = [];
+  filters.forEach((kernel) => {
+    const fmap = conv2d(img6x6, kernel);
+    const pooled = maxPool(fmap);
+    feats.push(pooled[0][0], pooled[0][1]);
+  });
+  return feats;
+}
+
+// 가중치 적용 (특징 중요도 조절)
+function applyWeights(feats) {
+  return feats.map((v, i) => v * weights[Math.floor(i / 2)]);
+}
+
+function cosineSimilarity(a, b) {
+  let dot = 0, na = 0, nb = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    na += a[i] * a[i];
+    nb += b[i] * b[i];
+  }
+  if (na === 0 || nb === 0) return 0;
+  return dot / (Math.sqrt(na) * Math.sqrt(nb));
+}
+
+function softmax(scores) {
+  const m = Math.max(...scores);
+  const exps = scores.map(s => Math.exp(s - m));
+  const sum = exps.reduce((a, b) => a + b, 0);
+  return exps.map(e => e / sum);
 }
 
 function classify() {
-  // 1. 합성곱 + 풀링
-  const features = [];
+  if (selectedDigits.length < 2) { alert('분류할 숫자를 2개 이상 선택하세요!'); return; }
+
+  // 1. 입력 이미지의 특징 추출 (가중치 적용)
+  const inputFeats = applyWeights(extractFeatures(inputData));
+
+  // 2. 각 후보 숫자의 템플릿 특징과 코사인 유사도 → 점수
+  const results = selectedDigits.map(d => {
+    const tFeats = applyWeights(extractFeatures(DIGIT_TEMPLATES[d]));
+    const cos = cosineSimilarity(inputFeats, tFeats);
+    const score = cos * 10 + bias;
+    return { digit: d, cos, score };
+  });
+
+  // 3. 소프트맥스로 확률 변환
+  const probs = softmax(results.map(r => r.score));
+  results.forEach((r, i) => r.prob = probs[i]);
+  results.sort((a, b) => b.prob - a.prob);
+  const winner = results[0];
+
+  // 4. 과정 시각화 (입력 이미지 기준)
   const vizData = [];
-  filters.forEach((kernel, fi) => {
+  filters.forEach((kernel) => {
     const fmap = conv2d(inputData, kernel);
-    const pooled = maxPool(fmap);
-    // 첫 번째 행 2개 값을 특징으로
-    features.push(pooled[0][0], pooled[0][1]);
-    vizData.push({ fmap, pooled });
+    vizData.push({ fmap, pooled: maxPool(fmap) });
   });
-
-  // 2. 가중치 곱 + 편향
-  let score = bias;
-  let detail = [];
-  // features는 필터당 2개씩, weights는 필터당 1개 → 평균내서 사용
-  filters.forEach((_, fi) => {
-    const f_avg = (features[fi*2] + features[fi*2+1]) / 2;
-    const contrib = f_avg * weights[fi];
-    score += contrib;
-    detail.push(`필터${fi+1}: 특징값 ${f_avg.toFixed(1)} × 가중치 ${weights[fi]} = ${contrib.toFixed(1)}`);
-  });
-
-  // 3. 시그모이드
-  const prob1 = sigmoid(score);
-  const prob2 = 1 - prob1;
-  const result = prob1 >= 0.5 ? 1 : 2;
-
-  // 시각화
   drawSteps(vizData);
 
-  // 결과 표시
+  // 5. 결과 표시
   document.getElementById('resultBox').style.display = 'block';
   const digitEl = document.getElementById('resultDigit');
-  digitEl.textContent = result;
-  digitEl.style.color = result === 1 ? '#4ade80' : '#f472b6';
+  digitEl.textContent = winner.digit;
+  digitEl.style.color = '#4ade80';
 
-  document.getElementById('resultBars').innerHTML = `
+  const colors = ['#4ade80', '#60a5fa', '#f472b6', '#fbbf24', '#a78bfa'];
+  document.getElementById('resultBars').innerHTML = results.map((r, i) => `
     <div class="result-bar">
-      <span class="label">숫자 1</span>
-      <div class="track"><div class="fill" style="width:${(prob1*100).toFixed(1)}%;background:#4ade80;">${(prob1*100).toFixed(1)}%</div></div>
-    </div>
-    <div class="result-bar">
-      <span class="label">숫자 2</span>
-      <div class="track"><div class="fill" style="width:${(prob2*100).toFixed(1)}%;background:#f472b6;">${(prob2*100).toFixed(1)}%</div></div>
-    </div>
-  `;
+      <span class="label">숫자 ${r.digit}</span>
+      <div class="track"><div class="fill" style="width:${(r.prob*100).toFixed(1)}%;background:${colors[i % colors.length]};">${(r.prob*100).toFixed(1)}%</div></div>
+    </div>`).join('');
 
   document.getElementById('resultDetail').innerHTML =
-    `점수: ${score.toFixed(2)} (편향 ${bias})<br>` + detail.join('<br>') +
-    `<br><br>💡 필터나 가중치를 바꿔보고 결과가 어떻게 달라지는지 확인해보세요!`;
+    results.map(r => `숫자 ${r.digit}: 유사도 ${r.cos.toFixed(2)} → 점수 ${r.score.toFixed(2)} → 확률 ${(r.prob*100).toFixed(1)}%`).join('<br>') +
+    `<br><br>💡 점수 = 코사인 유사도 × 10 + 편향(${bias})` +
+    `<br>💡 편향은 모든 숫자에 똑같이 더해져서 순위는 바뀌지 않아요 (소프트맥스의 성질!)` +
+    `<br>💡 필터·가중치를 바꿔보고 결과가 어떻게 달라지는지 확인해보세요!`;
 
   document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
 }
@@ -402,7 +462,8 @@ function makeCanvasBox(data, size, label) {
 // 초기화
 buildInputGrid();
 buildFilters();
-loadPreset('one');
+buildDigitButtons();
+loadDigitToGrid(1);
 </script>
 </body>
 </html>
