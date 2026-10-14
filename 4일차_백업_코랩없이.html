@@ -57,6 +57,8 @@
 
   <div class="card">
     <h2>🔗 바로가기</h2>
+    <p style="font-size:13px; color:#666; margin-bottom:10px;">💡 코랩을 원하는 학생은 아래 버튼으로 노트북을 열 수 있어요!</p>
+    <a class="link-btn" href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/04_%EC%9E%90%EC%97%B0%EC%96%B4%EC%B2%98%EB%A6%AC_AI%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8/%EC%8B%A4%EC%8A%B5)_%ED%85%8D%EC%8A%A4%ED%8A%B8_%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8.ipynb" target="_blank" style="background:#f9ab00; color:#333;">📓 코랩으로 열기</a><br>
     <a class="link-btn btn-teal" href="04_자연어처리_AI에이전트/text_agent_simulator.html" target="_blank">🤖 텍스트 에이전트 시뮬레이터</a>
     <a class="link-btn btn-green" href="python_backup.html" target="_blank">🐍 Python 백업 실행기</a>
     <a class="link-btn btn-blue" href="부록_경사하강법.html" target="_blank">📐 수학 실험실 (NLP 편)</a>
@@ -137,5 +139,68 @@ function copyText(id) {
   navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => alert("📋 복사되었습니다!"));
 }
 </script>
+
+<!-- 💻 탐구 도전: 코드 직접 실행하기 -->
+<script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+<script src="pyodide_runner.js"></script>
+<div class="container">
+  <div class="card">
+    <h2>💻 탐구 도전: 코드 직접 실행하기</h2>
+    <p style="font-size:14px;margin-bottom:10px;">코사인 유사도로 문서 검색을 직접 실행해보세요! <strong>MY_QUERY</strong>와 <strong>MY_DOCS</strong> 변수를 바꿔보면 결과가 어떻게 달라지는지 확인할 수 있어요.</p>
+    <textarea id="codeEditor" spellcheck="false" style="width:100%;height:420px;font-family:'Consolas',monospace;font-size:13px;padding:14px;border:2px solid #1abc9c;border-radius:8px;background:#1e1e1e;color:#d4d4d4;line-height:1.5;"></textarea>
+    <div style="margin:12px 0;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="copy-btn" style="background:#27ae60;" onclick="runPythonCode()">▶ 실행하기</button>
+      <button class="copy-btn" onclick="copyRunnerCode()">📋 코드 복사</button>
+      <button class="copy-btn" style="background:#7f8c8d;" onclick="resetRunnerCode('codeEditor', STARTER)">↩️ 처음 코드로</button>
+    </div>
+    <div id="codeStatus" style="text-align:center;padding:8px;font-weight:bold;color:#888;font-size:14px;"></div>
+    <h3 style="font-size:15px;margin:10px 0 6px;">📤 실행 결과</h3>
+    <div id="codeOutput" style="background:#1e1e1e;color:#d4d4d4;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;min-height:100px;max-height:320px;overflow-y:auto;white-space:pre-wrap;">여기에 실행 결과가 표시됩니다.</div>
+  </div>
+</div>
+<script>
+const STARTER = `# 🔧 탐구 도전: 아래 변수를 바꿔보세요!
+MY_QUERY = "가장 좋아하는 음식은?"  # ← 질문을 바꿔보세요!
+MY_DOCS = [  # ← 문서를 추가하거나 바꿔보세요!
+    "나는 김치찌개를 좋아한다",
+    "나는 불고기를 좋아한다",
+    "나는 비빔밥을 좋아한다",
+    "축구는 재미있는 운동이다",
+]
+
+import numpy as np
+
+def vectorize(text, vocab):
+    words = text.split()
+    return np.array([words.count(w) for w in vocab], dtype=float)
+
+def cosine_sim(a, b):
+    denom = np.linalg.norm(a) * np.linalg.norm(b)
+    return np.dot(a, b) / denom if denom != 0 else 0
+
+vocab = sorted(set(" ".join(MY_DOCS).split()))
+qv = vectorize(MY_QUERY, vocab)
+
+print(f"🤖 질문: '{MY_QUERY}'\\n")
+results = []
+for doc in MY_DOCS:
+    dv = vectorize(doc, vocab)
+    sim = cosine_sim(qv, dv)
+    results.append((sim, doc))
+results.sort(reverse=True)
+
+for i, (sim, doc) in enumerate(results, 1):
+    bar = "█" * int(sim * 20)
+    print(f"{i}위 [{sim*100:5.1f}%] {bar} {doc}")
+
+print(f"\\n💡 도전 과제:")
+print(f"   1. MY_QUERY를 '좋아하는 운동은?'으로 바꾸면?")
+print(f"   2. MY_DOCS에 새 문서를 추가해보세요!")
+print(f"   3. 왜 '음식' 질문에 '축구' 문서가 낮은 점수를 받을까요?")
+`;
+document.getElementById('codeEditor').value = STARTER;
+initPyodideRunner();
+</script>
+
 </body>
 </html>

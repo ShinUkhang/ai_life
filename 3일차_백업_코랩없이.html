@@ -59,6 +59,8 @@
 
   <div class="card">
     <h2>🔗 바로가기</h2>
+    <p style="font-size:13px; color:#666; margin-bottom:10px;">💡 코랩을 원하는 학생은 아래 버튼으로 노트북을 열 수 있어요!</p>
+    <a class="link-btn" href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/03_CNN_%ED%95%A9%EC%84%B1%EA%B3%B1%EC%8B%A0%EA%B2%BD%EB%A7%9D/%EC%8B%A4%EC%8A%B5)_CNN_%EA%B3%84%EC%82%B0%EA%B3%BC%EC%A0%95.ipynb" target="_blank" style="background:#f9ab00; color:#333;">📓 코랩으로 열기</a><br>
     <a class="link-btn btn-blue" href="03_CNN_합성곱신경망/cnn_classifier_simulator.html" target="_blank">🔬 CNN 분류 시뮬레이터</a>
     <a class="link-btn btn-green" href="python_backup.html" target="_blank">🐍 Python 백업 실행기</a>
     <a class="link-btn btn-purple" href="부록_경사하강법.html" target="_blank">📐 수학 실험실 (CNN 편)</a>
@@ -136,6 +138,80 @@ print("\n💡 세로선이 강하게 반응했나요?")</div>
 function copyText(id) {
   navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => alert("📋 복사되었습니다!"));
 }
+</script>
+<!-- 💻 탐구 도전: 코드 직접 실행하기 -->
+<script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+<script src="pyodide_runner.js"></script>
+<div style="max-width:900px;margin:0 auto;padding:0 20px 30px;">
+  <div class="card">
+    <h2>💻 탐구 도전: 코드 직접 실행하기</h2>
+    <p style="font-size:14px;margin-bottom:10px;">코랩 없이 여기서 바로 실행해요! <strong>MY_FILTER</strong>와 <strong>MY_DIGIT</strong>의 숫자를 바꿔보고 <kbd>▶ 실행하기</kbd>를 눌러보세요.</p>
+    <textarea id="codeEditor" spellcheck="false" style="width:100%;height:380px;font-family:'Consolas',monospace;font-size:13px;padding:14px;border:2px solid #2e86c1;border-radius:8px;background:#1e1e1e;color:#d4d4d4;resize:vertical;line-height:1.5;"></textarea>
+    <div style="margin:12px 0;display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn" onclick="runPythonCode()" style="padding:10px 20px;background:#27ae60;color:white;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">▶ 실행하기</button>
+      <button class="btn" onclick="copyRunnerCode()" style="padding:10px 20px;background:#2980b9;color:white;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">📋 코드 복사</button>
+      <button class="btn" onclick="resetRunnerCode('codeEditor', STARTER)" style="padding:10px 20px;background:#7f8c8d;color:white;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">↩️ 처음 코드로</button>
+    </div>
+    <div id="codeStatus" style="text-align:center;font-weight:bold;color:#888;padding:8px;">Python 로딩 중...</div>
+    <div id="codeOutput" style="background:#1e1e1e;color:#d4d4d4;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;min-height:100px;max-height:300px;overflow-y:auto;white-space:pre-wrap;">여기에 실행 결과가 표시됩니다.</div>
+  </div>
+</div>
+<script>
+const STARTER = `# 🔧 탐구 도전: 아래 변수를 바꿔보세요!
+# 나만의 3x3 필터를 만들어보세요! (세로선, 가로선, 대각선 등)
+MY_FILTER = [
+ [0, 1, 0],
+ [0, 1, 0],
+ [0, 1, 0],
+]
+# 나만의 6x6 숫자를 그려보세요! (0=검정, 1=흰색)
+MY_DIGIT = [
+ [0,0,1,1,0,0],
+ [0,0,0,1,0,0],
+ [0,0,1,1,0,0],
+ [0,0,0,1,0,0],
+ [0,0,0,1,0,0],
+ [0,0,1,1,1,0],
+]
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def conv2d(image, kernel):
+    kernel = np.array(kernel); h, w = np.array(image).shape
+    kh, kw = kernel.shape
+    out = np.zeros((h-kh+1, w-kw+1))
+    for i in range(out.shape[0]):
+        for j in range(out.shape[1]):
+            out[i,j] = np.sum(np.array(image)[i:i+kh, j:j+kw] * kernel)
+    return out
+
+def max_pool2d(fm):
+    h, w = fm.shape
+    out = np.zeros((h//2, w//2))
+    for i in range(out.shape[0]):
+        for j in range(out.shape[1]):
+            out[i,j] = np.max(fm[i*2:(i+1)*2, j*2:(j+1)*2])
+    return out
+
+img = np.array(MY_DIGIT, dtype=float)
+fmap = conv2d(img, MY_FILTER)
+pooled = max_pool2d(fmap)
+
+print(f"🎯 내 필터가 찾은 특징의 최대 강도: {np.max(fmap):.1f}")
+print(f"📊 풀링 후 크기: {pooled.shape}")
+print(f"\\n💡 도전 과제:")
+print(f"   1. MY_FILTER를 가로선 필터 [[0,0,0],[1,1,1],[0,0,0]]로 바꾸면?")
+print(f"   2. MY_DIGIT에 다른 숫자를 그려보세요!")
+print(f"   3. 필터 값을 2, -1 등으로 바꾸면 어떻게 될까요?")
+
+fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+axes[0].imshow(img, cmap='Blues'); axes[0].set_title("내 숫자")
+axes[1].imshow(fmap, cmap='hot'); axes[1].set_title("특성맵")
+axes[2].imshow(pooled, cmap='hot'); axes[2].set_title("풀링")
+plt.tight_layout(); plt.show()`;
+document.getElementById('codeEditor').value = STARTER;
+initPyodideRunner();
 </script>
 </body>
 </html>
