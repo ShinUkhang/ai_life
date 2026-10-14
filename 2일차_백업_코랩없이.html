@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🖥️ 2일차 백업 — 컴퓨터 비전 (코랩 없이 수업하기)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: '맑은 고딕', sans-serif; background: #f0f4f8; color: #333; line-height: 1.7; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+  header { background: linear-gradient(135deg, #6c3483, #8e44ad); color: white; padding: 35px 20px; text-align: center; border-radius: 14px; margin-bottom: 25px; }
+  header h1 { font-size: 26px; margin-bottom: 10px; }
+  header p { font-size: 15px; opacity: 0.92; }
+  .alert { background: #fdedec; border: 2px solid #e74c3c; border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; font-size: 14px; }
+  .alert strong { color: #c0392b; }
+  .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .card h2 { color: #6c3483; font-size: 19px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 3px solid #8e44ad; }
+  .card h3 { color: #2c3e50; font-size: 16px; margin: 14px 0 8px; }
+  .card p, .card li { font-size: 14px; }
+  .card ol, .card ul { padding-left: 22px; margin: 8px 0; }
+  .card li { margin-bottom: 6px; }
+  .link-btn { display: inline-block; padding: 12px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; margin: 6px 6px 6px 0; font-size: 14px; }
+  .link-btn:hover { opacity: 0.88; }
+  .btn-purple { background: #8e44ad; color: white; }
+  .btn-blue { background: #2980b9; color: white; }
+  .btn-green { background: #27ae60; color: white; }
+  .btn-orange { background: #e67e22; color: white; }
+  .step { background: #f8f9fa; border-radius: 8px; padding: 16px 20px; margin: 12px 0; border-left: 5px solid #8e44ad; }
+  .step h3 { margin-top: 0; color: #6c3483; }
+  .code-block { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 12.5px; overflow-x: auto; margin: 10px 0; white-space: pre; line-height: 1.5; }
+  .copy-btn { background: #34495e; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-bottom: 6px; }
+  .copy-btn:hover { background: #2c3e50; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+  th { background: #8e44ad; color: white; }
+  tr:nth-child(even) { background: #f9f9f9; }
+  footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
+  @media (max-width: 600px) { header h1 { font-size: 20px; } .card { padding: 16px; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🖥️ 2일차 백업 페이지</h1>
+    <p>컴퓨터 비전 — 코랩이 안 될 때 이 페이지로 수업하세요!</p>
+  </header>
+
+  <div class="alert">
+    <strong>⚠️ 코랩 장애 시 사용법:</strong> 이 페이지만 있으면 2일차 수업이 가능합니다.
+    시뮬레이터 → 게임 → 코딩 실습 순서로 진행하세요. Python 실행은 아래 백업 실행기를 사용하세요.
+  </div>
+
+  <div class="card">
+    <h2>🗺️ 수업 흐름 (90분)</h2>
+    <table>
+      <tr><th>순서</th><th>내용</th><th>도구</th><th>시간</th></tr>
+      <tr><td>1</td><td>픽셀·행렬 개념 (컴퓨터의 눈은 숫자!)</td><td>아래 시뮬레이터</td><td>15분</td></tr>
+      <tr><td>2</td><td>뺄셈으로 테두리 찾기</td><td>아래 시뮬레이터</td><td>15분</td></tr>
+      <tr><td>3</td><td>임계값 게임</td><td>매직아이 게임</td><td>20분</td></tr>
+      <tr><td>4</td><td>보행자 카운터 코딩</td><td>코딩 실습 페이지</td><td>25분</td></tr>
+      <tr><td>5</td><td>정리·질의응답</td><td>-</td><td>15분</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>🔗 바로가기 링크</h2>
+    <a class="link-btn btn-purple" href="02_컴퓨터비전_물체인식/object_detection_simulator.html" target="_blank">🔬 물체 인식 시뮬레이터</a>
+    <a class="link-btn btn-orange" href="magiceye_threshold.html" target="_blank">🎮 매직아이 게임</a>
+    <a class="link-btn btn-green" href="보행자_카운터_코딩실습.html" target="_blank">💻 보행자 카운터 코딩</a>
+    <a class="link-btn btn-blue" href="python_backup.html" target="_blank">🐍 Python 백업 실행기</a>
+  </div>
+
+  <div class="card">
+    <h2>📚 핵심 개념 정리</h2>
+
+    <div class="step">
+      <h3>1️⃣ 픽셀과 행렬</h3>
+      <p>컴퓨터에게 이미지는 <strong>숫자 표(행렬)</strong>입니다. 흑백 이미지에서 각 칸(픽셀)은 <strong>0(검정)~255(흰색)</strong>의 숫자입니다.</p>
+    </div>
+
+    <div class="step">
+      <h3>2️⃣ 뺄셈으로 테두리 찾기</h3>
+      <p><strong>오른쪽 셀 뺄셈</strong> → 세로선 검출: <code>|오른쪽(r,c+1) − 현재(r,c)|</code></p>
+      <p><strong>아래쪽 셀 뺄셈</strong> → 가로선 검출: <code>|아래쪽(r+1,c) − 현재(r,c)|</code></p>
+      <p>두 개를 합치면(<code>max</code>) 완전한 외곽선이 됩니다!</p>
+    </div>
+
+    <div class="step">
+      <h3>3️⃣ 임계값 (Threshold)</h3>
+      <p>"차이가 몇 이상이어야 진짜 선일까?"의 기준 숫자입니다.</p>
+      <p>낮추면 잡티까지 보이고, 높이면 진짜 선도 끊깁니다.</p>
+    </div>
+
+    <div class="step">
+      <h3>4️⃣ 움직임 감지 (배경 차분)</h3>
+      <p>테두리가 <strong>공간 뺄셈</strong>이라면, 움직임 감지는 <strong>시간 뺄셈</strong>입니다.</p>
+      <p>배경을 기억해두고 현재 화면에서 빼면 → 움직인 물체만 남습니다! (MOG2)</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💻 핵심 코드 (복사해서 백업 실행기에 붙여넣기)</h2>
+
+    <h3>테두리 검출</h3>
+    <button class="copy-btn" onclick="copyText('code1')">📋 복사</button>
+    <div class="code-block" id="code1">import numpy as np
+import matplotlib.pyplot as plt
+
+# 하트 모양 행렬
+heart = np.array([
+ [0,0,0,0,0,0,0,0],
+ [0,255,255,0,0,255,255,0],
+ [255,255,255,255,255,255,255,255],
+ [255,255,255,255,255,255,255,255],
+ [0,255,255,255,255,255,255,0],
+ [0,0,255,255,255,255,0,0],
+ [0,0,0,255,255,0,0,0],
+ [0,0,0,0,0,0,0,0]], dtype=np.uint8)
+
+# 오른쪽 셀 뺄셈 (세로선)
+diff_r = np.zeros_like(heart, dtype=int)
+diff_r[:, :-1] = np.abs(heart[:, 1:].astype(int) - heart[:, :-1].astype(int))
+
+# 아래쪽 셀 뺄셈 (가로선)
+diff_d = np.zeros_like(heart, dtype=int)
+diff_d[:-1, :] = np.abs(heart[1:, :].astype(int) - heart[:-1, :].astype(int))
+
+# 종합
+diff_total = np.maximum(diff_r, diff_d)
+
+fig, axes = plt.subplots(1, 4, figsize=(16, 4))
+axes[0].imshow(heart, cmap='gray'); axes[0].set_title("원본")
+axes[1].imshow(diff_r, cmap='hot'); axes[1].set_title("세로선")
+axes[2].imshow(diff_d, cmap='hot'); axes[2].set_title("가로선")
+axes[3].imshow(diff_total, cmap='hot'); axes[3].set_title("종합")
+plt.tight_layout(); plt.show()</div>
+
+    <h3>임계값 실험</h3>
+    <button class="copy-btn" onclick="copyText('code2')">📋 복사</button>
+    <div class="code-block" id="code2">import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(42)
+# 노이즈가 섞인 이미지
+img = np.zeros((10, 10), dtype=float)
+img[3:7, 3:7] = 200  # 사각형 물체
+img += np.random.uniform(0, 25, (10, 10))  # 노이즈
+img = np.clip(img, 0, 255).astype(np.uint8)
+
+# 테두리 검출 (간단 버전)
+diff = np.zeros_like(img, dtype=int)
+diff[:, :-1] = np.abs(img[:, 1:].astype(int) - img[:, :-1].astype(int))
+
+# 임계값 3단계 비교
+for t, name in [(25, "낮음(잡티 많음)"), (100, "적당함"), (180, "높음(선 끊김)")]:
+    edge = np.where(diff >= t, 255, 0).astype(np.uint8)
+    plt.figure(figsize=(4, 4))
+    plt.imshow(edge, cmap='gray')
+    plt.title(f"임계값={t} {name}")
+    plt.axis('off')
+    plt.show()</div>
+  </div>
+
+  <div class="card">
+    <h2>❓ 자주 묻는 질문</h2>
+    <p><strong>Q. 코랩이 또 안 되면?</strong><br>
+    A. 이 페이지의 시뮬레이터 + 게임 + 코딩 실습으로 90분 수업이 가능합니다. Python 코드는 백업 실행기에 붙여넣으세요.</p>
+    <p style="margin-top:10px;"><strong>Q. 학생들이 코드를 직접 쳐야 하나요?</strong><br>
+    A. 복사 버튼으로 코드를 가져가서 백업 실행기에 붙여넣고 실행하면 됩니다. 숫자만 바꿔보는 것부터 시작하세요.</p>
+  </div>
+
+  <footer>배화여자고등학교 AI Life 2일차 백업 — 오금고 연수용</footer>
+</div>
+
+<script>
+function copyText(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => alert("📋 복사되었습니다!"));
+}
+</script>
+</body>
+</html>
