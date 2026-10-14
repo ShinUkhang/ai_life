@@ -51,6 +51,7 @@
       <li>각 곡선 위의 점을 잡고 <strong>접선</strong>을 그으세요.</li>
       <li>접선의 방정식을 확인하고 <strong>특징(반사성질)</strong>을 관찰하세요.</li>
       <li>완성된 화면을 <strong>캡처</strong>하거나 <strong>GeoGebra 파일로 저장</strong>하세요.</li>
+      <li>⚠️ <strong>부정행위 방지:</strong> 상단의 <strong>[⏰ 작도 시간 기록하기]</strong> 버튼을 눌러 작업 시간을 기록하세요. 기록된 시간은 다운로드한 이미지/파일에 함께 저장됩니다.</li>
       <li>파일명이 <strong>학번_이름</strong>이 되도록 해서 제출하세요.</li>
     </ol>
   </div>
@@ -125,8 +126,29 @@
   <footer>배화여자고등학교 2학년 기하 수행평가</footer>
 </div>
 
+<style>
+  #timeStampBar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+    background: #1F4E78; color: #fff; text-align: center;
+    padding: 8px 12px; font-size: 14px; font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  #timeStampBar .t { color: #ffe082; }
+  body { padding-top: 42px; }
+  #stampBtn {
+    background: #e67e22; color: #fff; border: none; border-radius: 6px;
+    padding: 6px 14px; font-size: 13px; font-weight: bold; cursor: pointer; margin-left: 10px;
+  }
+  #stampBtn:hover { background: #d35400; }
+</style>
+<div id="timeStampBar">
+  🕐 <span class="t" id="liveClock">--</span>
+  <button id="stampBtn" onclick="stampTime()">⏰ 작도 시간 기록하기</button>
+  <span style="font-size:12px; opacity:0.85;">(버튼을 누르면 3개 창에 작업 시간이 자동 기록됩니다)</span>
+</div>
 <script>
-  function makeApplet(elId) {
+  var ggbApplets = {};
+  function makeApplet(elId, key) {
     var params = {
       "appName": "geometry",
       "width": 800,
@@ -140,11 +162,35 @@
     };
     var applet = new GGBApplet(params, true);
     applet.inject(elId);
+    ggbApplets[key] = applet;
+  }
+  function nowStr() {
+    var d = new Date();
+    function p(n){ return (n<10?'0':'')+n; }
+    return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+  function tickClock(){
+    document.getElementById('liveClock').textContent = nowStr();
+  }
+  setInterval(tickClock, 1000); tickClock();
+  function stampTime() {
+    var t = nowStr();
+    ['parabola','ellipse','hyperbola'].forEach(function(key){
+      try {
+        var ap = ggbApplets[key];
+        if (!ap) return;
+        ap.evalCommand('Delete[시간기록]');
+        ap.evalCommand('시간기록=Text["⏰ 작도 시간: ' + t + '", (-9, 8.5)]');
+        ap.evalCommand('SetColor[시간기록, 200, 30, 30]');
+        ap.evalCommand('SetTextSize[시간기록, 16]');
+      } catch(e) { console.log('stamp failed for', key, e); }
+    });
+    alert('⏰ ' + t + '\n3개의 GeoGebra 창에 작업 시간이 기록되었습니다.\n이제 다운로드/캡처하면 시간이 함께 저장됩니다.');
   }
   window.addEventListener('load', function() {
-    makeApplet('ggb-parabola');
-    makeApplet('ggb-ellipse');
-    makeApplet('ggb-hyperbola');
+    makeApplet('ggb-parabola', 'parabola');
+    makeApplet('ggb-ellipse', 'ellipse');
+    makeApplet('ggb-hyperbola', 'hyperbola');
   });
 </script>
 </body>
