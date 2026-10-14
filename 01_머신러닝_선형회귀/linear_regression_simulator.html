@@ -1946,5 +1946,70 @@ plt.legend(); plt.grid(True, alpha=0.3); plt.show()</pre>
       });
     })();
   </script>
+<!-- 💻 코랩 코드 직접 실행하기 -->
+<script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+<script src="../pyodide_runner.js"></script>
+<div class="code-runner-section" style="max-width:900px;margin:40px auto;padding:20px;">
+  <div style="background:white;border-radius:12px;padding:25px;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+    <h2 style="color:#1a5276;border-bottom:3px solid #2e86c1;padding-bottom:8px;margin-bottom:14px;">💻 코랩 코드 직접 실행하기</h2>
+    <p style="font-size:14px;margin-bottom:10px;">위 시뮬레이터의 <strong>경사하강법</strong>을 파이썬 코드로 직접 실행해보세요! 변수(학습률, 반복횟수)를 바꿔보세요.</p>
+    <textarea id="codeEditor" spellcheck="false" style="width:100%;height:320px;font-family:monospace;font-size:13px;padding:14px;border:2px solid #2e86c1;border-radius:8px;background:#1e1e1e;color:#d4d4d4;"></textarea>
+    <div style="margin:12px 0;">
+      <button onclick="runPythonCode()" style="padding:10px 20px;background:#27ae60;color:white;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">▶ 실행하기</button>
+      <button onclick="copyRunnerCode()" style="padding:10px 20px;background:#2980b9;color:white;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">📋 복사</button>
+      <button onclick="resetRunnerCode('codeEditor', STARTER)" style="padding:10px 20px;background:#7f8c8d;color:white;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">↩️ 초기화</button>
+    </div>
+    <div id="codeStatus" style="text-align:center;font-weight:bold;color:#888;padding:8px;"></div>
+    <div id="codeOutput" style="background:#1e1e1e;color:#d4d4d4;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;min-height:100px;white-space:pre-wrap;"></div>
+  </div>
+</div>
+<script>
+const STARTER = `# 🔧 변수를 바꿔보세요!
+LEARNING_RATE = 0.01  # 학습률 (보폭) - 크게 하면 빨리 가지만 발산 위험!
+EPOCHS = 100          # 반복 횟수
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 데이터 (집 크기 → 가격)
+np.random.seed(42)
+X = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], dtype=float)
+y = 3 * X + 2 + np.random.randn(10) * 1.5
+
+# 초기화
+w, b = 0.0, 0.0
+n = len(X)
+losses = []
+
+# 경사하강법!
+for epoch in range(EPOCHS):
+    y_pred = w * X + b
+    loss = np.mean((y - y_pred) ** 2)
+    losses.append(loss)
+    # 기울기 계산
+    dw = -(2/n) * np.sum(X * (y - y_pred))
+    db = -(2/n) * np.sum(y - y_pred)
+    # 업데이트
+    w -= LEARNING_RATE * dw
+    b -= LEARNING_RATE * db
+    if epoch % 20 == 0:
+        print(f"반복 {epoch}: 손실={loss:.2f}, w={w:.2f}, b={b:.2f}")
+
+print(f"\n✅ 최종: y = {w:.2f}x + {b:.2f} (정답: y = 3x + 2)")
+print(f"\n💡 LEARNING_RATE를 0.1, 0.001로 바꿔보고 결과를 비교해보세요!")
+
+# 그래프
+plt.figure(figsize=(10, 4))
+plt.subplot(1, 2, 1)
+plt.scatter(X, y, color="blue", label="실제 데이터")
+plt.plot(X, w*X+b, color="red", label=f"학습 결과")
+plt.legend(); plt.title("선형회귀 결과"); plt.grid(True)
+plt.subplot(1, 2, 2)
+plt.plot(losses, color="green")
+plt.title("손실 감소 곡선"); plt.xlabel("반복"); plt.ylabel("손실"); plt.grid(True)
+plt.tight_layout(); plt.show()`;
+document.getElementById('codeEditor').value = STARTER;
+initPyodideRunner();
+</script>
 </body>
 </html>

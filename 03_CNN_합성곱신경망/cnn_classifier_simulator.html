@@ -1879,5 +1879,82 @@ def predict_digit(image_6x6):
       }
     }
   </script>
+
+<!-- 💻 코랩 코드 직접 실행하기 -->
+<section id="colab-runner" style="max-width:960px;margin:30px auto;padding:0 20px;">
+  <div style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+    <h2 style="font-size:20px;color:#1a5276;margin-bottom:8px;">💻 코랩 코드 직접 실행하기</h2>
+    <p style="font-size:14px;color:#555;margin-bottom:12px;">아래 <b>KERNEL</b> 숫자를 바꿔보세요! 커널을 바꾸면 다른 특징이 검출돼요. 코랩 없이 여기서 바로 실행됩니다.</p>
+    <textarea id="codeEditor" spellcheck="false" style="width:100%;height:440px;font-family:Consolas,'D2Coding',monospace;font-size:13px;padding:14px;border:2px solid #2e86c1;border-radius:8px;background:#1e1e1e;color:#d4d4d4;resize:vertical;line-height:1.5;"></textarea>
+    <div style="display:flex;gap:10px;margin:12px 0;flex-wrap:wrap;">
+      <button onclick="runPythonCode()" style="padding:12px 24px;border:none;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;background:#27ae60;color:#fff;">▶ 실행하기</button>
+      <button onclick="copyRunnerCode()" style="padding:12px 24px;border:none;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;background:#2980b9;color:#fff;">📋 코드 복사</button>
+      <button onclick="resetRunnerCode('codeEditor', STARTER)" style="padding:12px 24px;border:none;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;background:#7f8c8d;color:#fff;">↩️ 초기화</button>
+    </div>
+    <div id="codeStatus" style="font-weight:bold;color:#888;margin-bottom:8px;">Python 로딩 중...</div>
+    <h3 style="font-size:15px;color:#2c3e50;margin-bottom:8px;">📤 실행 결과</h3>
+    <div id="codeOutput" style="background:#1e1e1e;color:#d4d4d4;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;min-height:120px;max-height:320px;overflow-y:auto;white-space:pre-wrap;">여기에 실행 결과가 표시됩니다.</div>
+  </div>
+</section>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+<script src="../pyodide_runner.js"></script>
+<script>
+const STARTER = `# 🔧 변수를 바꿔보세요! (커널 숫자를 바꾸면 다른 특징이 검출돼요)
+# 세로선 검출 커널 (1을 세로로 배치)
+KERNEL = [
+ [0, 1, 0],
+ [0, 1, 0],
+ [0, 1, 0],
+]
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def conv2d(image, kernel):
+    kernel = np.array(kernel)
+    kh, kw = kernel.shape
+    h, w = image.shape
+    out = np.zeros((h-kh+1, w-kw+1))
+    for i in range(out.shape[0]):
+        for j in range(out.shape[1]):
+            out[i,j] = np.sum(image[i:i+kh, j:j+kw] * kernel)
+    return out
+
+def max_pool2d(fm):
+    h, w = fm.shape
+    out = np.zeros((h//2, w//2))
+    for i in range(out.shape[0]):
+        for j in range(out.shape[1]):
+            out[i,j] = np.max(fm[i*2:(i+1)*2, j*2:(j+1)*2])
+    return out
+
+# 6x6 숫자 '1' 이미지
+img = np.array([
+ [0,0,1,1,0,0],
+ [0,0,1,1,0,0],
+ [0,0,1,1,0,0],
+ [0,0,1,1,0,0],
+ [0,0,1,1,0,0],
+ [0,0,1,1,0,0]], dtype=float)
+
+fmap = conv2d(img, KERNEL)
+pooled = max_pool2d(fmap)
+
+print("원본 (6x6):"); print(img.astype(int))
+print("\\n특성맵 (4x4) - 세로선이 강하게 반응!")
+print(np.round(fmap, 1))
+print("\\n풀링 후 (2x2):")
+print(np.round(pooled, 1))
+print("\\n💡 KERNEL을 가로선 검출용으로 바꿔보세요!")
+print("   [[0,0,0],[1,1,1],[0,0,0]]")
+
+fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+axes[0].imshow(img, cmap='Blues'); axes[0].set_title("원본")
+axes[1].imshow(fmap, cmap='hot'); axes[1].set_title("특성맵")
+axes[2].imshow(pooled, cmap='hot'); axes[2].set_title("풀링")
+plt.tight_layout(); plt.show()`;
+document.getElementById('codeEditor').value = STARTER;
+initPyodideRunner();
+</script>
 </body>
 </html>
