@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔮 MBTI 궁합 계산기 — 코사인 유사도</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: '맑은 고딕', sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); color: #eee; line-height: 1.7; min-height: 100vh; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+  header { text-align: center; padding: 40px 20px; }
+  header h1 { font-size: 30px; margin-bottom: 10px; background: linear-gradient(90deg, #ff6b9d, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  header p { color: #aaa; font-size: 15px; }
+  .card { background: rgba(255,255,255,0.06); backdrop-filter: blur(10px); border-radius: 16px; padding: 28px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); }
+  .card h2 { font-size: 19px; margin-bottom: 16px; color: #f0abfc; }
+  .selectors { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  @media (max-width: 600px) { .selectors { grid-template-columns: 1fr; } }
+  .person-box { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 18px; }
+  .person-box h3 { font-size: 16px; margin-bottom: 12px; text-align: center; }
+  .mbti-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .mbti-btn { padding: 10px 4px; border: 2px solid rgba(255,255,255,0.15); border-radius: 8px; background: rgba(255,255,255,0.05); color: #eee; cursor: pointer; font-size: 13px; font-weight: bold; transition: all 0.2s; text-align: center; }
+  .mbti-btn:hover { border-color: #a855f7; transform: scale(1.05); }
+  .mbti-btn.selected { background: linear-gradient(135deg, #a855f7, #6366f1); border-color: transparent; color: white; box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
+  .mbti-btn .emoji { font-size: 20px; display: block; margin-bottom: 2px; }
+  .calc-btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; background: linear-gradient(135deg, #ff6b9d, #a855f7); color: white; margin: 10px 0 20px; transition: transform 0.2s; }
+  .calc-btn:hover { transform: scale(1.02); }
+  .calc-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  #result { display: none; text-align: center; }
+  .score-circle { width: 180px; height: 180px; border-radius: 50%; margin: 20px auto; display: flex; align-items: center; justify-content: center; flex-direction: column; font-weight: bold; position: relative; background: conic-gradient(var(--color) var(--pct), rgba(255,255,255,0.08) var(--pct)); }
+  .score-inner { width: 140px; height: 140px; border-radius: 50%; background: #1a1a2e; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+  .score-num { font-size: 36px; }
+  .score-label { font-size: 12px; color: #aaa; }
+  .compat-msg { font-size: 20px; font-weight: bold; margin: 16px 0; }
+  .compat-desc { color: #ccc; font-size: 14px; max-width: 600px; margin: 0 auto; }
+  .type-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+  @media (max-width: 600px) { .type-cards { grid-template-columns: 1fr; } }
+  .type-card { border-radius: 12px; padding: 20px; text-align: left; }
+  .type-card .type-emoji { font-size: 48px; text-align: center; display: block; margin-bottom: 10px; }
+  .type-card h3 { text-align: center; font-size: 18px; margin-bottom: 4px; }
+  .type-card .type-nickname { text-align: center; color: #aaa; font-size: 13px; margin-bottom: 12px; }
+  .type-card ul { list-style: none; padding: 0; font-size: 13px; }
+  .type-card li { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .type-card li:last-child { border: none; }
+  .type-card li::before { content: "✦ "; color: #f0abfc; }
+  .math-box { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 18px; margin-top: 16px; font-size: 13px; }
+  .math-box h3 { color: #93c5fd; margin-bottom: 10px; font-size: 15px; }
+  .vector-bar { display: flex; align-items: center; margin: 4px 0; font-size: 12px; }
+  .vector-label { width: 70px; color: #aaa; flex-shrink: 0; }
+  .vector-track { flex: 1; height: 14px; background: rgba(255,255,255,0.08); border-radius: 7px; overflow: hidden; margin: 0 8px; }
+  .vector-fill { height: 100%; border-radius: 7px; transition: width 0.5s; }
+  .vector-val { width: 30px; text-align: right; color: #ccc; }
+  .legend { display: flex; gap: 16px; justify-content: center; margin: 12px 0; font-size: 12px; }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  footer { text-align: center; padding: 24px; color: #666; font-size: 12px; }
+  .vs-badge { text-align: center; font-size: 24px; margin: 10px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🔮 MBTI 궁합 계산기</h1>
+    <p>코사인 유사도로 알아보는 우리의 케미! — 4일차 자연어처리 실습</p>
+  </header>
+
+  <div class="card">
+    <h2>👥 두 사람의 MBTI를 선택하세요</h2>
+    <div class="selectors">
+      <div class="person-box">
+        <h3>🙋 나</h3>
+        <div class="mbti-grid" id="gridA"></div>
+      </div>
+      <div class="person-box">
+        <h3>💖 상대방</h3>
+        <div class="mbti-grid" id="gridB"></div>
+      </div>
+    </div>
+    <button class="calc-btn" id="calcBtn" onclick="calculate()" disabled>💜 궁합 계산하기</button>
+
+    <div id="result">
+      <div class="vs-badge" id="vsBadge"></div>
+      <div class="score-circle" id="scoreCircle">
+        <div class="score-inner">
+          <div class="score-num" id="scoreNum">0%</div>
+          <div class="score-label">친해질 확률</div>
+        </div>
+      </div>
+      <div class="compat-msg" id="compatMsg"></div>
+      <div class="compat-desc" id="compatDesc"></div>
+
+      <div class="legend">
+        <span><span class="dot" style="background:#a855f7"></span> 나의 특성</span>
+        <span><span class="dot" style="background:#ff6b9d"></span> 상대방의 특성</span>
+      </div>
+      <div class="math-box">
+        <h3>📐 코사인 유사도 계산 과정</h3>
+        <div id="vectorViz"></div>
+        <p style="margin-top:12px; color:#aaa;" id="mathExplain"></p>
+      </div>
+
+      <div class="type-cards" id="typeCards"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📚 코사인 유사도란?</h2>
+    <p style="font-size:14px; color:#ccc;">
+      두 벡터가 얼마나 <strong>같은 방향</strong>을 보고 있는지 재는 방법이에요.
+      4일차 수업에서 <strong>문서 검색</strong>에 쓴 바로 그 방법이랍니다!<br><br>
+      • 각 MBTI를 8가지 성격 특성(사교성, 직관력, 논리성, 계획성, 감수성, 모험심, 리더십, 창의성)의 점수로 표현해요<br>
+      • 두 점수 벡터 사이의 각도를 재서 <strong>코사인 값</strong>을 구해요<br>
+      • 1에 가까울수록 "케미 폭발!", -1에 가까울수록 "물과 기름"
+    </p>
+  </div>
+
+  <footer>배화여자고등학교 AI Life 4일차 — MBTI 궁합 계산기</footer>
+</div>
+
+<script>
+// MBTI 16유형 데이터: [이모지, 별명, 색상, 특성 8차원 벡터, 특징 4가지]
+// 특성 순서: [사교성, 직관력, 논리성, 계획성, 감수성, 모험심, 리더십, 창의성] (0~10)
+const MBTI = {
+  "INTJ": { emoji: "🧙", nickname: "용의주도한 전략가", color: "#8b5cf6",
+    vec: [2, 9, 9, 9, 3, 4, 7, 8],
+    traits: ["혼자서 깊게 생각하는 걸 좋아해요", "장기 계획을 세우는 데 탁월해요", "감정보다 논리로 판단해요", "완벽주의 성향이 있어요"] },
+  "INTP": { emoji: "🔬", nickname: "논리적인 사색가", color: "#6366f1",
+    vec: [2, 9, 10, 3, 3, 5, 3, 9],
+    traits: ["호기심이 많아서 '왜?'를 달고 살아요", "논리적 분석을 즐겨요", "계획보다 즉흥을 좋아해요", "새로운 아이디어가 끊임없이 떠올라요"] },
+  "ENTJ": { emoji: "👑", nickname: "대담한 통솔자", color: "#ef4444",
+    vec: [9, 8, 9, 10, 2, 6, 10, 7],
+    traits: ["타고난 리더! 앞장서는 걸 좋아해요", "목표를 정하면 끝까지 밀어붙여요", "효율성을 중요하게 생각해요", "자신감이 넘쳐요"] },
+  "ENTP": { emoji: "🎪", nickname: "뜨거운 논쟁가", color: "#f59e0b",
+    vec: [9, 9, 8, 2, 4, 9, 6, 10],
+    traits: ["토론을 즐기는 아이디어 뱅크!", "새로운 시도를 두려워하지 않아요", "재치가 넘치고 유머러스해요", "한 가지에 오래 집중하기 어려워요"] },
+  "INFJ": { emoji: "🔮", nickname: "선의의 옹호자", color: "#10b981",
+    vec: [3, 10, 4, 8, 10, 3, 6, 8],
+    traits: ["타인의 감정을 잘 읽어요", "의미 있는 일을 하고 싶어해요", "조용하지만 강한 신념이 있어요", "완벽한 관계를 추구해요"] },
+  "INFP": { emoji: "🌸", nickname: "열정적인 중재자", color: "#ec4899",
+    vec: [3, 10, 3, 2, 10, 6, 2, 9],
+    traits: ["감성이 풍부한 몽상가예요", "자신만의 가치관이 뚜렷해요", "갈등을 싫어하고 조화를 원해요", "창의적인 표현을 좋아해요"] },
+  "ENFJ": { emoji: "🌟", nickname: "정의로운 사회운동가", color: "#14b8a6",
+    vec: [10, 9, 4, 8, 10, 5, 9, 7],
+    traits: ["사람들을 이끄는 카리스마!", "타인의 성장을 돕는 걸 좋아해요", "공감 능력이 뛰어나요", "모두가 행복하길 바라요"] },
+  "ENFP": { emoji: "🎉", nickname: "재기발랄한 활동가", color: "#f97316",
+    vec: [10, 10, 3, 1, 9, 10, 5, 10],
+    traits: ["에너지가 넘치는 분위기 메이커!", "새로운 사람 만나는 걸 좋아해요", "즉흥적이고 자유로워요", "열정이 식으면 금방 질려해요"] },
+  "ISTJ": { emoji: "📋", nickname: "청렴결백한 논리주의자", color: "#64748b",
+    vec: [3, 2, 8, 10, 3, 2, 6, 2],
+    traits: ["약속을 반드시 지키는 신뢰형!", "체계적이고 꼼꼼해요", "전통과 규칙을 중시해요", "감정 표현이 서툴 수 있어요"] },
+  "ISFJ": { emoji: "🛡️", nickname: "용감한 수호자", color: "#0ea5e9",
+    vec: [4, 2, 3, 9, 10, 2, 4, 3],
+    traits: ["헌신적으로 남을 챙겨요", "따뜻하고 배려심이 깊어요", "안정적인 걸 좋아해요", "자신의 공을 잘 드러내지 않아요"] },
+  "ESTJ": { emoji: "💼", nickname: "엄격한 관리자", color: "#dc2626",
+    vec: [9, 2, 9, 10, 2, 4, 10, 3],
+    traits: ["조직을 이끄는 관리자형!", "사실과 결과를 중시해요", "체계적인 시스템을 좋아해요", "융통성이 부족해 보일 수 있어요"] },
+  "ESFJ": { emoji: "💝", nickname: "사교적인 외교관", color: "#db2777",
+    vec: [10, 2, 3, 9, 10, 4, 7, 3],
+    traits: ["인기 많은 사교왕!", "주변 사람들을 잘 챙겨요", "인정받는 걸 좋아해요", "갈등 상황을 피하려고 해요"] },
+  "ISTP": { emoji: "🔧", nickname: "만능 재주꾼", color: "#78716c",
+    vec: [4, 3, 9, 2, 2, 9, 3, 6],
+    traits: ["손으로 만드는 걸 잘해요", "위기 상황에서 침착해요", "혼자만의 시간이 필요해요", "말보다 행동으로 보여줘요"] },
+  "ISFP": { emoji: "🎨", nickname: "호기심 많은 예술가", color: "#a78bfa",
+    vec: [4, 4, 2, 1, 10, 9, 2, 9],
+    traits: ["감각적인 아티스트!", "현재를 즐기며 살아요", "경쟁보다 협력을 좋아해요", "자신의 감정을 소중히 여겨요"] },
+  "ESTP": { emoji: "🏄", nickname: "모험을 즐기는 사업가", color: "#ea580c",
+    vec: [10, 3, 8, 2, 3, 10, 7, 5],
+    traits: ["스릴을 즐기는 모험가!", "순발력이 뛰어나요", "현실적인 문제 해결사예요", "긴 설명은 질려해요"] },
+  "ESFP": { emoji: "🎤", nickname: "자유로운 영혼의 연예인", color: "#e11d48",
+    vec: [10, 4, 2, 1, 10, 10, 4, 8],
+    traits: ["어디서든 주목받는 스타!", "즐거움을 나누는 걸 좋아해요", "즉흥적인 매력이 있어요", "깊은 고민은 피하고 싶어해요"] },
+};
+
+const TRAIT_NAMES = ["사교성", "직관력", "논리성", "계획성", "감수성", "모험심", "리더십", "창의성"];
+
+let selectedA = null, selectedB = null;
+
+function buildGrid(gridId, person) {
+  const grid = document.getElementById(gridId);
+  for (const type of Object.keys(MBTI)) {
+    const btn = document.createElement("button");
+    btn.className = "mbti-btn";
+    btn.innerHTML = `<span class="emoji">${MBTI[type].emoji}</span>${type}`;
+    btn.onclick = () => selectMBTI(person, type, btn);
+    grid.appendChild(btn);
+  }
+}
+
+function selectMBTI(person, type, btn) {
+  const gridId = person === "A" ? "gridA" : "gridB";
+  document.querySelectorAll(`#${gridId} .mbti-btn`).forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+  if (person === "A") selectedA = type; else selectedB = type;
+  document.getElementById("calcBtn").disabled = !(selectedA && selectedB);
+}
+
+function cosineSimilarity(a, b) {
+  let dot = 0, normA = 0, normB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+}
+
+function calculate() {
+  if (!selectedA || !selectedB) return;
+  const dataA = MBTI[selectedA], dataB = MBTI[selectedB];
+  const sim = cosineSimilarity(dataA.vec, dataB.vec);
+  // -1~1 → 0~100% 변환 (재미있게 보정)
+  const pct = Math.round(((sim + 1) / 2) * 100);
+
+  document.getElementById("result").style.display = "block";
+  document.getElementById("vsBadge").textContent = `${dataA.emoji} ${selectedA}  VS  ${selectedB} ${dataB.emoji}`;
+
+  // 점수 원 애니메이션
+  const circle = document.getElementById("scoreCircle");
+  const color = pct >= 80 ? "#4ade80" : pct >= 60 ? "#a855f7" : pct >= 40 ? "#f59e0b" : "#ef4444";
+  circle.style.setProperty("--pct", pct + "%");
+  circle.style.setProperty("--color", color);
+
+  let num = 0;
+  const timer = setInterval(() => {
+    num += Math.ceil(pct / 30);
+    if (num >= pct) { num = pct; clearInterval(timer); }
+    document.getElementById("scoreNum").textContent = num + "%";
+    document.getElementById("scoreNum").style.color = color;
+  }, 40);
+
+  // 궁합 메시지
+  let msg, desc;
+  if (pct >= 85) { msg = "💘 운명적 궁합!"; desc = "서로 너무 잘 통해요! 같이 있으면 시간이 순삭! 평생 친구 예약이에요."; }
+  else if (pct >= 70) { msg = "💕 찰떡 궁합!"; desc = "성격이 잘 맞아서 금방 친해질 수 있어요. 공통 관심사를 찾아보세요!"; }
+  else if (pct >= 55) { msg = "😊 좋은 친구 궁합"; desc = "서로 다른 매력이 있어서 배우는 게 많아요. 조금만 노력하면 베프 가능!"; }
+  else if (pct >= 40) { msg = "🤝 노력형 궁합"; desc = "성격이 좀 다르지만, 그게 오히려 서로를 보완해줘요. 이해하려는 마음이 중요해요!"; }
+  else { msg = "🎢 롤러코스터 궁합"; desc = "정반대 매력! 부딪힐 때도 있지만 서로에게 없는 걸 채워줄 수 있는 관계예요."; }
+  document.getElementById("compatMsg").textContent = msg;
+  document.getElementById("compatMsg").style.color = color;
+  document.getElementById("compatDesc").textContent = desc;
+
+  // 벡터 시각화
+  let vizHTML = "";
+  for (let i = 0; i < TRAIT_NAMES.length; i++) {
+    const a = dataA.vec[i] * 10, b = dataB.vec[i] * 10;
+    vizHTML += `<div class="vector-bar">
+      <span class="vector-label">${TRAIT_NAMES[i]}</span>
+      <div class="vector-track"><div class="vector-fill" style="width:${a}%;background:#a855f7"></div></div>
+      <span class="vector-val">${dataA.vec[i]}</span>
+    </div>
+    <div class="vector-bar">
+      <span class="vector-label"></span>
+      <div class="vector-track"><div class="vector-fill" style="width:${b}%;background:#ff6b9d"></div></div>
+      <span class="vector-val">${dataB.vec[i]}</span>
+    </div>`;
+  }
+  document.getElementById("vectorViz").innerHTML = vizHTML;
+  document.getElementById("mathExplain").textContent =
+    `코사인 유사도 = ${sim.toFixed(3)} → 친해질 확률 ${pct}% (유사도를 0~100으로 변환)`;
+
+  // 타입 카드
+  document.getElementById("typeCards").innerHTML = [selectedA, selectedB].map(t => {
+    const d = MBTI[t];
+    return `<div class="type-card" style="background:${d.color}22; border:2px solid ${d.color}66;">
+      <span class="type-emoji">${d.emoji}</span>
+      <h3>${t}</h3>
+      <div class="type-nickname">${d.nickname}</div>
+      <ul>${d.traits.map(tr => `<li>${tr}</li>`).join("")}</ul>
+    </div>`;
+  }).join("");
+
+  document.getElementById("result").scrollIntoView({ behavior: "smooth" });
+}
+
+buildGrid("gridA", "A");
+buildGrid("gridB", "B");
+</script>
+</body>
+</html>
