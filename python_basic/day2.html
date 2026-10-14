@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐍 2일차: 조건문과 반복문 — python_basic</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: '맑은 고딕', sans-serif; background: #f0f4f8; color: #333; line-height: 1.7; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+  header { background: linear-gradient(135deg, #1a5276, #2e86c1); color: white; padding: 40px 20px; text-align: center; border-radius: 14px; margin-bottom: 25px; }
+  header h1 { font-size: 28px; margin-bottom: 10px; }
+  header p { font-size: 15px; opacity: 0.92; }
+  .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .card h2 { color: #1a5276; font-size: 19px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 3px solid #2e86c1; }
+  .card h3 { color: #2c3e50; font-size: 16px; margin: 14px 0 8px; }
+  .card p, .card li { font-size: 14px; }
+  .card ol, .card ul { padding-left: 22px; margin: 8px 0; }
+  .card li { margin-bottom: 6px; }
+  .notice { background: #fef9e7; border-left: 5px solid #f39c12; padding: 14px 18px; border-radius: 8px; margin: 14px 0; font-size: 14px; }
+  .step { background: #f8f9fa; border-radius: 8px; padding: 16px 20px; margin: 12px 0; border-left: 5px solid #2e86c1; }
+  .step h3 { margin-top: 0; color: #1a5276; }
+  .code-block { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; font-family: 'Consolas', 'D2Coding', monospace; font-size: 12.5px; overflow-x: auto; margin: 10px 0; white-space: pre; line-height: 1.5; }
+  .copy-btn { background: #34495e; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-bottom: 6px; }
+  .copy-btn:hover { background: #2c3e50; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+  th { background: #2e86c1; color: white; }
+  tr:nth-child(even) { background: #f9f9f9; }
+  .link-btn { display: inline-block; padding: 12px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; margin: 6px 6px 6px 0; font-size: 14px; }
+  .link-btn:hover { opacity: 0.88; }
+  .btn-green { background: #27ae60; color: white; }
+  .btn-blue { background: #2e86c1; color: white; }
+  .btn-gray { background: #7f8c8d; color: white; }
+  .quiz { background: #eaf2f8; border-radius: 8px; padding: 16px 20px; margin: 12px 0; }
+  .quiz h3 { color: #1a5276; margin-top: 0; }
+  .quiz .hint { font-size: 12px; color: #666; margin-top: 6px; }
+  footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
+  @media (max-width: 600px) { header h1 { font-size: 22px; } .card { padding: 16px; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🐍 2일차: 조건문과 반복문</h1>
+    <p>if, for, while — 2시간 × 1회</p>
+  </header>
+
+  <div class="card">
+    <h2>🗺️ 수업 흐름 (120분)</h2>
+    <table>
+      <tr><th>순서</th><th>내용</th><th>시간</th></tr>
+      <tr><td>1</td><td>1일차 복습 &amp; 워밍업</td><td>10분</td></tr>
+      <tr><td>2</td><td>if / elif / else (교통카드 잔액 비유)</td><td>25분</td></tr>
+      <tr><td>3</td><td>비교 연산자, 논리 연산자 (and, or, not)</td><td>20분</td></tr>
+      <tr><td>4</td><td>for문과 range()</td><td>25분</td></tr>
+      <tr><td>5</td><td>while문, break와 continue</td><td>20분</td></tr>
+      <tr><td>6</td><td>실습: 숫자 맞추기 게임 + 구구단</td><td>15분</td></tr>
+      <tr><td>7</td><td>연습문제 &amp; 정리</td><td>5분</td></tr>
+    </table>
+    <div class="notice">
+      <strong>💡 실행 방법:</strong> 아래 코드를 <strong>📋 복사</strong> 버튼으로 복사해서
+      <strong>Python 백업 실행기</strong>에 붙여넣고 실행하세요!
+    </div>
+    <p>
+      <a class="link-btn btn-green" href="../python_backup.html" target="_blank">🐍 Python 백업 실행기 열기</a>
+      <a class="link-btn btn-gray" href="index.html">← 과정 목차로</a>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>📚 핵심 개념</h2>
+
+    <div class="step">
+      <h3>1️⃣ if / elif / else — 갈림길에서 선택하기</h3>
+      <p>교통카드 잔액이 1500원 이상이면 버스를 타고, 아니면 충전하러 가죠? 프로그램도 이렇게 <strong>조건에 따라 다른 행동</strong>을 해요.</p>
+      <p><code>if</code> (만약 ~라면) → <code>elif</code> (아니면 만약 ~라면) → <code>else</code> (그 외에는) 순서로 써요.</p>
+      <p>⚠️ <strong>들여쓰기</strong>가 생명이에요! 조건 아래 실행할 코드는 스페이스 4칸(또는 Tab 1번) 들여쓰기!</p>
+    </div>
+
+    <div class="step">
+      <h3>2️⃣ 비교 연산자 — 두 값을 비교해요</h3>
+      <table>
+        <tr><th>연산자</th><th>뜻</th><th>예시</th></tr>
+        <tr><td><code>==</code></td><td>같다</td><td>5 == 5 → True</td></tr>
+        <tr><td><code>!=</code></td><td>다르다</td><td>5 != 3 → True</td></tr>
+        <tr><td><code>&gt;</code></td><td>크다</td><td>5 &gt; 3 → True</td></tr>
+        <tr><td><code>&lt;</code></td><td>작다</td><td>5 &lt; 3 → False</td></tr>
+        <tr><td><code>&gt;=</code></td><td>크거나 같다</td><td>5 &gt;= 5 → True</td></tr>
+        <tr><td><code>&lt;=</code></td><td>작거나 같다</td><td>5 &lt;= 4 → False</td></tr>
+      </table>
+      <p>⚠️ <code>=</code> 하나는 "넣어라(대입)", <code>==</code> 두 개는 "같니?(비교)"예요. 헷갈리면 큰일나요!</p>
+    </div>
+
+    <div class="step">
+      <h3>3️⃣ 논리 연산자 — 조건을 조합해요</h3>
+      <ul>
+        <li><code>and</code>: 둘 다 참이어야 참 (그리고)</li>
+        <li><code>or</code>: 하나라도 참이면 참 (또는)</li>
+        <li><code>not</code>: 참↔거짓 뒤집기 (아니다)</li>
+      </ul>
+      <p>예: <code>나이 &gt;= 17 and 학생증</code> → "17살 이상 <strong>그리고</strong> 학생증이 있을 때"</p>
+    </div>
+
+    <div class="step">
+      <h3>4️⃣ for문 — 정해진 횟수만큼 반복</h3>
+      <p><code>range(5)</code>는 0부터 4까지 5개의 숫자를 만들어요. <code>for i in range(5):</code>는 "5번 반복해라"는 뜻!</p>
+      <ul>
+        <li><code>range(5)</code> → 0, 1, 2, 3, 4</li>
+        <li><code>range(1, 6)</code> → 1, 2, 3, 4, 5 (끝 숫자는 포함 안 돼요!)</li>
+        <li><code>range(2, 11, 2)</code> → 2, 4, 6, 8, 10 (2씩 뛰기)</li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <h3>5️⃣ while문 — 조건이 참인 동안 계속</h3>
+      <p><code>while 조건:</code>은 조건이 참인 동안 계속 반복해요. <strong>⚠️ 조건이 영원히 참이면 무한 반복!</strong> 반복 안에서 조건을 바꿔주는 코드를 꼭 넣으세요.</p>
+    </div>
+
+    <div class="step">
+      <h3>6️⃣ break와 continue — 반복문 조종하기</h3>
+      <ul>
+        <li><code>break</code>: 반복문을 <strong>완전히 탈출!</strong></li>
+        <li><code>continue</code>: 이번 차례만 <strong>건너뛰고</strong> 다음으로!</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💻 따라 치기 코드</h2>
+
+    <h3>① if / elif / else</h3>
+    <button class="copy-btn" onclick="copyText('d2_code1')">📋 복사</button>
+    <div class="code-block" id="d2_code1"># 1. if문 - 교통카드 잔액 비유!
+# 잔액이 1500원 이상이면? 버스를 탈 수 있어요!
+
+잔액 = 2000
+
+if 잔액 >= 1500:
+    print("🚌 버스에 탑승합니다!")
+else:
+    print("💳 잔액이 부족해요. 충전하세요!")
+
+print()
+
+# if / elif / else - 여러 갈래 길
+점수 = 85
+
+if 점수 >= 90:
+    print("A학점! 🎉")
+elif 점수 >= 80:
+    print("B학점! 😊")
+elif 점수 >= 70:
+    print("C학점! 🙂")
+else:
+    print("조금 더 노력해요! 💪")
+
+# ⚠️ 들여쓰기를 꼭 지키세요! (스페이스 4칸)</div>
+
+    <h3>② 비교 연산자</h3>
+    <button class="copy-btn" onclick="copyText('d2_code2')">📋 복사</button>
+    <div class="code-block" id="d2_code2"># 2. 비교 연산자 - 두 값을 비교해요 (결과는 True/False!)
+print(5 == 5)   # True  (같다)
+print(5 != 5)   # False (다르다)
+print(5 &gt; 3)    # True  (크다)
+print(5 &lt; 3)    # False (작다)
+print(5 &gt;= 5)   # True  (크거나 같다)
+print(5 &lt;= 4)   # False (작거나 같다)
+
+print()
+
+# ⚠️ = 하나는 "넣어라(대입)", == 두 개는 "같니?(비교)"
+나이 = 17          # 17을 나이 상자에 넣기
+print(나이 == 17)  # 나이가 17과 같니? → True
+print(나이 == 20)  # 나이가 20과 같니? → False</div>
+
+    <h3>③ 논리 연산자</h3>
+    <button class="copy-btn" onclick="copyText('d2_code3')">📋 복사</button>
+    <div class="code-block" id="d2_code3"># 3. 논리 연산자 - 조건을 조합해요!
+# and: 둘 다 참이어야 참 (그리고)
+# or: 하나라도 참이면 참 (또는)
+# not: 뒤집기 (아니다)
+
+나이 = 17
+학생증 = True
+
+# and: 나이도 17 이상 "그리고" 학생증도 있어야
+if 나이 &gt;= 17 and 학생증:
+    print("영화관 청소년 할인! 🎬")
+
+# or: 비가 오"거나" 눈이 오면
+날씨 = "맑음"
+if 날씨 == "비" or 날씨 == "눈":
+    print("우산을 챙기세요! ☂️")
+else:
+    print("좋은 날씨네요! ☀️")
+
+# not: 뒤집기
+로그인 = False
+if not 로그인:
+    print("로그인이 필요합니다. 🔑")</div>
+
+    <h3>④ for문과 range()</h3>
+    <button class="copy-btn" onclick="copyText('d2_code4')">📋 복사</button>
+    <div class="code-block" id="d2_code4"># 4. for문 - 정해진 횟수만큼 반복!
+# range(5) → 0, 1, 2, 3, 4 (5번 반복)
+
+for i in range(5):
+    print(f"{i+1}번째 안녕! 👋")
+
+print()
+
+# range(시작, 끝) → 시작부터 끝-1까지
+for 숫자 in range(1, 6):
+    print(숫자)  # 1, 2, 3, 4, 5
+
+print()
+
+# range(시작, 끝, 간격) → 2씩 뛰기
+print("짝수만 출력:")
+for n in range(2, 11, 2):
+    print(n)  # 2, 4, 6, 8, 10</div>
+
+    <h3>⑤ while문</h3>
+    <button class="copy-btn" onclick="copyText('d2_code5')">📋 복사</button>
+    <div class="code-block" id="d2_code5"># 5. while문 - 조건이 참인 동안 계속 반복!
+# ⚠️ 조심! 조건이 영원히 참이면 무한 반복이에요
+
+횟수 = 1
+while 횟수 &lt;= 5:
+    print(f"{횟수}번째 반복 중...")
+    횟수 = 횟수 + 1  # ← 이걸 빼먹으면 무한 루프! 😱
+
+print("반복 끝! 🎉")</div>
+
+    <h3>⑥ break와 continue</h3>
+    <button class="copy-btn" onclick="copyText('d2_code6')">📋 복사</button>
+    <div class="code-block" id="d2_code6"># 6. break와 continue - 반복문 조종하기!
+# break: 반복문을 완전히 탈출!
+# continue: 이번 차례만 건너뛰고 다음으로!
+
+print("--- break 예시 ---")
+for i in range(1, 11):
+    if i == 4:
+        print("4에서 멈춤! 🛑")
+        break  # 반복문 탈출!
+    print(i)
+
+print()
+print("--- continue 예시 ---")
+for i in range(1, 6):
+    if i == 3:
+        continue  # 3만 건너뛰기
+    print(i)  # 1, 2, 4, 5 출력 (3은 안 나와요)</div>
+  </div>
+
+  <div class="card">
+    <h2>🛠️ 실습 1: 숫자 맞추기 게임</h2>
+    <p>컴퓨터가 정한 비밀 숫자를 맞추는 게임! <code>random</code> 모듈을 사용해요.</p>
+    <button class="copy-btn" onclick="copyText('d2_code7')">📋 복사</button>
+    <div class="code-block" id="d2_code7"># 🎯 숫자 맞추기 게임!
+import random  # 랜덤 숫자 모듈 불러오기
+
+# 1부터 20 사이의 비밀 숫자 정하기
+비밀숫자 = random.randint(1, 20)
+시도횟수 = 0
+
+print("🎯 숫자 맞추기 게임!")
+print("1부터 20 사이의 숫자를 맞춰보세요.")
+print()
+
+while True:  # 맞출 때까지 무한 반복
+    추측 = int(input("숫자를 입력하세요: "))
+    시도횟수 = 시도횟수 + 1
+
+    if 추측 == 비밀숫자:
+        print(f"🎉 정답! {시도횟수}번 만에 맞췄어요!")
+        break  # 맞췄으니 탈출!
+    elif 추측 &lt; 비밀숫자:
+        print("⬆️ 더 큰 숫자예요!")
+    else:
+        print("⬇️ 더 작은 숫자예요!")</div>
+  </div>
+
+  <div class="card">
+    <h2>🛠️ 실습 2: 구구단 출력</h2>
+    <p>for문 하나로 구구단 완성! 원하는 단을 입력받아보세요.</p>
+    <button class="copy-btn" onclick="copyText('d2_code8')">📋 복사</button>
+    <div class="code-block" id="d2_code8"># ✖️ 구구단 출력하기
+단 = int(input("몇 단을 출력할까요? "))
+
+print(f"--- {단}단 ---")
+for i in range(1, 10):
+    print(f"{단} × {i} = {단 * i}")
+
+print()
+print("--- 도전! 구구단 전체 출력 ---")
+for 단 in range(2, 10):
+    print(f"[{단}단]", end="  ")
+    for i in range(1, 10):
+        print(f"{단*i:2}", end=" ")
+    print()  # 줄바꿈</div>
+  </div>
+
+  <div class="card">
+    <h2>✏️ 연습문제</h2>
+
+    <div class="quiz">
+      <h3>문제 1. 🔢 짝수/홀수 판별기</h3>
+      <p>숫자를 입력받아 짝수인지 홀수인지 출력하세요.</p>
+      <p class="hint">💡 힌트: 숫자 % 2 == 0 이면 짝수! if/else를 사용하세요.</p>
+    </div>
+
+    <div class="quiz">
+      <h3>문제 2. ➕ 3의 배수 합 구하기</h3>
+      <p>1부터 100까지 숫자 중 3의 배수들의 합을 구하세요.</p>
+      <p class="hint">💡 힌트: for문으로 1~100을 돌면서, 3의 배수면(i % 3 == 0) 합계에 더하세요.</p>
+    </div>
+
+    <div class="quiz">
+      <h3>문제 3. 🔑 로그인 프로그램</h3>
+      <p>아이디와 비밀번호를 맞게 입력할 때까지 계속 물어보는 프로그램을 만드세요. (정답 아이디: "python", 비밀번호: "1234")</p>
+      <p class="hint">💡 힌트: while True + if문 + break를 조합하세요!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔗 다음 단계</h2>
+    <p>
+      <a class="link-btn btn-blue" href="day3.html">3일차: 자료구조와 함수 (준비 중)</a>
+      <a class="link-btn btn-gray" href="index.html">← 과정 목차로</a>
+      <a class="link-btn btn-gray" href="day1.html">← 1일차 복습</a>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>📝 과제</h2>
+    <p>오늘 배운 <strong>조건문·반복문</strong>을 활용해 아래 과제를 풀어보세요!</p>
+
+    <div class="step">
+      <h3>🔢 과제 1 (알고리즘): 소수 판별기</h3>
+      <p>숫자를 입력받아 <strong>소수(prime number)</strong>인지 판별하는 코드를 작성하세요.</p>
+      <p>💡 힌트: 소수는 <strong>1과 자기 자신으로만</strong> 나누어떨어지는 수예요. 2부터 (숫자-1)까지 나눠보며 나누어떨어지는 수가 있는지 <code>for</code>문으로 확인해보세요!</p>
+      <p>❓ 17은 소수일까요? 21은요? 코드를 실행해서 확인해보세요!</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('hw1')">📋 스타터 코드 복사</button>
+    <div class="code-block" id="hw1"># 과제 1: 소수 판별기 (스타터 코드)
+# 소수 = 1과 자기 자신으로만 나누어떨어지는 수 (2, 3, 5, 7, 11, 13...)
+
+숫자 = int(input("숫자를 입력하세요: "))
+
+# TODO: 2부터 (숫자-1)까지 for문으로 돌면서
+#       나누어떨어지는 수(% == 0)가 있는지 확인하세요!
+# 힌트: 나누어떨어지는 수가 하나라도 있으면 소수가 아니에요.
+
+# 소수이면 "소수입니다!", 아니면 "소수가 아닙니다!" 출력</div>
+
+    <div class="step">
+      <h3>🐚 과제 2 (수학): 피보나치 수열</h3>
+      <p>피보나치 수열은 <strong>1, 1, 2, 3, 5, 8, 13, ...</strong> 처럼 <strong>앞의 두 수를 더해서</strong> 다음 수를 만드는 수열이에요.</p>
+      <p>❓ <strong>20번째 수는 뭘까요?</strong> 규칙을 코드로 만들어 확인해보세요!</p>
+      <p>💡 힌트: <code>for</code>문으로 반복하면서 두 개의 변수를 계속 갱신해보세요. (a, b = b, a+b 꼴!)</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('hw2')">📋 스타터 코드 복사</button>
+    <div class="code-block" id="hw2"># 과제 2: 피보나치 수열 (스타터 코드)
+# 1, 1, 2, 3, 5, 8, 13, ... (앞의 두 수를 더하면 다음 수!)
+
+a = 1  # 첫 번째 수
+b = 1  # 두 번째 수
+
+print(f"1번째: {a}")
+print(f"2번째: {b}")
+
+# TODO: for문을 사용해서 3번째부터 20번째까지 출력하세요!
+# 힌트: 다음 수 = a + b
+#       그 다음에는 a와 b를 한 칸씩 앞으로 이동!</div>
+
+    <div class="step">
+      <h3>🤔 생각할 거리</h3>
+      <p><strong>"for문과 while문은 언제 바꿔 쓸 수 있을까?"</strong></p>
+      <p>구구단 출력 코드를 <code>for</code>문 버전과 <code>while</code>문 버전, 두 가지로 모두 작성해보세요.</p>
+      <p>💡 힌트: 반복 횟수를 <strong>미리 알 때</strong>는 for문이 편하고, <strong>조건이 만족될 때까지</strong> 반복할 때는 while문이 편해요. 숫자 맞추기 게임은 왜 while문을 썼을까요?</p>
+    </div>
+
+    <div class="notice">📤 <strong>제출:</strong> 완성한 코드를 <code>학번_이름_과제2.py</code> 파일로 저장해서 제출하세요.</div>
+  </div>
+
+  <footer>배화여자고등학교 — Python 기초 과정 python_basic · 2일차</footer>
+</div>
+
+<script>
+function copyText(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => alert("📋 코드가 복사되었습니다!"));
+}
+</script>
+</body>
+</html>

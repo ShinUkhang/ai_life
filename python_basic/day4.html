@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐍 Python 기초 4일차 — 파일과 모듈</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: '맑은 고딕', sans-serif; background: #f0f4f8; color: #333; line-height: 1.7; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+  header { background: linear-gradient(135deg, #1a5276, #2e86c1); color: white; padding: 35px 20px; text-align: center; border-radius: 14px; margin-bottom: 25px; }
+  header h1 { font-size: 26px; margin-bottom: 10px; }
+  header p { font-size: 15px; opacity: 0.92; }
+  .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .card h2 { color: #1a5276; font-size: 19px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 3px solid #2e86c1; }
+  .card h3 { color: #2c3e50; font-size: 16px; margin: 16px 0 8px; }
+  .card p, .card li { font-size: 14px; }
+  .card ol, .card ul { padding-left: 22px; margin: 8px 0; }
+  .card li { margin-bottom: 6px; }
+  .step { background: #f8f9fa; border-radius: 8px; padding: 16px 20px; margin: 12px 0; border-left: 5px solid #2e86c1; }
+  .step h3 { margin-top: 0; color: #1a5276; }
+  .code-block { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; font-family: 'Consolas', 'D2Coding', monospace; font-size: 13px; overflow-x: auto; margin: 10px 0; white-space: pre; line-height: 1.6; }
+  .copy-btn { background: #34495e; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-bottom: 6px; }
+  .copy-btn:hover { background: #2c3e50; }
+  .notice { background: #fef9e7; border-left: 5px solid #f39c12; padding: 14px 18px; border-radius: 8px; margin: 14px 0; font-size: 14px; }
+  .practice { background: #eaf2f8; border-radius: 8px; padding: 16px 20px; margin: 12px 0; }
+  .practice h3 { color: #1a5276; margin-top: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+  th { background: #2e86c1; color: white; }
+  tr:nth-child(even) { background: #f9f9f9; }
+  .nav { text-align: center; margin: 20px 0; }
+  .nav a { display: inline-block; padding: 10px 22px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; margin: 0 6px; }
+  .nav-prev { background: #7f8c8d; color: white; }
+  .nav-next { background: #2e86c1; color: white; }
+  footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
+  @media (max-width: 600px) { header h1 { font-size: 20px; } .card { padding: 16px; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🐍 Python 기초 4일차</h1>
+    <p>파일과 모듈 — 데이터를 저장하고, 남의 코드를 빌려 써요</p>
+  </header>
+
+  <div class="notice">
+    <strong>💡 실습 방법:</strong> 아래 코드는 <strong>📋 복사</strong> 버튼으로 복사해서
+    <a href="../python_backup.html" target="_blank">🐍 Python 백업 실행기</a>에 붙여넣고 실행하세요.<br>
+    ※ 브라우저 실행기에서는 파일 저장이 제한될 수 있어요. 파일 실습은 PC의 파이썬에서 해보세요!
+  </div>
+
+  <div class="card">
+    <h2>🗺️ 수업 흐름 (2시간)</h2>
+    <table>
+      <tr><th>시간</th><th>내용</th><th>분량</th></tr>
+      <tr><td>0:00–0:30</td><td>파일 읽기/쓰기: open·with문</td><td>개념 + 실습</td></tr>
+      <tr><td>0:30–1:00</td><td>모듈과 import: random·datetime·math</td><td>개념 + 실습</td></tr>
+      <tr><td>1:00–1:20</td><td>pip와 외부 라이브러리 개념</td><td>개념 설명</td></tr>
+      <tr><td>1:20–1:40</td><td>예외 처리: try/except</td><td>개념 + 실습</td></tr>
+      <tr><td>1:40–1:55</td><td>종합 실습: 가계부 프로그램</td><td>코딩 실습</td></tr>
+      <tr><td>1:55–2:00</td><td>연습 문제 풀이·정리</td><td>정리</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>📁 1. 파일 읽기/쓰기 — 메모장에 저장하기</h2>
+    <div class="step">
+      <h3>파일이란?</h3>
+      <p>지금까지 만든 데이터는 프로그램이 끝나면 <strong>사라집니다.</strong> 파일에 저장하면 <strong>영구 보관</strong>됩니다!</p>
+      <ul>
+        <li><code>"w"</code> — 쓰기 모드 (새로 만들기, 기존 내용은 지워짐!)</li>
+        <li><code>"r"</code> — 읽기 모드</li>
+        <li><code>"a"</code> — 이어쓰기 모드 (기존 내용 뒤에 추가)</li>
+      </ul>
+      <p><strong>with문</strong>을 쓰면 파일을 다 쓴 뒤 <strong>자동으로 닫아줍니다.</strong> (닫는 걸 깜빡해도 안전!)</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('c41')">📋 복사</button>
+    <div class="code-block" id="c41"># 파일에 쓰기 (w = 새로 쓰기)
+with open("일기.txt", "w", encoding="utf-8") as f:
+    f.write("오늘 파이썬 4일차를 배웠다!\n")  # \n = 줄바꿈
+    f.write("파일 저장이 신기하다.\n")
+# ← with 블록이 끝나면 자동으로 파일 닫힘!
+
+# 파일 읽기 (r = 읽기)
+with open("일기.txt", "r", encoding="utf-8") as f:
+    내용 = f.read()      # 전체 내용을 한 번에 읽기
+    print(내용)
+
+# 이어쓰기 (a = 뒤에 추가)
+with open("일기.txt", "a", encoding="utf-8") as f:
+    f.write("내일은 5일차다!\n")
+
+# 다시 읽어보기
+with open("일기.txt", "r", encoding="utf-8") as f:
+    print("=== 최종 내용 ===")
+    print(f.read())</div>
+    <div class="notice">
+      <strong>⚠️ 주의:</strong> <code>encoding="utf-8"</code>을 꼭 쓰세요! 한글을 저장할 때 깨지지 않습니다.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🧩 2. 모듈과 import — 남의 코드를 빌려 쓰기</h2>
+    <div class="step">
+      <h3>모듈이란?</h3>
+      <p>다른 사람이 미리 만들어둔 <strong>코드 묶음(도구상자)</strong>입니다. <code>import</code>로 가져와서 씁니다.</p>
+      <p>비유: <strong>레고 블록</strong> — 하나하나 만들지 말고 완성된 블록을 조립하세요!</p>
+    </div>
+
+    <h3>🎲 random — 랜덤 도구</h3>
+    <button class="copy-btn" onclick="copyText('c42')">📋 복사</button>
+    <div class="code-block" id="c42">import random  # 랜덤 도구 가져오기!
+
+# 주사위 굴리기 (1~6 중 하나)
+print(random.randint(1, 6))
+
+# 리스트에서 랜덤으로 하나 뽑기
+점심메뉴 = ["김밥", "라면", "떡볶이", "비빔밥"]
+print(random.choice(점심메뉴))
+
+# 순서 섞기
+카드 = ["A", "B", "C", "D"]
+random.shuffle(카드)
+print(카드)</div>
+
+    <h3>📅 datetime — 날짜·시간 도구</h3>
+    <button class="copy-btn" onclick="copyText('c43')">📋 복사</button>
+    <div class="code-block" id="c43">import datetime  # 날짜 도구 가져오기!
+
+# 지금 시간
+지금 = datetime.datetime.now()
+print(지금)
+
+# 예쁘게 출력하기
+print(지금.strftime("%Y년 %m월 %d일"))   # 2026년 10월 14일
+print(지금.strftime("%H시 %M분"))       # 15시 30분
+
+# 오늘 날짜만
+오늘 = datetime.date.today()
+print(오늘)</div>
+
+    <h3>🔢 math — 수학 도구</h3>
+    <button class="copy-btn" onclick="copyText('c44')">📋 복사</button>
+    <div class="code-block" id="c44">import math  # 수학 도구 가져오기!
+
+print(math.pi)             # 원주율 3.14159...
+print(math.sqrt(16))       # 제곱근 = 4.0
+print(math.ceil(3.2))      # 올림 = 4
+print(math.floor(3.8))     # 내림 = 3
+
+# from ~ import: 모듈 이름 없이 바로 쓰기
+from math import pi, sqrt
+print(pi)                  # math. 없이 바로 사용!
+print(sqrt(25))            # 5.0</div>
+  </div>
+
+  <div class="card">
+    <h2>📦 3. pip와 외부 라이브러리</h2>
+    <div class="step">
+      <h3>pip란?</h3>
+      <p>파이썬 기본 도구상자에 없는 <strong>외부 블록을 다운로드하는 앱스토어</strong>입니다.</p>
+      <p>터미널(명령창)에서 이렇게 설치합니다:</p>
+    </div>
+    <div class="code-block">pip install requests     # 인터넷 요청 도구
+pip install matplotlib   # 그래프 도구
+pip install numpy        # 숫자 계산 도구</div>
+    <p>설치한 뒤에는 <code>import</code>로 가져와서 쓰면 됩니다. (코랩에서는 셀에 <code>!pip install</code>로 설치!)</p>
+  </div>
+
+  <div class="card">
+    <h2>🛡️ 4. 예외 처리 — 오류가 나도 멈추지 않기</h2>
+    <div class="step">
+      <h3>예외 처리란?</h3>
+      <p>프로그램이 오류로 <strong>갑자기 죽지 않게</strong> 미리 대비하는 것입니다.</p>
+      <p>비유: <strong>안전벨트</strong> — 사고가 나도 최소한의 안전을 보장합니다!</p>
+      <ul>
+        <li><code>try:</code> — "일단 시도해봐" (위험한 코드)</li>
+        <li><code>except:</code> — "오류 나면 이렇게 해" (대처 코드)</li>
+      </ul>
+    </div>
+    <button class="copy-btn" onclick="copyText('c45')">📋 복사</button>
+    <div class="code-block" id="c45"># 예외 처리 없이 나누기 → 0으로 나누면 프로그램이 죽어요!
+# print(10 / 0)   # ❌ ZeroDivisionError!
+
+# try/except로 안전하게!
+try:
+    결과 = 10 / 0          # 위험한 시도!
+    print(결과)
+except:
+    print("⚠️ 0으로 나눌 수 없어요!")   # 오류 나면 이쪽 실행
+
+print("프로그램 계속 실행 중...")  # ← 죽지 않고 계속됨!
+
+# 숫자 입력 받기 (문자를 입력하면 오류!)
+try:
+    숫자 = int(input("숫자를 입력하세요: "))
+    print("입력한 숫자의 2배:", 숫자 * 2)
+except:
+    print("⚠️ 숫자를 입력해주세요!")
+
+# 어떤 오류인지 알고 싶을 때
+try:
+    f = open("없는파일.txt", "r")
+except FileNotFoundError:
+    print("⚠️ 파일이 없습니다!")
+except Exception as e:
+    print("⚠️ 알 수 없는 오류:", e)</div>
+  </div>
+
+  <div class="card">
+    <h2>🎯 종합 실습: 가계부 프로그램</h2>
+    <p>지금까지 배운 <strong>파일 + 함수 + 예외 처리</strong>를 합쳐서 가계부를 만들어봅시다!</p>
+    <button class="copy-btn" onclick="copyText('c46')">📋 복사</button>
+    <div class="code-block" id="c46"># ===== 가계부 프로그램 =====
+# 파일에 지출 내역을 저장하고 불러옵니다!
+
+파일명 = "가계부.txt"
+
+# 지출 추가 함수 (파일에 이어쓰기)
+def 지출추가(항목, 금액):
+    try:
+        with open(파일명, "a", encoding="utf-8") as f:
+            f.write(항목 + "," + str(금액) + "\n")  # 쉼표로 구분해서 저장
+        print("✅ 저장 완료: " + 항목 + " " + str(금액) + "원")
+    except Exception as e:
+        print("⚠️ 저장 실패:", e)
+
+# 전체 내역 보기 함수
+def 내역보기():
+    try:
+        with open(파일명, "r", encoding="utf-8") as f:
+            내용 = f.read()
+            if 내용 == "":
+                print("📭 아직 내역이 없습니다.")
+            else:
+                print("📋 === 지출 내역 ===")
+                print(내용)
+    except FileNotFoundError:
+        print("📭 가계부 파일이 아직 없습니다. 먼저 지출을 추가하세요!")
+
+# 총 지출 합계 함수
+def 총합계():
+    try:
+        합계 = 0
+        with open(파일명, "r", encoding="utf-8") as f:
+            for 줄 in f:                    # 한 줄씩 읽기
+                항목, 금액 = 줄.strip().split(",")  # 쉼표로 나누기
+                합계 += int(금액)           # 금액 더하기
+        return 합계
+    except FileNotFoundError:
+        return 0
+
+# ===== 사용해보기 =====
+지출추가("점심", 8000)
+지출추가("교통비", 1500)
+지출추가("간식", 3000)
+
+내역보기()
+print("💰 총 지출:", 총합계(), "원")</div>
+  </div>
+
+  <div class="card">
+    <h2>✏️ 연습 문제</h2>
+    <div class="practice">
+      <h3>문제 1. 명언 저장소 (파일 쓰기)</h3>
+      <p>좋아하는 명언 3개를 <code>"명언.txt"</code> 파일에 저장하고, 다시 읽어서 출력하세요.</p>
+    </div>
+    <div class="practice">
+      <h3>문제 2. 로또 번호 (random)</h3>
+      <p><code>random</code> 모듈을 사용해서 1~45 중에서 중복 없이 6개의 로또 번호를 뽑아 출력하세요. (힌트: <code>random.sample</code>)</p>
+    </div>
+    <div class="practice">
+      <h3>문제 3. 안전한 계산기 (try/except)</h3>
+      <p>두 숫자를 입력받아 나누는 계산기를 만드세요. 0으로 나누거나 문자를 입력해도 프로그램이 죽지 않게 <code>try/except</code>를 사용하세요.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📊 5. 시각화 — matplotlib으로 그래프 그리기</h2>
+    <div class="step">
+      <h3>왜 시각화인가?</h3>
+      <p>숫자만 봐서는 모르는 패턴이 <strong>그림</strong>으로 보면 한눈에 보입니다. 데이터 분석의 첫걸음이에요!</p>
+    </div>
+
+    <h3>꺾은선 그래프 (함수 그리기)</h3>
+    <button class="copy-btn" onclick="copyText('viz1')">📋 복사</button>
+    <div class="code-block" id="viz1">import matplotlib.pyplot as plt
+import numpy as np
+
+# x 값 준비 (-10부터 10까지)
+x = np.linspace(-10, 10, 100)
+
+# y = x^2 (이차함수)
+y = x ** 2
+
+plt.figure(figsize=(8, 5))
+plt.plot(x, y, label="y = x²", color="blue", linewidth=2)
+plt.title("이차함수 그래프")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.legend()
+plt.grid(True)
+plt.show()</div>
+
+    <h3>막대 그래프 (비교하기)</h3>
+    <button class="copy-btn" onclick="copyText('viz2')">📋 복사</button>
+    <div class="code-block" id="viz2">import matplotlib.pyplot as plt
+
+# 과목별 점수
+subjects = ["국어", "영어", "수학", "과학", "사회"]
+scores = [85, 92, 78, 88, 95]
+
+plt.figure(figsize=(8, 5))
+plt.bar(subjects, scores, color=["#ff9999", "#66b3ff", "#99ff99", "#ffcc99", "#c2c2f0"])
+plt.title("과목별 점수")
+plt.ylabel("점수")
+plt.ylim(0, 100)
+plt.show()</div>
+
+    <h3>수학 연결: sin 곡선 그리기</h3>
+    <button class="copy-btn" onclick="copyText('viz3')">📋 복사</button>
+    <div class="code-block" id="viz3">import matplotlib.pyplot as plt
+import numpy as np
+
+# 0부터 2π까지
+x = np.linspace(0, 2 * np.pi, 100)
+y_sin = np.sin(x)
+y_cos = np.cos(x)
+
+plt.figure(figsize=(10, 5))
+plt.plot(x, y_sin, label="sin(x)", color="red")
+plt.plot(x, y_cos, label="cos(x)", color="blue", linestyle="--")
+plt.title("삼각함수 그래프")
+plt.xlabel("x (라디안)")
+plt.ylabel("y")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# 💡 생각할 거리: sin과 cos 그래프는 어떤 관계인가요?</div>
+  </div>
+
+  <div class="nav">
+    <a class="nav-prev" href="day3.html">← 3일차</a>
+    <a class="nav-next" href="day5.html">5일차 →</a>
+  </div>
+
+  <div class="card">
+    <h2>📝 과제</h2>
+    <p>오늘 배운 <strong>파일·모듈</strong>을 활용해 아래 과제를 풀어보세요!</p>
+
+    <div class="step">
+      <h3>📊 과제 1 (알고리즘): 단어 빈도 분석기</h3>
+      <p>텍스트 파일에서 <strong>가장 많이 나온 단어 TOP 5</strong>를 찾는 코드를 작성하세요.</p>
+      <p>💡 힌트: 파일을 읽고 → <code>split()</code>으로 단어 분리 → <strong>딕셔너리</strong>에 단어별 개수 세기 → 개수로 정렬!</p>
+      <p>❓ 좋아하는 노래 가사나 시를 텍스트 파일로 만들어 분석해보세요. 어떤 단어가 가장 많이 나올까요?</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('hw1')">📋 스타터 코드 복사</button>
+    <div class="code-block" id="hw1"># 과제 1: 단어 빈도 분석기 (스타터 코드)
+# 텍스트 파일에서 가장 많이 나온 단어 TOP 5 찾기!
+
+# 1단계: 분석할 텍스트 파일 만들기
+with open("분석할글.txt", "w", encoding="utf-8") as f:
+    f.write("파이썬은 재미있다 파이썬은 쉽다 코딩은 재미있다")
+
+# 2단계: 파일 읽고 단어별 개수 세기
+단어개수 = {}  # 딕셔너리: {단어: 개수}
+
+with open("분석할글.txt", "r", encoding="utf-8") as f:
+    내용 = f.read()
+
+# TODO: 내용.split()으로 단어를 분리하고,
+#       for문으로 딕셔너리에 개수를 세어보세요!
+# 힌트: 단어가 딕셔너리에 있으면 +1, 없으면 1로 시작!
+
+# 3단계: 가장 많이 나온 단어 TOP 5 출력
+# TODO: sorted()와 lambda를 활용하거나,
+#       딕셔너리.items()를 리스트로 바꿔 정렬해보세요!</div>
+
+    <div class="step">
+      <h3>🥧 과제 2 (수학): 몬테카를로 π 계산</h3>
+      <p><strong>random</strong>으로 점을 무작위로 찍어 원주율 π를 추정해보세요!</p>
+      <p>💡 원리: 한 변의 길이가 2인 정사각형 안에 반지름 1인 원을 그리면, <strong>(원 안에 들어간 점 / 전체 점) ≈ π/4</strong>가 돼요. 점을 많이 찍을수록 π에 가까워져요!</p>
+      <p>❓ 점이 원 안에 들어가는 조건은? (힌트: 중심에서의 거리 <code>x² + y² ≤ 1</code>!)</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('hw2')">📋 코드 복사 (실행해보기)</button>
+    <div class="code-block" id="hw2"># 과제 2: 몬테카를로 방법으로 원주율 π 구하기
+# 원리: 정사각형에 점을 무작위로 찍으면
+#       (원 안의 점 / 전체 점) ≈ 원의 넓이 / 정사각형 넓이 = π/4
+
+import random
+
+전체점 = 10000
+원안의점 = 0
+
+for i in range(전체점):
+    x = random.uniform(-1, 1)  # -1부터 1까지 무작위
+    y = random.uniform(-1, 1)
+
+    # TODO: 점(x, y)가 원 안에 있는지 판별하세요!
+    # 힌트: x² + y² <= 1 이면 원 안!
+    # if ???:
+    #     원안의점 += 1
+
+추정파이 = 4 * 원안의점 / 전체점
+print(f"추정한 π: {추정파이}")
+print(f"실제 π: 3.14159265...")
+print(f"오차: {abs(추정파이 - 3.14159265):.6f}")
+
+# ❓ 전체점을 100개 → 10000개 → 100000개로 바꿔보세요!
+#    어떻게 달라지나요?</div>
+
+    <div class="step">
+      <h3>🤔 생각할 거리</h3>
+      <p><strong>"점을 100개 찍을 때와 10000개 찍을 때, 정확도는 어떻게 달라질까?"</strong></p>
+      <p>위 코드를 점 개수만 바꿔 여러 번 실행해보세요. 실행할 때마다 결과가 조금씩 다른 이유는 뭘까요?</p>
+      <p>💡 힌트: 무작위라서 매번 결과가 달라져요. 하지만 점을 <strong>많이 찍을수록</strong> 오차가 줄어드는 경향이 있어요. 이게 바로 <strong>확률과 통계</strong>의 힘이에요!</p>
+    </div>
+
+    <div class="notice">📤 <strong>제출:</strong> 완성한 코드를 <code>학번_이름_과제4.py</code> 파일로 저장해서 제출하세요. (몬테카를로 실행 결과 화면 캡처도 함께 제출하면 👍)</div>
+  </div>
+
+  <footer>🐍 Python 기초 5일차 — 4일차: 파일과 모듈</footer>
+</div>
+
+<script>
+function copyText(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => alert("📋 코드가 복사되었습니다!"));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐍 1일차: Python 첫걸음 — python_basic</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: '맑은 고딕', sans-serif; background: #f0f4f8; color: #333; line-height: 1.7; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+  header { background: linear-gradient(135deg, #1a5276, #2e86c1); color: white; padding: 40px 20px; text-align: center; border-radius: 14px; margin-bottom: 25px; }
+  header h1 { font-size: 28px; margin-bottom: 10px; }
+  header p { font-size: 15px; opacity: 0.92; }
+  .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .card h2 { color: #1a5276; font-size: 19px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 3px solid #2e86c1; }
+  .card h3 { color: #2c3e50; font-size: 16px; margin: 14px 0 8px; }
+  .card p, .card li { font-size: 14px; }
+  .card ol, .card ul { padding-left: 22px; margin: 8px 0; }
+  .card li { margin-bottom: 6px; }
+  .notice { background: #fef9e7; border-left: 5px solid #f39c12; padding: 14px 18px; border-radius: 8px; margin: 14px 0; font-size: 14px; }
+  .step { background: #f8f9fa; border-radius: 8px; padding: 16px 20px; margin: 12px 0; border-left: 5px solid #2e86c1; }
+  .step h3 { margin-top: 0; color: #1a5276; }
+  .code-block { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; font-family: 'Consolas', 'D2Coding', monospace; font-size: 12.5px; overflow-x: auto; margin: 10px 0; white-space: pre; line-height: 1.5; }
+  .copy-btn { background: #34495e; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-bottom: 6px; }
+  .copy-btn:hover { background: #2c3e50; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+  th { background: #2e86c1; color: white; }
+  tr:nth-child(even) { background: #f9f9f9; }
+  .link-btn { display: inline-block; padding: 12px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; margin: 6px 6px 6px 0; font-size: 14px; }
+  .link-btn:hover { opacity: 0.88; }
+  .btn-green { background: #27ae60; color: white; }
+  .btn-blue { background: #2e86c1; color: white; }
+  .btn-gray { background: #7f8c8d; color: white; }
+  .quiz { background: #eaf2f8; border-radius: 8px; padding: 16px 20px; margin: 12px 0; }
+  .quiz h3 { color: #1a5276; margin-top: 0; }
+  .quiz .hint { font-size: 12px; color: #666; margin-top: 6px; }
+  footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
+  @media (max-width: 600px) { header h1 { font-size: 22px; } .card { padding: 16px; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🐍 1일차: Python 첫걸음</h1>
+    <p>변수, 자료형, 입출력 — 2시간 × 1회</p>
+  </header>
+
+  <div class="card">
+    <h2>🗺️ 수업 흐름 (120분)</h2>
+    <table>
+      <tr><th>순서</th><th>내용</th><th>시간</th></tr>
+      <tr><td>1</td><td>오리엔테이션 &amp; 실행 환경 소개</td><td>10분</td></tr>
+      <tr><td>2</td><td>변수란? (상자에 이름표 붙이기)</td><td>20분</td></tr>
+      <tr><td>3</td><td>자료형: int, float, str, bool</td><td>20분</td></tr>
+      <tr><td>4</td><td>print() 출력, input() 입력</td><td>20분</td></tr>
+      <tr><td>5</td><td>연산자와 f-string</td><td>20분</td></tr>
+      <tr><td>6</td><td>실습: 자기소개 프로그램 만들기</td><td>20분</td></tr>
+      <tr><td>7</td><td>연습문제 &amp; 정리</td><td>10분</td></tr>
+    </table>
+    <div class="notice">
+      <strong>💡 실행 방법:</strong> 아래 코드를 <strong>📋 복사</strong> 버튼으로 복사해서
+      <strong>Python 백업 실행기</strong>에 붙여넣고 실행하세요!
+    </div>
+    <p>
+      <a class="link-btn btn-green" href="../python_backup.html" target="_blank">🐍 Python 백업 실행기 열기</a>
+      <a class="link-btn btn-gray" href="index.html">← 과정 목차로</a>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>📚 핵심 개념</h2>
+
+    <div class="step">
+      <h3>1️⃣ 변수란? — 상자에 이름표 붙이기</h3>
+      <p>변수는 <strong>값을 담는 상자</strong>예요. 상자에 이름표를 붙여두면 나중에 이름만 불러서 값을 꺼낼 수 있어요.</p>
+      <p><code>이름 = "김파이"</code> 라고 쓰면, "김파이"라는 값을 담은 상자에 "이름"이라는 이름표를 붙인 거예요.</p>
+    </div>
+
+    <div class="step">
+      <h3>2️⃣ 자료형 — 상자 안에 뭐가 들었을까?</h3>
+      <p>파이썬의 기본 자료형 4가지를 알아두세요.</p>
+      <ul>
+        <li><strong>int</strong> (정수): 17, -3, 0 — 소수점 없는 숫자</li>
+        <li><strong>float</strong> (실수): 3.14, 165.5 — 소수점 있는 숫자</li>
+        <li><strong>str</strong> (문자열): "안녕", '파이썬' — 따옴표로 감싼 글자</li>
+        <li><strong>bool</strong> (불리언): True, False — 참/거짓 (첫 글자 대문자!)</li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <h3>3️⃣ print() — 화면에 보여주기</h3>
+      <p><code>print()</code>는 괄호 안의 내용을 화면에 출력해요. 쉼표로 여러 개를 한 번에 출력할 수 있어요.</p>
+    </div>
+
+    <div class="step">
+      <h3>4️⃣ input() — 사용자에게 물어보기</h3>
+      <p><code>input()</code>은 키보드로 입력받은 값을 돌려줘요. <strong>⚠️ 주의: input()으로 받은 값은 무조건 문자열(str)이에요!</strong> 숫자로 계산하려면 <code>int()</code>로 바꿔줘야 해요.</p>
+    </div>
+
+    <div class="step">
+      <h3>5️⃣ 연산자 — 계산기 놀이</h3>
+      <p><code>+</code> <code>-</code> <code>*</code> <code>/</code> 외에 파이썬만의 특별한 연산자가 있어요.</p>
+      <ul>
+        <li><code>//</code> : 몫만 (소수점 버림) → 7 // 3 = 2</li>
+        <li><code>%</code> : 나머지만 → 7 % 3 = 1</li>
+        <li><code>**</code> : 거듭제곱 → 2 ** 3 = 8</li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <h3>6️⃣ f-string — 문자열 속에 변수 넣기</h3>
+      <p>문자열 앞에 <code>f</code>를 붙이고, 변수 자리에 <code>{중괄호}</code>를 쓰면 값이 쏙 들어가요. 가장 편한 방법이에요!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💻 따라 치기 코드</h2>
+
+    <h3>① 변수 만들기</h3>
+    <button class="copy-btn" onclick="copyText('d1_code1')">📋 복사</button>
+    <div class="code-block" id="d1_code1"># 1. 변수란? 상자에 이름표를 붙이는 것!
+
+# 상자(이름표 = 값) 만들기
+이름 = "김파이"      # 문자열 상자
+나이 = 17           # 정수 상자
+키 = 165.5         # 실수 상자
+학생인가요 = True   # 불리언 상자 (참/거짓)
+
+# 상자 안을 들여다보기
+print(이름)
+print(나이)
+print(키)
+print(학생인가요)</div>
+
+    <h3>② 자료형 확인하기</h3>
+    <button class="copy-btn" onclick="copyText('d1_code2')">📋 복사</button>
+    <div class="code-block" id="d1_code2"># 2. 자료형 알아보기 - type()으로 확인!
+print(type(17))        # 정수 int
+print(type(3.14))      # 실수 float
+print(type("안녕"))    # 문자열 str
+print(type(True))      # 불리언 bool
+
+# 변수에 담긴 값의 자료형도 확인할 수 있어요
+나이 = 17
+print(type(나이))      # 정수 int</div>
+
+    <h3>③ print()로 출력하기</h3>
+    <button class="copy-btn" onclick="copyText('d1_code3')">📋 복사</button>
+    <div class="code-block" id="d1_code3"># 3. print()로 출력하기
+print("안녕하세요!")          # 그냥 출력
+
+# 쉼표로 여러 개 출력 (자동으로 띄어쓰기가 들어가요)
+print("나는", 17, "살이야")
+
+# 문자열끼리 더하기 (붙여쓰기)
+이름 = "김파이"
+print("내 이름은 " + 이름 + "야")</div>
+
+    <h3>④ input()으로 입력받기</h3>
+    <button class="copy-btn" onclick="copyText('d1_code4')">📋 복사</button>
+    <div class="code-block" id="d1_code4"># 4. input()으로 입력받기
+# ⚠️ input()으로 받은 값은 무조건 문자열(str)이에요!
+
+이름 = input("이름을 입력하세요: ")
+print("반가워요,", 이름, "님!")
+
+# 숫자로 계산하려면 int()로 바꿔줘야 해요
+나이 = input("나이를 입력하세요: ")
+나이 = int(나이)  # 문자열 → 정수로 변환
+print("내년 나이는", 나이 + 1, "살이네요!")</div>
+
+    <h3>⑤ 연산자</h3>
+    <button class="copy-btn" onclick="copyText('d1_code5')">📋 복사</button>
+    <div class="code-block" id="d1_code5"># 5. 연산자 - 계산기 놀이!
+print(7 + 3)    # 10  더하기
+print(7 - 3)    # 4   빼기
+print(7 * 3)    # 21  곱하기
+print(7 / 3)    # 2.333... 나누기 (소수점까지)
+print(7 // 3)   # 2   몫만 (소수점 버림)
+print(7 % 3)    # 1   나머지만
+print(2 ** 3)   # 8   거듭제곱 (2의 3제곱)
+
+# 변수에 담아서 계산해도 돼요
+가격 = 1500
+개수 = 3
+합계 = 가격 * 개수
+print("합계:", 합계)</div>
+
+    <h3>⑥ f-string</h3>
+    <button class="copy-btn" onclick="copyText('d1_code6')">📋 복사</button>
+    <div class="code-block" id="d1_code6"># 6. f-string - 문자열 속에 변수 넣기 (제일 편한 방법!)
+이름 = "김파이"
+나이 = 17
+
+# f를 앞에 붙이고, 변수 자리에 {중괄호}!
+print(f"내 이름은 {이름}이고, 나이는 {나이}살이야.")
+
+# 계산식도 바로 넣을 수 있어요!
+print(f"내년 나이는 {나이 + 1}살이야.")
+
+# 소수점 자릿수도 조절할 수 있어요
+평균 = 87.66666
+print(f"평균 점수는 {평균:.1f}점이야.")  # 소수점 첫째 자리까지</div>
+  </div>
+
+  <div class="card">
+    <h2>🛠️ 실습: 자기소개 프로그램 만들기</h2>
+    <p>배운 것을 총동원해서 나를 소개하는 프로그램을 만들어보세요!</p>
+    <button class="copy-btn" onclick="copyText('d1_code7')">📋 복사</button>
+    <div class="code-block" id="d1_code7"># 🎤 자기소개 프로그램 만들기
+print("=" * 30)
+print("   🌟 자기소개 프로그램 🌟")
+print("=" * 30)
+
+# 1. 사용자에게 정보 입력받기
+이름 = input("이름이 뭐예요? ")
+나이 = input("몇 살이에요? ")
+취미 = input("취미가 뭐예요? ")
+
+# 2. f-string으로 멋지게 소개하기
+print()
+print("-" * 30)
+print(f"안녕하세요! 저는 {이름}입니다.")
+print(f"나이는 {나이}살이고, 취미는 {취미}예요.")
+print(f"내년에는 {int(나이) + 1}살이 됩니다!")
+print("-" * 30)
+print("만나서 반가워요! 😊")</div>
+  </div>
+
+  <div class="card">
+    <h2>✏️ 연습문제</h2>
+
+    <div class="quiz">
+      <h3>문제 1. 🧮 직사각형 넓이 구하기</h3>
+      <p>가로와 세로를 입력받아 직사각형의 넓이를 출력하세요.</p>
+      <p class="hint">💡 힌트: 넓이 = 가로 × 세로. input()으로 받은 값은 int()로 바꿔야 해요!</p>
+    </div>
+
+    <div class="quiz">
+      <h3>문제 2. 🎂 나이 계산기</h3>
+      <p>태어난 연도를 입력받아 올해(2026년) 나이를 출력하세요.</p>
+      <p class="hint">💡 힌트: 나이 = 2026 - 태어난 연도</p>
+    </div>
+
+    <div class="quiz">
+      <h3>문제 3. 🗣️ f-string 자기소개</h3>
+      <p>이름, 학교, 좋아하는 과목을 입력받아 f-string으로 한 문장으로 출력하세요.</p>
+      <p class="hint">💡 힌트: print(f"저는 {학교}에 다니는 {이름}입니다. {과목}을 좋아해요.")</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔗 다음 단계</h2>
+    <p>
+      <a class="link-btn btn-blue" href="day2.html">2일차: 조건문과 반복문 →</a>
+      <a class="link-btn btn-gray" href="index.html">← 과정 목차로</a>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>📝 과제</h2>
+    <p>오늘 배운 <strong>변수·자료형·입출력</strong>을 활용해 아래 과제를 풀어보세요!</p>
+
+    <div class="step">
+      <h3>🧮 과제 1 (알고리즘): 자판기 거스름돈 계산기</h3>
+      <p>1000원을 넣고 650원짜리 음료수를 샀을 때, 거스름돈 350원을 <strong>500원 / 100원 / 50원 / 10원</strong> 동전으로 <strong>가장 적은 개수</strong>로 거슬러주는 코드를 작성하세요.</p>
+      <p>💡 힌트: 큰 동전부터 차례로 나눠보세요. <code>//</code>(몫)과 <code>%</code>(나머지)를 활용하면 쉬워요!</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('hw1')">📋 스타터 코드 복사</button>
+    <div class="code-block" id="hw1"># 과제 1: 자판기 거스름돈 계산기 (스타터 코드)
+# 1000원을 넣고 650원짜리 음료수를 샀어요!
+
+넣은돈 = 1000      # 손님이 넣은 돈
+음료수값 = 650     # 음료수 가격
+
+거스름돈 = 넣은돈 - 음료수값
+print(f"거스름돈: {거스름돈}원")
+
+# TODO: 500원, 100원, 50원, 10원 동전으로
+#       가장 적은 개수로 거슬러주는 코드를 완성하세요!
+# 힌트: // (몫)과 % (나머지)를 사용하세요.
+
+# 예) 500원짜리 개수 = 거스름돈 // 500
+#     남은 돈 = 거스름돈 % 500
+#     ... 100원, 50원, 10원도 같은 방법으로!</div>
+
+    <div class="step">
+      <h3>🌡️ 과제 2 (수학): 섭씨 ↔ 화씨 변환기</h3>
+      <p>온도 변환 공식 <strong>F = C × 9/5 + 32</strong>를 코드로 만드세요.</p>
+      <p>❓ <strong>36.5°C는 몇 °F일까요?</strong> 코드를 실행해서 확인해보세요!</p>
+      <p>💡 보너스: 화씨를 섭씨로 바꾸는 공식도 만들어보세요. (힌트: 위 식을 C에 대해 풀어보세요!)</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('hw2')">📋 스타터 코드 복사</button>
+    <div class="code-block" id="hw2"># 과제 2: 섭씨 ↔ 화씨 변환기 (스타터 코드)
+# 공식: 화씨 = 섭씨 × 9/5 + 32
+
+섭씨 = float(input("섭씨 온도를 입력하세요: "))
+
+# TODO: 위 공식을 코드로 작성하세요!
+# 화씨 = ???
+
+print(f"{섭씨}°C는 {화씨}°F입니다.")
+
+# ❓ 36.5°C를 입력하면 몇 °F가 나올까요?</div>
+
+    <div class="step">
+      <h3>🤔 생각할 거리</h3>
+      <p><strong>"왜 컴퓨터는 0.1 + 0.2를 0.30000000000000004라고 할까?"</strong></p>
+      <p>백업 실행기에 <code>print(0.1 + 0.2)</code>를 입력해보세요. 정말 0.30000000000000004가 나오나요?</p>
+      <p>💡 힌트: 컴퓨터는 숫자를 <strong>2진수</strong>로 저장해요. 0.1을 2진수로 정확히 표현할 수 있을까요? (10진수에서 1/3 = 0.333...처럼 무한히 이어지는 것과 비슷해요!)</p>
+    </div>
+
+    <div class="notice">📤 <strong>제출:</strong> 완성한 코드를 <code>학번_이름_과제1.py</code> 파일로 저장해서 제출하세요. (과제 1, 2 중 하나만 해도 OK!)</div>
+  </div>
+
+  <footer>배화여자고등학교 — Python 기초 과정 python_basic · 1일차</footer>
+</div>
+
+<script>
+function copyText(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => alert("📋 코드가 복사되었습니다!"));
+}
+</script>
+</body>
+</html>

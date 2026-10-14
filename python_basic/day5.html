@@ -366,6 +366,96 @@ while True:
     <div class="notice"><strong>🚀 다음 단계:</strong> 오늘 만든 프로그램을 친구에게 보여주고, 새로운 기능을 추가해보세요. 프로그래밍은 <strong>만들면서</strong> 느는 거예요!</div>
   </div>
 
+  <div class="card">
+    <h2>📝 과제</h2>
+    <p>오늘 만든 <strong>미니 프로젝트를 더 발전</strong>시켜보세요! 배운 것을 응용하는 과제예요.</p>
+
+    <div class="step">
+      <h3>🎚️ 과제 1 (알고리즘): "난이도 조절" 기능 추가하기</h3>
+      <p>내 프로젝트에 <strong>난이도 선택</strong> 기능을 추가하세요.</p>
+      <ul>
+        <li><strong>단어 퀴즈:</strong> 쉬움(짧은 단어) / 보통 / 어려움(긴 단어) — 단어 길이나 문제 수로 조절</li>
+        <li><strong>챗봇:</strong> 쉬움(힌트 제공) / 어려움(힌트 없음)</li>
+        <li><strong>숫자 야구:</strong> 쉬움(3자리) / 어려움(4자리) — 자리수로 조절</li>
+      </ul>
+      <p>💡 힌트: 게임 시작 전에 <code>input()</code>으로 난이도를 입력받고, <code>if</code>문으로 설정을 다르게 하세요!</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('hw1')">📋 스타터 코드 복사</button>
+    <div class="code-block" id="hw1"># 과제 1: 난이도 조절 기능 (스타터 코드)
+# 내 프로젝트에 이 코드를 응용해보세요!
+
+print("=== 난이도 선택 ===")
+print("1. 쉬움 😊")
+print("2. 보통 🙂")
+print("3. 어려움 😈")
+난이도 = input("선택 (1/2/3): ")
+
+# TODO: if문으로 난이도별 설정을 다르게 하세요!
+# 예시 (숫자 맞추기 게임):
+# if 난이도 == "1":
+#     최대숫자 = 50    # 1~50 중에서
+#     기회 = 10       # 기회 10번
+# elif 난이도 == "2":
+#     최대숫자 = 100
+#     기회 = 7
+# else:
+#     최대숫자 = 200
+#     기회 = 5
+
+print(f"선택한 난이도: {난이도}")
+# TODO: 위 설정을 내 게임에 적용하세요!</div>
+
+    <div class="step">
+      <h3>📈 과제 2 (수학): "통계 보기" 기능 추가하기</h3>
+      <p>내 프로젝트에 <strong>게임 통계</strong>를 보여주는 기능을 추가하세요.</p>
+      <ul>
+        <li><strong>평균 점수:</strong> 지금까지의 점수들을 리스트에 저장하고 평균 계산</li>
+        <li><strong>최고 점수:</strong> <code>max()</code>로 최고 기록 찾기</li>
+        <li><strong>플레이 횟수:</strong> <code>len()</code>으로 몇 판 했는지 세기</li>
+      </ul>
+      <p>💡 힌트: 3일차에 배운 <strong>리스트</strong>를 활용! 점수를 리스트에 차곡차곡 쌓아두세요.</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('hw2')">📋 스타터 코드 복사</button>
+    <div class="code-block" id="hw2"># 과제 2: 통계 보기 기능 (스타터 코드)
+# 내 프로젝트에 이 코드를 응용해보세요!
+
+점수기록 = []  # 지금까지의 점수를 저장하는 리스트
+
+# 게임이 끝날 때마다 점수를 추가 (예시)
+# 점수기록.append(이번점수)
+
+# TODO: 아래 통계 코드를 내 프로젝트에 넣어보세요!
+
+def 통계보기():
+    if len(점수기록) == 0:
+        print("아직 기록이 없어요!")
+        return
+    print("=== 📈 게임 통계 ===")
+    print(f"플레이 횟수: {len(점수기록)}번")
+    print(f"평균 점수: {sum(점수기록) / len(점수기록):.1f}점")
+    print(f"최고 점수: {max(점수기록)}점")
+    print(f"최저 점수: {min(점수기록)}점")
+
+# 테스트용 (실제로는 게임 점수가 들어감)
+점수기록 = [80, 95, 70, 100, 85]
+통계보기()</div>
+
+    <div class="step">
+      <h3>🤔 생각할 거리</h3>
+      <p><strong>"내 프로젝트를 더 재미있게 만들려면 어떤 수학/알고리즘을 쓸 수 있을까?"</strong></p>
+      <p>아이디어 예시:</p>
+      <ul>
+        <li>🎲 <strong>확률:</strong> 랜덤 이벤트나 크리티컬 확률 추가하기</li>
+        <li>⏱️ <strong>시간:</strong> 제한 시간 안에 풀기 (datetime 모듈 활용)</li>
+        <li>🏆 <strong>랭킹:</strong> 점수를 파일에 저장해서 친구와 겨루기 (4일차 파일 활용!)</li>
+        <li>🔀 <strong>정렬:</strong> 랭킹을 점수 순으로 정렬하기 (3일차 버블 정렬 활용!)</li>
+      </ul>
+      <p>5일 동안 배운 것을 <strong>모두 연결</strong>하면 더 멋진 프로그램이 돼요!</p>
+    </div>
+
+    <div class="notice">📤 <strong>제출:</strong> 발전시킨 프로젝트 코드를 <code>학번_이름_과제5.py</code> 파일로 저장해서 제출하세요. <strong>추가한 기능이 뭔지</strong> 코드 맨 위 주석에 적어주세요! (예: # 추가 기능: 난이도 조절, 통계 보기)</div>
+  </div>
+
   <footer>배화여자고등학교 — Python 기초 과정 python_basic (5일차)</footer>
 </div>
 

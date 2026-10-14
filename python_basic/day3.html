@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐍 Python 기초 3일차 — 자료구조와 함수</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: '맑은 고딕', sans-serif; background: #f0f4f8; color: #333; line-height: 1.7; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+  header { background: linear-gradient(135deg, #1a5276, #2e86c1); color: white; padding: 35px 20px; text-align: center; border-radius: 14px; margin-bottom: 25px; }
+  header h1 { font-size: 26px; margin-bottom: 10px; }
+  header p { font-size: 15px; opacity: 0.92; }
+  .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .card h2 { color: #1a5276; font-size: 19px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 3px solid #2e86c1; }
+  .card h3 { color: #2c3e50; font-size: 16px; margin: 16px 0 8px; }
+  .card p, .card li { font-size: 14px; }
+  .card ol, .card ul { padding-left: 22px; margin: 8px 0; }
+  .card li { margin-bottom: 6px; }
+  .step { background: #f8f9fa; border-radius: 8px; padding: 16px 20px; margin: 12px 0; border-left: 5px solid #2e86c1; }
+  .step h3 { margin-top: 0; color: #1a5276; }
+  .code-block { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; font-family: 'Consolas', 'D2Coding', monospace; font-size: 13px; overflow-x: auto; margin: 10px 0; white-space: pre; line-height: 1.6; }
+  .copy-btn { background: #34495e; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-bottom: 6px; }
+  .copy-btn:hover { background: #2c3e50; }
+  .notice { background: #fef9e7; border-left: 5px solid #f39c12; padding: 14px 18px; border-radius: 8px; margin: 14px 0; font-size: 14px; }
+  .practice { background: #eaf2f8; border-radius: 8px; padding: 16px 20px; margin: 12px 0; }
+  .practice h3 { color: #1a5276; margin-top: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+  th { background: #2e86c1; color: white; }
+  tr:nth-child(even) { background: #f9f9f9; }
+  .nav { text-align: center; margin: 20px 0; }
+  .nav a { display: inline-block; padding: 10px 22px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; margin: 0 6px; }
+  .nav-prev { background: #7f8c8d; color: white; }
+  .nav-next { background: #2e86c1; color: white; }
+  footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
+  @media (max-width: 600px) { header h1 { font-size: 20px; } .card { padding: 16px; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🐍 Python 기초 3일차</h1>
+    <p>자료구조와 함수 — 여러 데이터를 담고, 코드를 재사용해요</p>
+  </header>
+
+  <div class="notice">
+    <strong>💡 실습 방법:</strong> 아래 코드는 <strong>📋 복사</strong> 버튼으로 복사해서
+    <a href="../python_backup.html" target="_blank">🐍 Python 백업 실행기</a>에 붙여넣고 실행하세요.
+  </div>
+
+  <div class="card">
+    <h2>🗺️ 수업 흐름 (2시간)</h2>
+    <table>
+      <tr><th>시간</th><th>내용</th><th>분량</th></tr>
+      <tr><td>0:00–0:30</td><td>리스트: 생성·인덱싱·슬라이싱·append</td><td>개념 + 실습</td></tr>
+      <tr><td>0:30–0:55</td><td>튜플·딕셔너리·집합</td><td>개념 + 실습</td></tr>
+      <tr><td>0:55–1:25</td><td>함수: def·return·매개변수</td><td>개념 + 실습</td></tr>
+      <tr><td>1:25–1:55</td><td>종합 실습: 성적 관리 프로그램</td><td>코딩 실습</td></tr>
+      <tr><td>1:55–2:00</td><td>연습 문제 풀이·정리</td><td>정리</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>📦 1. 리스트 — 여러 개를 한 줄에 담기</h2>
+    <div class="step">
+      <h3>리스트란?</h3>
+      <p>장바구니에 여러 물건을 담듯이, <strong>여러 데이터를 순서대로 담는 바구니</strong>입니다. 대괄호 <code>[ ]</code>를 씁니다.</p>
+      <p>인덱스(번호)는 <strong>0부터 시작</strong>합니다! (첫 번째가 0번)</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('c31')">📋 복사</button>
+    <div class="code-block" id="c31"># 리스트 만들기 (대괄호 사용!)
+fruits = ["사과", "바나나", "딸기"]
+print(fruits)          # 전체 출력
+
+# 인덱싱: 번호로 하나씩 꺼내기 (0부터 시작!)
+print(fruits[0])       # 사과 (첫 번째)
+print(fruits[2])       # 딸기 (세 번째)
+print(fruits[-1])      # 딸기 (뒤에서 첫 번째!)
+
+# 슬라이싱: 구간으로 잘라내기 [시작:끝] (끝은 제외!)
+print(fruits[0:2])     # 사과, 바나나
+
+# append: 맨 뒤에 추가하기
+fruits.append("포도")
+print(fruits)          # 사과, 바나나, 딸기, 포도
+
+# len: 개수 세기
+print(len(fruits))     # 4개</div>
+
+    <div class="step">
+      <h3>튜플 — 못 바꾸는 리스트</h3>
+      <p>소괄호 <code>( )</code>를 씁니다. 한 번 만들면 <strong>바꿀 수 없습니다.</strong> (좌표처럼 고정된 값에 사용)</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('c32')">📋 복사</button>
+    <div class="code-block" id="c32"># 튜플 만들기 (소괄호 사용!)
+point = (3, 5)         # x=3, y=5 좌표
+print(point[0])        # 3
+print(point[1])        # 5
+
+# 튜플은 바꿀 수 없어요! (아래 줄을 실행하면 오류!)
+# point[0] = 10        # ❌ TypeError 발생
+
+# 리스트는 바꿀 수 있어요
+nums = [1, 2, 3]
+nums[0] = 100
+print(nums)            # [100, 2, 3]</div>
+  </div>
+
+  <div class="card">
+    <h2>🗂️ 2. 딕셔너리 — 이름표가 붙은 서랍장</h2>
+    <div class="step">
+      <h3>딕셔너리란?</h3>
+      <p>리스트가 "0번, 1번" 번호로 찾는다면, 딕셔너리는 <strong>"이름"이라는 키(key)로 값(value)을 찾습니다.</strong></p>
+      <p>중괄호 <code>{ }</code>와 콜론 <code>:</code>을 씁니다. (키: 값)</p>
+      <p>비유: <strong>학생 성적표</strong> — "철수"라는 이름으로 성적을 찾죠!</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('c33')">📋 복사</button>
+    <div class="code-block" id="c33"># 딕셔너리 만들기 (중괄호 + 키: 값!)
+scores = {"철수": 90, "영희": 85, "민수": 78}
+print(scores)
+
+# 키로 값 꺼내기
+print(scores["철수"])    # 90
+print(scores["영희"])    # 85
+
+# 새로운 학생 추가하기
+scores["지훈"] = 95
+print(scores)
+
+# 값 바꾸기
+scores["민수"] = 80     # 민수 성적을 78 → 80으로 수정
+print(scores)
+
+# 키 목록, 값 목록 보기
+print(scores.keys())    # 모든 이름
+print(scores.values())  # 모든 점수</div>
+
+    <div class="step">
+      <h3>집합 — 중복 없는 주머니</h3>
+      <p>중괄호 <code>{ }</code>를 쓰지만 키 없이 값만 담고, <strong>중복을 허용하지 않습니다.</strong></p>
+    </div>
+    <button class="copy-btn" onclick="copyText('c34')">📋 복사</button>
+    <div class="code-block" id="c34"># 집합 만들기
+my_set = {1, 2, 3, 3, 2, 1}
+print(my_set)           # {1, 2, 3} → 중복 제거!
+
+# 추가하기
+my_set.add(4)
+print(my_set)           # {1, 2, 3, 4}
+
+# 합집합·교집합
+a = {1, 2, 3}
+b = {3, 4, 5}
+print(a | b)            # 합집합: {1, 2, 3, 4, 5}
+print(a & b)            # 교집합: {3}</div>
+  </div>
+
+  <div class="card">
+    <h2>⚙️ 3. 함수 — 자주 쓰는 코드를 이름 붙이기</h2>
+    <div class="step">
+      <h3>함수란?</h3>
+      <p>자주 쓰는 코드를 <strong>하나의 이름으로 묶어두는 것</strong>입니다. <code>def</code>로 만듭니다.</p>
+      <p>비유: <strong>자판기</strong> — 돈(입력)을 넣으면 음료수(출력)가 나옵니다!</p>
+      <ul>
+        <li><strong>매개변수</strong>: 자판기에 넣는 돈 (받는 쪽 이름)</li>
+        <li><strong>인자</strong>: 실제로 넣는 돈 (호출할 때 값)</li>
+        <li><strong>return</strong>: 자판기에서 나오는 음료수 (돌려주는 값)</li>
+      </ul>
+    </div>
+    <button class="copy-btn" onclick="copyText('c35')">📋 복사</button>
+    <div class="code-block" id="c35"># 함수 정의하기 (def 사용!)
+def 인사하기():
+    print("안녕하세요!")    # ← 들여쓰기 필수!
+
+# 함수 호출하기 (이름 + 괄호)
+인사하기()                # 안녕하세요!
+인사하기()                # 또 호출 가능!
+
+# 매개변수가 있는 함수
+def 인사하기_이름(name):   # name = 매개변수 (받는 쪽)
+    print(name + "님, 안녕하세요!")
+
+인사하기_이름("철수")      # "철수" = 인자 (주는 쪽)
+인사하기_이름("영희")
+
+# return: 결과를 돌려주는 함수
+def 더하기(a, b):
+    결과 = a + b
+    return 결과          # ← 이 값을 돌려줍니다!
+
+합 = 더하기(3, 5)          # 8이 돌아와서 합에 저장
+print(합)
+
+# return이 없으면? → None (없음)이 돌아와요
+def 그냥출력():
+    print("출력만!")
+
+x = 그냥출력()
+print(x)                   # None</div>
+  </div>
+
+  <div class="card">
+    <h2>🎯 종합 실습: 성적 관리 프로그램</h2>
+    <p>지금까지 배운 <strong>딕셔너리 + 함수</strong>를 합쳐서 성적 관리 프로그램을 만들어봅시다!</p>
+    <button class="copy-btn" onclick="copyText('c36')">📋 복사</button>
+    <div class="code-block" id="c36"># ===== 성적 관리 프로그램 =====
+# 딕셔너리: 학생 이름 → 점수 저장
+scores = {}
+
+# 학생 추가 함수
+def 학생추가(이름, 점수):
+    scores[이름] = 점수
+    print(이름 + " 학생 추가 완료! (점수: " + str(점수) + ")")
+
+# 평균 구하는 함수
+def 평균구하기():
+    if len(scores) == 0:       # 학생이 없으면
+        return 0
+    합계 = sum(scores.values())  # 모든 점수 더하기
+    return 합계 / len(scores)    # 평균 = 합계 ÷ 인원수
+
+# 최고 점수 학생 찾기 함수
+def 최고점수():
+    if len(scores) == 0:
+        return "학생이 없습니다"
+    최고이름 = max(scores, key=scores.get)  # 점수가 가장 높은 이름
+    return 최고이름 + " (" + str(scores[최고이름]) + "점)"
+
+# ===== 사용해보기 =====
+학생추가("철수", 90)
+학생추가("영희", 85)
+학생추가("민수", 78)
+학생추가("지훈", 95)
+
+print("\n📊 전체 성적:", scores)
+print("📊 평균:", 평균구하기())
+print("🏆 1등:", 최고점수())</div>
+  </div>
+
+  <div class="card">
+    <h2>✏️ 연습 문제</h2>
+    <div class="practice">
+      <h3>문제 1. 장바구니 (리스트)</h3>
+      <p>장바구니 리스트 <code>cart = ["우유", "빵"]</code>에 <code>"계란"</code>을 추가하고, 전체 개수와 첫 번째 상품을 출력하세요.</p>
+    </div>
+    <div class="practice">
+      <h3>문제 2. 전화번호부 (딕셔너리)</h3>
+      <p>전화번호부 딕셔너리를 만들어 친구 3명의 이름과 전화번호를 저장하고, 한 명의 번호를 출력하세요.</p>
+    </div>
+    <div class="practice">
+      <h3>문제 3. 할인 계산기 (함수)</h3>
+      <p>가격과 할인율(%)을 받아서 할인된 가격을 <code>return</code>하는 함수 <code>할인가격</code>을 만드세요. (예: 10000원, 20% → 8000원)</p>
+    </div>
+  </div>
+
+  <div class="nav">
+    <a class="nav-prev" href="day2.html">← 2일차</a>
+    <a class="nav-next" href="day4.html">4일차 →</a>
+  </div>
+
+  <div class="card">
+    <h2>📝 과제</h2>
+    <p>오늘 배운 <strong>리스트·딕셔너리·함수</strong>를 활용해 아래 과제를 풀어보세요!</p>
+
+    <div class="step">
+      <h3>🫧 과제 1 (알고리즘): 버블 정렬</h3>
+      <p><code>[5, 2, 8, 1, 9]</code>를 <strong>작은 순서대로</strong> 정렬하는 코드를 직접 구현하세요. (sort() 사용 금지!)</p>
+      <p>💡 힌트: <strong>옆의 두 수를 비교</strong>해서 순서가 뒤바뀌었으면 <strong>자리 바꾸기</strong>! 이걸 리스트 끝까지 반복하면 가장 큰 수가 맨 뒤로 "거품처럼" 올라가요.</p>
+      <p>❓ 왜 "버블(거품)" 정렬일까요? 코드를 실행하며 큰 숫자가 뒤로 이동하는 모습을 관찰해보세요!</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('hw1')">📋 스타터 코드 복사</button>
+    <div class="code-block" id="hw1"># 과제 1: 버블 정렬 (스타터 코드)
+# [5, 2, 8, 1, 9]를 작은 순서대로 정렬하기 (sort() 금지!)
+
+숫자들 = [5, 2, 8, 1, 9]
+print(f"정렬 전: {숫자들}")
+
+# TODO: 이중 for문을 사용해서 버블 정렬을 구현하세요!
+# 힌트 1: 바깥 for문은 전체를 몇 번 반복할지 (리스트 길이만큼)
+# 힌트 2: 안쪽 for문은 옆의 두 수를 비교 (숫자들[i]와 숫자들[i+1])
+# 힌트 3: 앞의 수가 더 크면 자리 바꾸기!
+#         숫자들[i], 숫자들[i+1] = 숫자들[i+1], 숫자들[i]
+
+print(f"정렬 후: {숫자들}")</div>
+
+    <div class="step">
+      <h3>📐 과제 2 (수학): 최대공약수 / 최소공배수 함수</h3>
+      <p><strong>유클리드 호제법</strong>으로 최대공약수(GCD)를 구하는 함수를 만드세요.</p>
+      <p>💡 유클리드 호제법: <strong>큰 수를 작은 수로 나눈 나머지</strong>를 구하고, 나머지가 0이 될 때까지 반복하면 마지막 나눈 수가 최대공약수!</p>
+      <p>❓ 12와 18의 최대공약수는? 최소공배수는? (힌트: 최소공배수 = 두 수의 곱 ÷ 최대공약수)</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('hw2')">📋 스타터 코드 복사</button>
+    <div class="code-block" id="hw2"># 과제 2: 최대공약수 / 최소공배수 (스타터 코드)
+# 유클리드 호제법: 큰 수를 작은 수로 나눈 나머지를 반복!
+
+def 최대공약수(a, b):
+    # TODO: 유클리드 호제법으로 구현하세요!
+    # 힌트: while b != 0:
+    #           a, b = b, a % b
+    #       나머지가 0이 되면 a가 최대공약수!
+    pass
+
+def 최소공배수(a, b):
+    # TODO: 최소공배수 = a × b ÷ 최대공약수
+    pass
+
+print(최대공약수(12, 18))  # 6이 나와야 해요!
+print(최소공배수(12, 18))  # 36이 나와야 해요!</div>
+
+    <div class="step">
+      <h3>🤔 생각할 거리</h3>
+      <p><strong>"리스트에서 값을 찾는 데 걸리는 시간은, 리스트가 2배가 되면 어떻게 될까?"</strong></p>
+      <p>💡 힌트: <code>for</code>문으로 리스트를 처음부터 끝까지 하나씩 확인한다면, 리스트가 2배로 길어지면 확인해야 할 것도 2배! 이렇게 입력이 커질 때 시간이 어떻게 늘어나는지를 생각하는 것이 <strong>알고리즘의 효율</strong>이에요.</p>
+      <p>❓ 그렇다면 정렬된 리스트에서는 더 빨리 찾을 수 있을까요? (다음에 배울 이진 탐색을 기대해주세요!)</p>
+    </div>
+
+    <div class="notice">📤 <strong>제출:</strong> 완성한 코드를 <code>학번_이름_과제3.py</code> 파일로 저장해서 제출하세요.</div>
+  </div>
+
+  <footer>🐍 Python 기초 5일차 — 3일차: 자료구조와 함수</footer>
+</div>
+
+<script>
+function copyText(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => alert("📋 코드가 복사되었습니다!"));
+}
+</script>
+</body>
+</html>

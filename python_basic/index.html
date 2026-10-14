@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐍 Python 기초 5일차 — python_basic</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: '맑은 고딕', sans-serif; background: #f0f4f8; color: #333; line-height: 1.7; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+  header { background: linear-gradient(135deg, #1a5276, #2e86c1); color: white; padding: 40px 20px; text-align: center; border-radius: 14px; margin-bottom: 25px; }
+  header h1 { font-size: 28px; margin-bottom: 10px; }
+  header p { font-size: 15px; opacity: 0.92; }
+  .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .card h2 { color: #1a5276; font-size: 19px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 3px solid #2e86c1; }
+  .day-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 16px; }
+  .day-card { background: #f8f9fa; border-radius: 10px; padding: 20px; border-left: 5px solid #2e86c1; transition: transform 0.2s; }
+  .day-card:hover { transform: translateY(-3px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  .day-card h3 { color: #1a5276; margin-bottom: 8px; font-size: 17px; }
+  .day-card p { font-size: 13px; color: #666; margin-bottom: 12px; }
+  .day-card a { display: inline-block; background: #2e86c1; color: white; padding: 8px 18px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: bold; }
+  .day-card a:hover { background: #1a5276; }
+  .notice { background: #fef9e7; border-left: 5px solid #f39c12; padding: 14px 18px; border-radius: 8px; margin: 14px 0; font-size: 14px; }
+  footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🐍 Python 기초 5일차</h1>
+    <p>2시간 × 5회 — 코랩 없이 브라우저만으로 배우는 파이썬</p>
+  </header>
+
+  <div class="card">
+    <h2>📖 과정 안내</h2>
+    <p>프로그래밍이 처음인 분을 위한 파이썬 기초 과정입니다. 각 일차는 2시간 분량이며, 모든 실습은 브라우저에서 바로 실행할 수 있습니다.</p>
+    <div class="notice">
+      <strong>💡 준비물:</strong> 브라우저만 있으면 됩니다! 코랩 계정 불필요.
+      코드는 <strong>Python 백업 실행기</strong>에 붙여넣어 실행하세요.
+    </div>
+    <p style="margin-top:12px;">
+      <a href="../python_backup.html" target="_blank" style="display:inline-block; background:#27ae60; color:white; padding:10px 22px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:14px;">🐍 Python 백업 실행기 열기</a>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🗓️ 5일차 커리큘럼</h2>
+    <div class="day-grid">
+      <div class="day-card">
+        <h3>1일차: 첫걸음 👣</h3>
+        <p>변수, 자료형, 입출력<br>print()와 input() 마스터</p>
+        <a href="day1.html">수업 보기 →</a>
+      </div>
+      <div class="day-card">
+        <h3>2일차: 조건과 반복 🔁</h3>
+        <p>if문, for문, while문<br>숫자 맞추기 게임 만들기</p>
+        <a href="day2.html">수업 보기 →</a>
+      </div>
+      <div class="day-card">
+        <h3>3일차: 자료구조와 함수 📦</h3>
+        <p>리스트, 딕셔너리, 함수<br>성적 관리 프로그램</p>
+        <a href="day3.html">수업 보기 →</a>
+      </div>
+      <div class="day-card">
+        <h3>4일차: 파일과 모듈 📁</h3>
+        <p>파일 읽기/쓰기, 모듈<br>가계부 프로그램 만들기</p>
+        <a href="day4.html">수업 보기 →</a>
+      </div>
+      <div class="day-card">
+        <h3>5일차: 미니 프로젝트 🚀</h3>
+        <p>종합 프로젝트<br>단어 퀴즈 게임 + 발표</p>
+        <a href="day5.html">수업 보기 →</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>배화여자고등학교 — Python 기초 과정 python_basic</footer>
+</div>
+</body>
+</html>
