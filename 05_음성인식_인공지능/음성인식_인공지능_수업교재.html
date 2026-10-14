@@ -32,7 +32,7 @@
       .mobile-label{font-size:12px !important;}
     }
   </style>
-</head>
+<style>.concept-tip{cursor:help;font-size:11px}.concept-desc{font-size:10px;color:#888;display:block;margin-top:2px;line-height:1.4}</style></head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
 
   <!-- ========================================== -->
@@ -405,7 +405,7 @@ ipd.Audio(sound_wave, rate=sampling_rate)</pre>
             <div class="space-y-2 text-xs">
               <div>
                 <div class="flex justify-between text-slate-600 mb-0.5">
-                  <span>1. RMS (소리 에너지 크기)</span>
+                  <span>1. RMS (소리 에너지 크기) <span class="concept-tip" title="Root Mean Square: 소리 파형의 평균 에너지. 클수록 큰 소리!">❓</span><br><span class="concept-desc">📖 파형의 제곱 평균 → 소리의 크기를 숫자로! 0=무음, 1=최대</span></span>
                   <span class="mono font-bold text-purple-600" id="valRMS">0.312</span>
                 </div>
                 <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
@@ -415,7 +415,7 @@ ipd.Audio(sound_wave, rate=sampling_rate)</pre>
 
               <div>
                 <div class="flex justify-between text-slate-600 mb-0.5">
-                  <span>2. ZCR (영교차율: 자음 거칠기)</span>
+                  <span>2. ZCR (영교차율: 자음 거칠기) <span class="concept-tip" title="Zero Crossing Rate: 파형이 0선을 crossing하는 횟수. 자음(ㅅ,ㅊ)은 거칠어서 ZCR이 높음!">❓</span><br><span class="concept-desc">📖 0선을 몇 번 넘나드는지 → ㅅ·ㅊ 같은 거친 소리 구분!</span></span>
                   <span class="mono font-bold text-purple-600" id="valZCR">0.145</span>
                 </div>
                 <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
@@ -425,7 +425,7 @@ ipd.Audio(sound_wave, rate=sampling_rate)</pre>
 
               <div>
                 <div class="flex justify-between text-slate-600 mb-0.5">
-                  <span>3. Low Band (0~300Hz 기본 주파수)</span>
+                  <span>3. Low Band (0~300Hz 기본 주파수) <span class="concept-tip" title="낮은 주파수 대역: 목소리의 기본 음높이(피치). 남성은 낮고, 여성/아이는 높음!">❓</span><br><span class="concept-desc">📖 목소리의 기본 음높이 → 누구의 목소리인지 구분!</span></span>
                   <span class="mono font-bold text-indigo-600" id="valLow">0.485</span>
                 </div>
                 <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
@@ -435,7 +435,7 @@ ipd.Audio(sound_wave, rate=sampling_rate)</pre>
 
               <div>
                 <div class="flex justify-between text-slate-600 mb-0.5">
-                  <span>4. Mid Band (300~3000Hz 모음 포만트)</span>
+                  <span>4. Mid Band (300~3000Hz 모음 포만트) <span class="concept-tip" title="중간 주파수 대역: 모음(ㅏ,ㅓ,ㅗ)의 특징이 담긴 곳. 포만트=입 모양에 따라 강조되는 주파수!">❓</span><br><span class="concept-desc">📖 모음의 지문 → ㅏ와 ㅗ를 구분하는 핵심 단서!</span></span>
                   <span class="mono font-bold text-emerald-600" id="valMid">0.720</span>
                 </div>
                 <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
@@ -445,7 +445,7 @@ ipd.Audio(sound_wave, rate=sampling_rate)</pre>
 
               <div>
                 <div class="flex justify-between text-slate-600 mb-0.5">
-                  <span>5. High Band (3000~8000Hz 마찰음)</span>
+                  <span>5. High Band (3000~8000Hz 마찰음) <span class="concept-tip" title="높은 주파수 대역: ㅅ,ㅆ,ㅊ 같은 마찰음(치찰음)이 주로 분포. 쉿! 하는 소리!">❓</span><br><span class="concept-desc">📖 쉿! 하는 마찰음 → ㅅ 계열 자음 잡아내기!</span></span>
                   <span class="mono font-bold text-amber-600" id="valHigh">0.340</span>
                 </div>
                 <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
