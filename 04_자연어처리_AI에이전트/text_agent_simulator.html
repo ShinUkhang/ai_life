@@ -797,6 +797,9 @@
     <div class="toss-tab-pill" id="tabNav4" onclick="switchTab('tab4')">
       <span>💬 4. 실시간 Q&A 대화 & 독서 탐구</span>
     </div>
+    <div class="toss-tab-pill" id="tabNav5" onclick="switchTab('tab5')">
+      <span>💻 5. 코드 직접 실행</span>
+    </div>
   </nav>
 
   <!-- 메인 바디 -->
@@ -1665,6 +1668,10 @@ print(f"\n최종 조립된 에이전트 프롬프트:\n{prompt}")
         document.getElementById('tabNav4').classList.add('active');
         document.getElementById('tabSection4').classList.add('active');
         document.getElementById('statusBanner').textContent = '💬 4단계: 에이전트에게 직접 질문하고, AI가 읽은 원문 근거와 답변을 대조합니다.';
+      } else if (tabId === 'tab5') {
+        document.getElementById('tabNav5').classList.add('active');
+        document.getElementById('tabSection5').classList.add('active');
+        document.getElementById('statusBanner').textContent = '💻 5단계: 코사인 유사도 + 텍스트 에이전트 코드를 브라우저에서 바로 실행해보세요!';
       }
     }
 
@@ -2251,7 +2258,7 @@ ${query}`;
   </script>
 
   <!-- 💻 코랩 코드 직접 실행하기 (Pyodide 브라우저 실행기) -->
-  <section id="colabCodeRunner" style="max-width:1100px; margin:40px auto; padding:0 20px;">
+  <section class="tab-section" id="tabSection5" style="max-width:1100px; margin:0 auto; padding:0 20px;">
     <div style="background:#ffffff; border:1px solid #e4e8eb; border-radius:16px; padding:28px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
       <h2 style="font-size:20px; margin-bottom:8px;">💻 코랩 코드 직접 실행하기</h2>
       <p style="font-size:14px; color:#555; margin-bottom:16px;">
