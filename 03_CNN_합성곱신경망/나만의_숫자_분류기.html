@@ -111,6 +111,21 @@
     <h2>4️⃣ 분류 실행!</h2>
     <div style="text-align:center;">
       <button class="btn btn-success" onclick="classify()" style="font-size:18px; padding:14px 40px;">🚀 숫자 분류하기!</button>
+    <div style="margin-top:16px; padding:16px; background:#f0f7ff; border-radius:10px;">
+      <h3 style="margin-bottom:10px;">🎓 경사하강법으로 가중치 자동 학습</h3>
+      <p style="font-size:13px; color:#555; margin-bottom:10px;">선택한 숫자들을 가장 잘 구분하는 가중치를 AI가 스스로 찾아요!<br>(1일차에 배운 경사하강법이 여기서 쓰여요!)</p>
+      <div style="display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap;">
+        <label style="font-size:13px;">학습률: <input type="number" id="lrInput" value="0.1" step="0.01" min="0.001" max="1" style="width:70px; padding:4px;"></label>
+        <label style="font-size:13px;">반복: <input type="number" id="epochInput" value="100" step="10" min="10" max="1000" style="width:70px; padding:4px;"></label>
+        <button class="btn btn-primary" onclick="trainWeights()" style="font-size:15px;">🎓 가중치 학습 시작!</button>
+      </div>
+      <div id="trainProgress" style="margin-top:12px; font-size:13px; display:none;">
+        <div style="background:#e0e0e0; border-radius:10px; height:20px; overflow:hidden;">
+          <div id="trainBar" style="height:100%; width:0%; background:linear-gradient(90deg,#2e86c1,#27ae60); transition:width 0.1s;"></div>
+        </div>
+        <div id="trainLog" style="margin-top:8px; font-family:monospace; font-size:12px; max-height:120px; overflow-y:auto; background:#1a1a2e; color:#eee; padding:10px; border-radius:8px;"></div>
+      </div>
+    </div>
     </div>
     <div class="step-viz" id="stepViz"></div>
     <div class="result-box" id="resultBox" style="display:none;">
@@ -362,6 +377,118 @@ function softmax(scores) {
   const exps = scores.map(s => Math.exp(s - m));
   const sum = exps.reduce((a, b) => a + b, 0);
   return exps.map(e => e / sum);
+}
+
+// 경사하강법으로 가중치 학습
+function extractAllFeatures() {
+  // 선택된 숫자들 + 입력 이미지의 특징 추출
+  const allFeatures = {};
+  // 입력 이미지
+  allFeatures['input'] = extractFeatures(inputData);
+  // 선택된 숫자 템플릿들
+  for (const d of selectedDigits) {
+    allFeatures[d] = extractFeatures(DIGIT_TEMPLATES[d]);
+  }
+  return allFeatures;
+}
+
+function extractFeatures(imgData) {
+  const feats = [];
+  filters.forEach((kernel) => {
+    const fmap = conv2d(imgData, kernel);
+    const pooled = maxPool(fmap);
+    feats.push(pooled[0][0], pooled[0][1]);
+  });
+  return feats;
+}
+
+function softmax(scores) {
+  const maxS = Math.max(...scores);
+  const exps = scores.map(s => Math.exp(s - maxS));
+  const sum = exps.reduce((a,b) => a+b, 0);
+  return exps.map(e => e/sum);
+}
+
+async function trainWeights() {
+  if (selectedDigits.length < 2) { alert('숫자를 2개 이상 선택해주세요!'); return; }
+  
+  const lr = parseFloat(document.getElementById('lrInput').value) || 0.1;
+  const epochs = parseInt(document.getElementById('epochInput').value) || 100;
+  
+  document.getElementById('trainProgress').style.display = 'block';
+  const bar = document.getElementById('trainBar');
+  const log = document.getElementById('trainLog');
+  log.innerHTML = '';
+  
+  // 특징 추출 (필터당 2개 값)
+  const numFeatures = filters.length * 2;
+  // 가중치 초기화 (작은 랜덤값)
+  let W = Array(selectedDigits.length).fill().map(() => 
+    Array(numFeatures).fill().map(() => (Math.random()-0.5)*0.5)
+  );
+  let b = Array(selectedDigits.length).fill(0);
+  
+  // 학습 데이터: 각 숫자의 템플릿
+  const trainData = selectedDigits.map(d => ({
+    digit: d,
+    features: extractFeatures(DIGIT_TEMPLATES[d]),
+    label: selectedDigits.indexOf(d)
+  }));
+  
+  log.innerHTML += `🎓 학습 시작! (학습률=${lr}, 반복=${epochs}회)<br>`;
+  log.innerHTML += `📊 선택된 숫자: ${selectedDigits.join(', ')}<br><br>`;
+  
+  for (let epoch = 0; epoch < epochs; epoch++) {
+    let totalLoss = 0;
+    
+    for (const data of trainData) {
+      // 순전파
+      const scores = W.map((w, c) => 
+        w.reduce((s, wij, j) => s + wij * data.features[j], 0) + b[c]
+      );
+      const probs = softmax(scores);
+      
+      // 손실 (크로스 엔트로피)
+      totalLoss += -Math.log(Math.max(probs[data.label], 1e-10));
+      
+      // 역전파 (그래디언트)
+      for (let c = 0; c < W.length; c++) {
+        const grad = probs[c] - (c === data.label ? 1 : 0);
+        for (let j = 0; j < numFeatures; j++) {
+          W[c][j] -= lr * grad * data.features[j];
+        }
+        b[c] -= lr * grad;
+      }
+    }
+    
+    if (epoch % Math.max(1, Math.floor(epochs/10)) === 0 || epoch === epochs-1) {
+      const avgLoss = (totalLoss / trainData.length).toFixed(4);
+      log.innerHTML += `반복 ${epoch+1}/${epochs}: 손실 = ${avgLoss}<br>`;
+      log.scrollTop = log.scrollHeight;
+      bar.style.width = ((epoch+1)/epochs*100) + '%';
+      await new Promise(r => setTimeout(r, 10));
+    }
+  }
+  
+  log.innerHTML += `<br>✅ 학습 완료!<br>`;
+  log.innerHTML += `💡 학습된 가중치를 아래 슬라이더에 반영했어요!<br>`;
+  
+  // 학습된 가중치를 기존 weights에 반영 (첫 번째 필터 기준 평균)
+  // 기존 UI는 필터당 1개 가중치이므로, 클래스별 가중치의 평균을 사용
+  const avgW = W[0].map((_, j) => W.reduce((s, w) => s + w[j], 0) / W.length);
+  // 필터당 2개 특징 → 평균내서 필터당 1개로
+  for (let fi = 0; fi < filters.length; fi++) {
+    weights[fi] = parseFloat(((avgW[fi*2] + avgW[fi*2+1]) / 2).toFixed(2));
+  }
+  bias = parseFloat((b.reduce((a,c) => a+c, 0) / b.length).toFixed(2));
+  
+  buildWeights();
+  updateBias(bias);
+  document.getElementById('biasSlider').value = bias;
+  document.getElementById('biasVal').textContent = bias;
+  
+  log.innerHTML += `<br>🎯 이제 "숫자 분류하기" 버튼을 눌러보세요!`;
+  log.scrollTop = log.scrollHeight;
 }
 
 function classify() {
