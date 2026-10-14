@@ -2236,7 +2236,141 @@ ${query}`;
         }
       }
 
-      return `(페르소나: ${agentName})<br>제가 읽은 본문 데이터에 따르면 다음과 같은 근거가 적혀 있습니다:<br><b>"${bestChunk}"</b><br>본문 내용을 토대로 질문에 대해 사실대로 말씀드립니다!`;
+      // ── 일반 질문: 페르소나 말투 + 질문유형 + 본문근거로 자연스럽게 답변 ──
+      return buildSmartAnswer(query, bestChunk, docKey, agentName);
+    }
+
+    // 질문 유형 파악
+    function detectQuestionType(q) {
+      if (/왜|이유|까닭|어째서/.test(q)) return 'why';
+      if (/어떻게|어떡|방법|과정|절차/.test(q)) return 'how';
+      if (/언제|어디|누가|누구|몇|얼마|무슨 때/.test(q)) return 'fact';
+      if (/느낌|마음|감정|생각|어떻|기분/.test(q)) return 'emotion';
+      if (/무엇|뭐|뭔|무슨|어떤|이란|뜻/.test(q)) return 'what';
+      return 'general';
+    }
+
+    // 페르소나 유형 파악 (docKey + 입력창 이름 기준)
+    function detectPersona(docKey) {
+      const nameEl = document.getElementById('agentNameInput');
+      const name = nameEl ? nameEl.value : '';
+      if (docKey === 'dongbaek' || name.includes('점순이')) return 'dongbaek';
+      if (docKey === 'prince' || name.includes('여우')) return 'fox';
+      if (docKey === 'school_rule' || name.includes('판사') || name.includes('선도부장')) return 'judge';
+      return 'custom';
+    }
+
+    // 본문 청크에서 질문과 관련된 핵심 문장 1~2개 추출
+    function extractKeySentences(chunk, query) {
+      if (!chunk) return [];
+      // 문장 분리 (마침표/느낌표/물음표 기준)
+      const sentences = chunk.split(/(?<=[.!?。！？])\s*/).filter(s => s.trim().length > 5);
+      if (sentences.length === 0) return [chunk.slice(0, 120)];
+      // 질문 키워드 추출 (2글자 이상)
+      const keywords = query.replace(/[^가-힣a-zA-Z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length >= 2);
+      // 각 문장에 키워드가 몇 개 들어있는지 점수화
+      const scored = sentences.map(s => {
+        let score = 0;
+        keywords.forEach(kw => { if (s.includes(kw)) score += 2; });
+        // 너무 긴 문장은 감점 (핵심만 뽑기 위해)
+        if (s.length > 150) score -= 1;
+        return { s: s.trim(), score };
+      });
+      scored.sort((a, b) => b.score - a.score);
+      // 최고점 문장 + 차순위 (점수가 0보다 클 때만)
+      const result = [];
+      if (scored[0]) result.push(scored[0].s);
+      if (scored[1] && scored[1].score > 0 && result[0] !== scored[1].s) result.push(scored[1].s);
+      return result;
+    }
+
+    // 페르소나별 말투 사전
+    const PERSONA_VOICE = {
+      dongbaek: {
+        openers: ['흥! 그걸 왜 물어?', '뭐야, 갑자기?', '에이 참, 그거야!'],
+        evidence: ['본문에 보면 알겠지만', '글에 쓰여있잖아', '내 얘기 좀 들어봐'],
+        closers: ['알겠어?', '흥, 그래도 더 궁금하면 물어봐!', '이 정도면 됐지?'],
+        suffix: '다니까!'
+      },
+      fox: {
+        openers: ['오, 좋은 질문이로구나.', '자, 귀를 기울여보렴.', '그것이 궁금하구나.'],
+        evidence: ['내가 본 바로는', '이야기 속에서는', '기억을 더듬어보면'],
+        closers: ['이것이 내가 깨달은 진리란다.', '마음에 새겨두렴.', '별을 보며 생각해보렴.'],
+        suffix: '이란다.'
+      },
+      judge: {
+        openers: ['질문에 답변하겠다.', '확인 결과를 말씀드리겠다.'],
+        evidence: ['규정에 따르면', '본문 기록에 의하면', '확인된 사실은'],
+        closers: ['이상이다.', '규정을 준수하기 바란다.', '추가 질문이 있으면 말씀하라.'],
+        suffix: '이다.'
+      },
+      custom: {
+        openers: ['좋은 질문이에요!', '확인해볼게요!', '그 부분이 궁금하셨군요!'],
+        evidence: ['본문에 보면', '찾아본 내용에 따르면', '관련 부분에서는'],
+        closers: ['도움이 됐으면 좋겠어요!', '더 궁금한 게 있으면 물어보세요!', '이해가 되셨나요?'],
+        suffix: '요.'
+      }
+    };
+
+    // 스마트 답변 생성기
+    function buildSmartAnswer(query, bestChunk, docKey, agentName) {
+      const persona = detectPersona(docKey);
+      const voice = PERSONA_VOICE[persona] || PERSONA_VOICE.custom;
+      const qType = detectQuestionType(query);
+      const keySentences = extractKeySentences(bestChunk, query);
+
+      // 랜덤 선택 헬퍼 (매번 조금씩 다르게)
+      const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+      const opener = pick(voice.openers);
+      const evWord = pick(voice.evidence);
+      const closer = pick(voice.closers);
+
+      // 근거 문장 조합 (따옴표로 자연스럽게 인용)
+      let evidence = '';
+      if (keySentences.length > 0) {
+        const quoted = keySentences.map(s => {
+          const short = s.length > 80 ? s.slice(0, 80) + '...' : s;
+          return '"' + short + '"';
+        }).join(' 그리고 ');
+        evidence = `${evWord} ${quoted} 이렇게 나와 있어${voice.suffix}`;
+      }
+
+      // 질문 유형별 답변 뼈대
+      let body = '';
+      const qShort = query.length > 20 ? query.slice(0, 20) + '...' : query;
+
+      if (persona === 'dongbaek') {
+        if (qType === 'why') body = `그건 말야, 다 이유가 있다니까? ${evidence}`;
+        else if (qType === 'what') body = `그게 뭔지 궁금하지? ${evidence}`;
+        else if (qType === 'how') body = `어떻게냐고? ${evidence}`;
+        else if (qType === 'emotion') body = `내 마음이 어땠냐고? 솔직히 말하면... ${evidence}`;
+        else if (qType === 'fact') body = `그건 확실하게 말할 수 있지! ${evidence}`;
+        else body = `"${qShort}" 이거 물어본 거지? ${evidence}`;
+        return `${opener}<br><br>${body}<br><br>${closer}`;
+      } else if (persona === 'fox') {
+        if (qType === 'why') body = `모든 일에는 까닭이 있는 법이지. ${evidence}`;
+        else if (qType === 'what') body = `그것의 참뜻을 알려주마. ${evidence}`;
+        else if (qType === 'how') body = `방법이란, 마음으로 먼저 가는 것이란다. ${evidence}`;
+        else if (qType === 'emotion') body = `마음이란 참으로 오묘한 것이지. ${evidence}`;
+        else if (qType === 'fact') body = `사실만을 말해주마. ${evidence}`;
+        else body = `"${qShort}" — 참으로 흥미로운 물음이로구나. ${evidence}`;
+        return `${opener}<br><br>${body}<br><br>${closer}`;
+      } else if (persona === 'judge') {
+        if (qType === 'why') body = `사유는 다음과 같다. ${evidence}`;
+        else if (qType === 'what') body = `해당 사항의 정의는 다음과 같다. ${evidence}`;
+        else if (qType === 'how') body = `절차는 다음과 같다. ${evidence}`;
+        else if (qType === 'fact') body = `사실관계를 확인하였다. ${evidence}`;
+        else body = `질문 "${qShort}"에 대해 답변한다. ${evidence}`;
+        return `${opener}<br><br>${body}<br><br>${closer}`;
+      } else {
+        if (qType === 'why') body = `이유를 설명해드릴게요. ${evidence}`;
+        else if (qType === 'what') body = `그것에 대해 알려드릴게요. ${evidence}`;
+        else if (qType === 'how') body = `방법을 안내해드릴게요. ${evidence}`;
+        else if (qType === 'emotion') body = `그런 마음이 드셨군요. ${evidence}`;
+        else if (qType === 'fact') body = `확인된 내용을 말씀드릴게요. ${evidence}`;
+        else body = `"${qShort}"에 대해 찾아봤어요. ${evidence}`;
+        return `${opener}<br><br>${body}<br><br>${closer}`;
+      }
     }
 
     function clearChat() {
