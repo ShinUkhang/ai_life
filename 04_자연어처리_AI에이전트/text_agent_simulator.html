@@ -2237,5 +2237,76 @@ ${query}`;
       updateApiStatusUI();
     };
   </script>
+
+  <!-- 💻 코랩 코드 직접 실행하기 (Pyodide 브라우저 실행기) -->
+  <section id="colabCodeRunner" style="max-width:1100px; margin:40px auto; padding:0 20px;">
+    <div style="background:#ffffff; border:1px solid #e4e8eb; border-radius:16px; padding:28px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+      <h2 style="font-size:20px; margin-bottom:8px;">💻 코랩 코드 직접 실행하기</h2>
+      <p style="font-size:14px; color:#555; margin-bottom:16px;">
+        위에서 배운 <strong>코사인 유사도 + 텍스트 에이전트</strong> 코드를 브라우저에서 바로 실행해보세요!
+        <strong style="color:#00B06B;">QUERY</strong>나 <strong style="color:#00B06B;">corpus</strong> 변수를 바꿔서 실험할 수 있어요. (코랩 계정 불필요)
+      </p>
+      <textarea id="codeEditor" spellcheck="false" style="width:100%; height:420px; font-family:'Consolas','D2Coding',monospace; font-size:13px; padding:14px; border:2px solid #00B06B; border-radius:10px; background:#1e1e1e; color:#d4d4d4; resize:vertical; line-height:1.55;"></textarea>
+      <div style="display:flex; gap:10px; margin:14px 0; flex-wrap:wrap;">
+        <button onclick="runPythonCode()" style="padding:12px 24px; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer; background:#00B06B; color:#fff;">▶ 실행하기</button>
+        <button onclick="copyRunnerCode()" style="padding:12px 24px; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer; background:#1f4ef5; color:#fff;">📋 코드 복사</button>
+        <button onclick="resetRunnerCode('codeEditor', STARTER)" style="padding:12px 24px; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer; background:#6b7280; color:#fff;">↩️ 처음 코드로</button>
+      </div>
+      <div id="codeStatus" style="text-align:center; padding:8px; font-weight:bold; color:#888; font-size:14px;">Python 로딩 중...</div>
+      <h3 style="font-size:15px; margin:10px 0 8px;">📤 실행 결과</h3>
+      <div id="codeOutput" style="background:#1e1e1e; color:#d4d4d4; padding:16px; border-radius:10px; font-family:'Consolas',monospace; font-size:13px; min-height:140px; max-height:320px; overflow-y:auto; white-space:pre-wrap;">여기에 실행 결과가 표시됩니다.</div>
+    </div>
+  </section>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+  <script src="../pyodide_runner.js"></script>
+  <script>
+const STARTER = `# ========================================================
+# 🤖 텍스트 에이전트 + 코사인 유사도 (4일차 코랩 코드)
+# ========================================================
+# 🔧 변수를 바꿔보세요! (문서와 질문을 바꿔보세요)
+QUERY = "경복궁 정문은?"  # ← 질문을 바꿔보세요!
+
+import numpy as np
+
+class TextAgent:
+    def __init__(self, name, corpus):
+        self.name = name
+        self.corpus = corpus
+        self.vocab = sorted(set(" ".join(corpus).split()))
+
+    def vectorize(self, text):
+        words = text.split()
+        return np.array([words.count(w) for w in self.vocab], dtype=float)
+
+    def cosine_sim(self, a, b):
+        denom = np.linalg.norm(a) * np.linalg.norm(b)
+        return np.dot(a, b) / denom if denom != 0 else 0
+
+    def search(self, query, top_k=2):
+        qv = self.vectorize(query)
+        scores = [(self.cosine_sim(qv, self.vectorize(doc)), doc) for doc in self.corpus]
+        scores.sort(reverse=True)
+        return scores[:top_k]
+
+corpus = [
+    "광화문은 조선시대 경복궁의 정문이다",
+    "경복궁은 1395년에 창건된 조선의 법궁이다",
+    "숭례문은 국보 제1호이다",
+    "창덕궁은 유네스코 세계문화유산이다",
+]
+
+agent = TextAgent("역사도우미", corpus)
+results = agent.search(QUERY)
+
+print(f"🤖 질문: '{QUERY}'\\n")
+for i, (score, doc) in enumerate(results, 1):
+    print(f"{i}위 (유사도 {score*100:.1f}%): {doc}")
+
+print(f"\\n💡 QUERY를 '세계문화유산은?' 으로 바꿔보세요!")
+print(f"💡 corpus에 새 문서를 추가해보세요!")
+`;
+document.getElementById('codeEditor').value = STARTER;
+initPyodideRunner();
+  </script>
 </body>
 </html>
