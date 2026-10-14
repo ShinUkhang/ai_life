@@ -130,10 +130,10 @@ const MBTI_INFO = {
 };
 
 const DIMS = [
-  { name: "E / I", left: "E (외향적)", right: "I (내향적)" },
-  { name: "S / N", left: "S (현실적)", right: "N (직관적)" },
-  { name: "T / F", left: "T (논리적)", right: "F (감성적)" },
-  { name: "J / P", left: "J (계획적)", right: "P (즉흥적)" }
+  { name: "E / I", left: "I (내향적)", right: "E (외향적)" },
+  { name: "S / N", left: "N (직관적)", right: "S (현실적)" },
+  { name: "T / F", left: "F (감성적)", right: "T (논리적)" },
+  { name: "J / P", left: "P (즉흥적)", right: "J (계획적)" }
 ];
 
 let valsA = [0,0,0,0], valsB = [0,0,0,0];
@@ -170,9 +170,9 @@ function buildSliders() {
       row.innerHTML =
         '<div class="dim-name">' + dim.name + '</div>' +
         '<div class="slider-label">' +
-          '<span class="left">' + dim.left + ' (+)</span>' +
+          '<span class="left">(–) ' + dim.left + '</span>' +
           '<span class="val" id="val' + person + i + '">' + (v > 0 ? "+" : "") + v + '</span>' +
-          '<span class="right">(–) ' + dim.right + '</span>' +
+          '<span class="right">' + dim.right + ' (+)</span>' +
         '</div>' +
         '<input type="range" min="-10" max="10" step="1" value="' + v + '" id="sl' + person + i + '">';
       container.appendChild(row);
