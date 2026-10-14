@@ -2001,12 +2001,12 @@ print(f"\n💡 LEARNING_RATE를 0.1, 0.001로 바꿔보고 결과를 비교해�
 # 그래프
 plt.figure(figsize=(10, 4))
 plt.subplot(1, 2, 1)
-plt.scatter(X, y, color="blue", label="실제 데이터")
-plt.plot(X, w*X+b, color="red", label=f"학습 결과")
-plt.legend(); plt.title("선형회귀 결과"); plt.grid(True)
+plt.scatter(X, y, color="blue", label="Actual Data")
+plt.plot(X, w*X+b, color="red", label=f"Trained Model")
+plt.legend(); plt.title("Linear Regression Result"); plt.grid(True)
 plt.subplot(1, 2, 2)
 plt.plot(losses, color="green")
-plt.title("손실 감소 곡선"); plt.xlabel("반복"); plt.ylabel("손실"); plt.grid(True)
+plt.title("Loss Curve"); plt.xlabel("Epoch"); plt.ylabel("Loss"); plt.grid(True)
 plt.tight_layout(); plt.show()`;
 document.getElementById('codeEditor').value = STARTER;
 initPyodideRunner();

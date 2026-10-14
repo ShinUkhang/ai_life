@@ -1949,9 +1949,9 @@ print("\\n💡 KERNEL을 가로선 검출용으로 바꿔보세요!")
 print("   [[0,0,0],[1,1,1],[0,0,0]]")
 
 fig, axes = plt.subplots(1, 3, figsize=(12, 4))
-axes[0].imshow(img, cmap='Blues'); axes[0].set_title("원본")
-axes[1].imshow(fmap, cmap='hot'); axes[1].set_title("특성맵")
-axes[2].imshow(pooled, cmap='hot'); axes[2].set_title("풀링")
+axes[0].imshow(img, cmap='Blues'); axes[0].set_title("Original")
+axes[1].imshow(fmap, cmap='hot'); axes[1].set_title("Feature Map")
+axes[2].imshow(pooled, cmap='hot'); axes[2].set_title("Pooling")
 plt.tight_layout(); plt.show()`;
 document.getElementById('codeEditor').value = STARTER;
 initPyodideRunner();
