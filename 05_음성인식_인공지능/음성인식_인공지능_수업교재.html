@@ -317,9 +317,9 @@ sound_wave = amplitude * np.sin(2 * np.pi * frequency * t)
 # 소리 파형 0.015초 구간 확대 그래프 그리기
 plt.figure(figsize=(10, 3))
 plt.plot(t[:240], sound_wave[:240], color="#4F46E5", lw=2)
-plt.title("440Hz 사인파 소리 파형 (Waveform)")
-plt.xlabel("시간 (Time, 초)")
-plt.ylabel("진폭 (Amplitude)")
+plt.title("440Hz Sine Wave (Waveform)")
+plt.xlabel("Time (sec)")
+plt.ylabel("Amplitude")
 plt.grid(True, alpha=0.3)
 plt.show()
 

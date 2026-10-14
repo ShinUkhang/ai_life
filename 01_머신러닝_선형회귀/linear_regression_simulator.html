@@ -1096,10 +1096,10 @@ print(f"\n최종 회귀식: y = {W:.4f} * x + {b:.4f}")</pre>
   <pre id="pyCell01_6" class="py-cell-code"># 5. 시각화 (산점도와 회귀선)
 # → 점들 사이에 AI가 그은 직선을 그려봐요
 plt.figure(figsize=(8, 4))
-plt.scatter(X, Y, color='#1f4ef5', label='실제 데이터 (x, y)')
-plt.plot(X, W * X + b, color='#03c75a', lw=2.5, label=f'예측선: y={W:.2f}x+{b:.2f}')
-plt.xlabel('x (입력 노드)'); plt.ylabel('y (출력 노드)')
-plt.title('선형회귀 가중치 전파 학습 결과')
+plt.scatter(X, Y, color='#1f4ef5', label='Actual Data (x, y)')
+plt.plot(X, W * X + b, color='#03c75a', lw=2.5, label=f'Prediction: y={W:.2f}x+{b:.2f}')
+plt.xlabel('x (Input)'); plt.ylabel('y (Output)')
+plt.title('Linear Regression Result')
 plt.legend(); plt.grid(True, alpha=0.3); plt.show()</pre>
 </div>
     </div>
