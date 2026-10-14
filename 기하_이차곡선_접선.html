@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2학년 기하 수행평가 - 이차곡선과 접선 GeoGebra 실습</title>
+<script src="https://www.geogebra.org/apps/deployggb.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: '맑은 고딕', sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+  header { background: linear-gradient(135deg, #1F4E78, #2e86c1); color: white; padding: 30px 20px; text-align: center; border-radius: 12px; margin-bottom: 25px; }
+  header h1 { font-size: 24px; margin-bottom: 8px; }
+  header p { font-size: 14px; opacity: 0.9; }
+  .info-box { background: #fff8e1; border-left: 5px solid #f39c12; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; }
+  .info-box h3 { color: #e67e22; margin-bottom: 8px; }
+  .info-box ol { padding-left: 20px; font-size: 14px; }
+  .info-box li { margin-bottom: 6px; }
+  .section { background: white; border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+  .section h2 { color: #1F4E78; font-size: 20px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 3px solid #1F4E78; }
+  .section .desc { background: #eef5fb; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
+  .section .desc strong { color: #1F4E78; }
+  .ggb-wrapper { width: 100%; max-width: 850px; margin: 0 auto 15px; border: 2px solid #ddd; border-radius: 8px; overflow: hidden; }
+  .task-list { background: #f8f9fa; padding: 15px 20px; border-radius: 8px; margin-top: 15px; }
+  .task-list h4 { color: #2c3e50; margin-bottom: 10px; }
+  .task-list label { display: block; padding: 8px 0; font-size: 14px; cursor: pointer; border-bottom: 1px solid #eee; }
+  .task-list label:last-child { border-bottom: none; }
+  .task-list input[type="checkbox"] { margin-right: 10px; transform: scale(1.3); }
+  .submit-box { background: #eafaf1; border: 2px solid #27ae60; border-radius: 12px; padding: 25px; text-align: center; margin-top: 30px; }
+  .submit-box h2 { color: #27ae60; margin-bottom: 12px; }
+  .submit-box p { font-size: 14px; margin-bottom: 8px; }
+  .submit-box .filename { background: white; display: inline-block; padding: 8px 20px; border-radius: 6px; font-weight: bold; color: #1F4E78; margin: 10px 0; border: 2px dashed #27ae60; }
+  footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
+  @media (max-width: 600px) {
+    header h1 { font-size: 19px; }
+    .section { padding: 15px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>📐 2학년 기하 수행평가</h1>
+    <p>이차곡선과 접선의 특징 — GeoGebra 작도 실습</p>
+  </header>
+
+  <div class="info-box">
+    <h3>📋 실습 방법</h3>
+    <ol>
+      <li>아래 3개의 GeoGebra 창에서 각 곡선을 작도하세요.</li>
+      <li>각 곡선 위의 점을 잡고 <strong>접선</strong>을 그으세요.</li>
+      <li>접선의 방정식을 확인하고 <strong>특징(반사성질)</strong>을 관찰하세요.</li>
+      <li>완성된 화면을 <strong>캡처</strong>하거나 <strong>GeoGebra 파일로 저장</strong>하세요.</li>
+      <li>파일명이 <strong>학번_이름</strong>이 되도록 해서 제출하세요.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>1️⃣ 포물선과 접선</h2>
+    <div class="desc">
+      <strong>정의:</strong> 초점 F와 준선 l에 대해, 점 P에서 F까지의 거리 = l까지의 거리를 만족하는 점들의 집합<br>
+      <strong>표준형:</strong> y² = 4px &nbsp;|&nbsp; <strong>접선:</strong> 점 (x₀, y₀)에서 y₀y = 2p(x + x₀)<br>
+      <strong>특징:</strong> 초점에서 나온 빛은 접선에서 반사되어 준선에 평행하게 나간다.
+    </div>
+    <div class="ggb-wrapper" id="ggb-parabola"></div>
+    <div class="task-list">
+      <h4>✅ 이 순서대로 하세요</h4>
+      <label><input type="checkbox"> 초점 F와 준선 l을 그린다</label>
+      <label><input type="checkbox"> 포물선을 작도한다 (정의 이용 또는 명령어)</label>
+      <label><input type="checkbox"> 포물선 위의 점 P를 잡는다</label>
+      <label><input type="checkbox"> 점 P에서의 접선을 그린다</label>
+      <label><input type="checkbox"> 접선의 방정식을 확인한다</label>
+      <label><input type="checkbox"> 반사성질을 확인한다 (F→P→준선 평행)</label>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2️⃣ 타원과 접선</h2>
+    <div class="desc">
+      <strong>정의:</strong> 두 초점 F₁, F₂에 대해, PF₁ + PF₂ = 2a (일정)를 만족하는 점들의 집합<br>
+      <strong>표준형:</strong> x²/a² + y²/b² = 1 &nbsp;|&nbsp; <strong>접선:</strong> 점 (x₀, y₀)에서 x₀x/a² + y₀y/b² = 1<br>
+      <strong>특징:</strong> 한 초점에서 나온 빛은 접선에서 반사되어 다른 초점으로 들어간다.
+    </div>
+    <div class="ggb-wrapper" id="ggb-ellipse"></div>
+    <div class="task-list">
+      <h4>✅ 이 순서대로 하세요</h4>
+      <label><input type="checkbox"> 두 초점 F₁, F₂를 잡는다</label>
+      <label><input type="checkbox"> 타원을 작도한다</label>
+      <label><input type="checkbox"> 타원 위의 점 P를 잡는다</label>
+      <label><input type="checkbox"> 점 P에서의 접선을 그린다</label>
+      <label><input type="checkbox"> 접선의 방정식을 확인한다</label>
+      <label><input type="checkbox"> 반사성질을 확인한다 (F₁→P→F₂)</label>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3️⃣ 쌍곡선과 접선</h2>
+    <div class="desc">
+      <strong>정의:</strong> 두 초점 F₁, F₂에 대해, |PF₁ - PF₂| = 2a (일정)를 만족하는 점들의 집합<br>
+      <strong>표준형:</strong> x²/a² - y²/b² = 1 &nbsp;|&nbsp; <strong>접선:</strong> 점 (x₀, y₀)에서 x₀x/a² - y₀y/b² = 1<br>
+      <strong>특징:</strong> 접선은 ∠F₁PF₂의 이등분선이다.
+    </div>
+    <div class="ggb-wrapper" id="ggb-hyperbola"></div>
+    <div class="task-list">
+      <h4>✅ 이 순서대로 하세요</h4>
+      <label><input type="checkbox"> 두 초점 F₁, F₂를 잡는다</label>
+      <label><input type="checkbox"> 쌍곡선을 작도한다</label>
+      <label><input type="checkbox"> 쌍곡선 위의 점 P를 잡는다</label>
+      <label><input type="checkbox"> 점 P에서의 접선을 그린다</label>
+      <label><input type="checkbox"> 접선의 방정식을 확인한다</label>
+      <label><input type="checkbox"> 접선이 각의 이등분선임을 확인한다</label>
+    </div>
+  </div>
+
+  <div class="submit-box">
+    <h2>📤 제출하기</h2>
+    <p>3개의 작도를 모두 완성했으면 결과물을 저장하세요.</p>
+    <p><strong>방법 1:</strong> 각 GeoGebra 창의 메뉴(☰) → 다운로드 → PNG 이미지 또는 GeoGebra 파일(.ggb)</p>
+    <p><strong>방법 2:</strong> 화면 캡처 후 이미지 파일로 저장</p>
+    <p>파일명은 반드시 아래 형식으로!</p>
+    <div class="filename">학번_이름 (예: 20101_홍길동)</div>
+    <p>선생님이 안내하는 구글 드라이브 폴더에 업로드하세요.</p>
+  </div>
+
+  <footer>배화여자고등학교 2학년 기하 수행평가</footer>
+</div>
+
+<script>
+  function makeApplet(elId) {
+    var params = {
+      "appName": "geometry",
+      "width": 800,
+      "height": 500,
+      "showToolBar": true,
+      "showAlgebraInput": true,
+      "showMenuBar": true,
+      "enableLabelDrags": true,
+      "showResetIcon": true,
+      "language": "ko"
+    };
+    var applet = new GGBApplet(params, true);
+    applet.inject(elId);
+  }
+  window.addEventListener('load', function() {
+    makeApplet('ggb-parabola');
+    makeApplet('ggb-ellipse');
+    makeApplet('ggb-hyperbola');
+  });
+</script>
+</body>
+</html>
