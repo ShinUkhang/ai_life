@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🖥️ 3일차 백업 — CNN 합성곱신경망 (코랩 없이 수업하기)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: '맑은 고딕', sans-serif; background: #f0f4f8; color: #333; line-height: 1.7; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+  header { background: linear-gradient(135deg: #1a5276, #2e86c1); background: linear-gradient(135deg, #1a5276, #2e86c1); color: white; padding: 35px 20px; text-align: center; border-radius: 14px; margin-bottom: 25px; }
+  header h1 { font-size: 26px; margin-bottom: 10px; }
+  header p { font-size: 15px; opacity: 0.92; }
+  .alert { background: #fdedec; border: 2px solid #e74c3c; border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; font-size: 14px; }
+  .alert strong { color: #c0392b; }
+  .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .card h2 { color: #1a5276; font-size: 19px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 3px solid #2e86c1; }
+  .card h3 { color: #2c3e50; font-size: 16px; margin: 14px 0 8px; }
+  .card p, .card li { font-size: 14px; }
+  .card ol, .card ul { padding-left: 22px; margin: 8px 0; }
+  .link-btn { display: inline-block; padding: 12px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; margin: 6px 6px 6px 0; font-size: 14px; }
+  .link-btn:hover { opacity: 0.88; }
+  .btn-blue { background: #2980b9; color: white; }
+  .btn-green { background: #27ae60; color: white; }
+  .btn-purple { background: #8e44ad; color: white; }
+  .step { background: #f8f9fa; border-radius: 8px; padding: 16px 20px; margin: 12px 0; border-left: 5px solid #2e86c1; }
+  .step h3 { margin-top: 0; color: #1a5276; }
+  .code-block { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 12.5px; overflow-x: auto; margin: 10px 0; white-space: pre; line-height: 1.5; }
+  .copy-btn { background: #34495e; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+  th { background: #2e86c1; color: white; }
+  footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🖥️ 3일차 백업 페이지</h1>
+    <p>CNN 합성곱신경망 — 코랩이 안 될 때 이 페이지로 수업하세요!</p>
+  </header>
+
+  <div class="alert">
+    <strong>⚠️ 코랩 장애 시:</strong> 시뮬레이터 → 개념 설명 → 백업 실행기 순서로 진행하세요.
+    CNN 계산과정은 NumPy만으로 돌아가서 백업 실행기에서도 잘 됩니다!
+  </div>
+
+  <div class="card">
+    <h2>🗺️ 수업 흐름 (150분)</h2>
+    <table>
+      <tr><th>순서</th><th>내용</th><th>도구</th><th>시간</th></tr>
+      <tr><td>1</td><td>합성곱 개념 (필터로 특징 찾기)</td><td>아래 시뮬레이터</td><td>30분</td></tr>
+      <tr><td>2</td><td>6×6 숫자 → 합성곱 → 풀링 → 판별</td><td>백업 실행기 + 코드</td><td>40분</td></tr>
+      <tr><td>3</td><td>MNIST 손글씨 분류 (심화)</td><td>코랩 or 설명</td><td>40분</td></tr>
+      <tr><td>4</td><td>적대적 예제 (모델 속이기)</td><td>토론</td><td>25분</td></tr>
+      <tr><td>5</td><td>정리</td><td>-</td><td>15분</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>🔗 바로가기</h2>
+    <a class="link-btn btn-blue" href="03_CNN_합성곱신경망/cnn_classifier_simulator.html" target="_blank">🔬 CNN 분류 시뮬레이터</a>
+    <a class="link-btn btn-green" href="python_backup.html" target="_blank">🐍 Python 백업 실행기</a>
+    <a class="link-btn btn-purple" href="부록_경사하강법.html" target="_blank">📐 수학 실험실 (CNN 편)</a>
+  </div>
+
+  <div class="card">
+    <h2>📚 핵심 개념</h2>
+    <div class="step">
+      <h3>1️⃣ 합성곱 (Convolution)</h3>
+      <p>3×3 필터(커널)를 이미지 위에서 밀면서 <strong>각 위치마다 곱하고 더하기</strong>를 합니다.</p>
+      <p>세로선 필터 → 세로선만 강조된 특성맵이 나옵니다!</p>
+    </div>
+    <div class="step">
+      <h3>2️⃣ 맥스풀링 (Max Pooling)</h3>
+      <p>2×2 영역에서 <strong>가장 큰 값만</strong> 남깁니다. 크기는 절반, 특징은 유지!</p>
+    </div>
+    <div class="step">
+      <h3>3️⃣ 완전연결층 (Dense)</h3>
+      <p>평탄화한 벡터에 <strong>가중치를 곱하고 더해서</strong> 최종 점수를 냅니다.</p>
+    </div>
+    <div class="step">
+      <h3>4️⃣ 시그모이드</h3>
+      <p>점수를 <strong>0~100% 확률</strong>로 바꿔줍니다.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💻 핵심 코드 (백업 실행기에 붙여넣기)</h2>
+    <button class="copy-btn" onclick="copyText('cnn1')">📋 복사</button>
+    <div class="code-block" id="cnn1">import numpy as np
+
+# 2D 합성곱 연산
+def conv2d(image, kernel):
+    kh, kw = kernel.shape
+    h, w = image.shape
+    out = np.zeros((h-kh+1, w-kw+1))
+    for i in range(out.shape[0]):
+        for j in range(out.shape[1]):
+            out[i,j] = np.sum(image[i:i+kh, j:j+kw] * kernel)
+    return out
+
+# 2x2 맥스풀링
+def max_pool2d(fm, pool_size=2):
+    h, w = fm.shape
+    out = np.zeros((h//pool_size, w//pool_size))
+    for i in range(out.shape[0]):
+        for j in range(out.shape[1]):
+            out[i,j] = np.max(fm[i*pool_size:(i+1)*pool_size,
+                                j*pool_size:(j+1)*pool_size])
+    return out
+
+# 세로선 검출 필터
+kernel_v = np.array([[0,1,0],[0,1,0],[0,1,0]])
+
+# 6x6 숫자 '1' 이미지 (세로선)
+img1 = np.array([
+ [0,0,255,255,0,0],
+ [0,0,255,255,0,0],
+ [0,0,255,255,0,0],
+ [0,0,255,255,0,0],
+ [0,0,255,255,0,0],
+ [0,0,255,255,0,0]]) / 255.0
+
+fmap = conv2d(img1, kernel_v)
+print("특성맵 (4x4):")
+print(np.round(fmap, 2))
+print("\n풀링 후 (2x2):")
+print(np.round(max_pool2d(fmap), 2))
+print("\n💡 세로선이 강하게 반응했나요?")</div>
+  </div>
+
+  <footer>배화여자고등학교 AI Life 3일차 백업 — 오금고 연수용</footer>
+</div>
+<script>
+function copyText(id) {
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => alert("📋 복사되었습니다!"));
+}
+</script>
+</body>
+</html>

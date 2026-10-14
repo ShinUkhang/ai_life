@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🖥️ 4일차 백업 — AI 에이전트 (코랩 없이 수업하기)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: '맑은 고딕', sans-serif; background: #f0f4f8; color: #333; line-height: 1.7; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+  header { background: linear-gradient(135deg, #117a65, #1abc9c); color: white; padding: 35px 20px; text-align: center; border-radius: 14px; margin-bottom: 25px; }
+  header h1 { font-size: 26px; margin-bottom: 10px; }
+  header p { font-size: 15px; opacity: 0.92; }
+  .alert { background: #fdedec; border: 2px solid #e74c3c; border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; font-size: 14px; }
+  .alert strong { color: #c0392b; }
+  .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .card h2 { color: #117a65; font-size: 19px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 3px solid #1abc9c; }
+  .card p, .card li { font-size: 14px; }
+  .card ol, .card ul { padding-left: 22px; margin: 8px 0; }
+  .link-btn { display: inline-block; padding: 12px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; margin: 6px 6px 6px 0; font-size: 14px; }
+  .link-btn:hover { opacity: 0.88; }
+  .btn-green { background: #27ae60; color: white; }
+  .btn-teal { background: #1abc9c; color: white; }
+  .btn-blue { background: #2980b9; color: white; }
+  .step { background: #f8f9fa; border-radius: 8px; padding: 16px 20px; margin: 12px 0; border-left: 5px solid #1abc9c; }
+  .step h3 { margin-top: 0; color: #117a65; font-size: 16px; }
+  .code-block { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 12.5px; overflow-x: auto; margin: 10px 0; white-space: pre; line-height: 1.5; }
+  .copy-btn { background: #34495e; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+  th { background: #1abc9c; color: white; }
+  footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🖥️ 4일차 백업 페이지</h1>
+    <p>AI 에이전트 (자연어처리) — 코랩이 안 될 때 이 페이지로 수업하세요!</p>
+  </header>
+
+  <div class="alert">
+    <strong>⚠️ 코랩 장애 시:</strong> 에이전트 실습은 API 키 없이도 <strong>오프라인 모드</strong>로 동작합니다.
+    시뮬레이터 → 개념 → 백업 실행기 순서로 진행하세요.
+  </div>
+
+  <div class="card">
+    <h2>🗺️ 수업 흐름 (150분)</h2>
+    <table>
+      <tr><th>순서</th><th>내용</th><th>도구</th><th>시간</th></tr>
+      <tr><td>1</td><td>텍스트 에이전트 개념 (RAG)</td><td>아래 시뮬레이터</td><td>30분</td></tr>
+      <tr><td>2</td><td>코사인 유사도로 문서 검색</td><td>백업 실행기 + 코드</td><td>40분</td></tr>
+      <tr><td>3</td><td>나만의 에이전트 만들기</td><td>백업 실행기</td><td>40분</td></tr>
+      <tr><td>4</td><td>발표·정리</td><td>-</td><td>40분</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>🔗 바로가기</h2>
+    <a class="link-btn btn-teal" href="04_자연어처리_AI에이전트/text_agent_simulator.html" target="_blank">🤖 텍스트 에이전트 시뮬레이터</a>
+    <a class="link-btn btn-green" href="python_backup.html" target="_blank">🐍 Python 백업 실행기</a>
+    <a class="link-btn btn-blue" href="부록_경사하강법.html" target="_blank">📐 수학 실험실 (NLP 편)</a>
+  </div>
+
+  <div class="card">
+    <h2>📚 핵심 개념</h2>
+    <div class="step">
+      <h3>1️⃣ RAG (검색 증강 생성)</h3>
+      <p><strong>검색</strong> → <strong>증강</strong> → <strong>생성</strong>의 3단계!</p>
+      <p>AI가 아는 것만 답하는 게 아니라, 문서를 먼저 찾아보고 근거를 대고 답합니다.</p>
+    </div>
+    <div class="step">
+      <h3>2️⃣ 코사인 유사도</h3>
+      <p>두 문장이 얼마나 비슷한지 <strong>각도</strong>로 재는 방법입니다.</p>
+      <p>1에 가까울수록 비슷한 문장!</p>
+    </div>
+    <div class="step">
+      <h3>3️⃣ 에이전트</h3>
+      <p><strong>목표</strong>를 주면 스스로 <strong>계획→실행→확인</strong>하는 AI입니다.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💻 핵심 코드 (백업 실행기에 붙여넣기)</h2>
+    <button class="copy-btn" onclick="copyText('agent1')">📋 복사</button>
+    <div class="code-block" id="agent1">import numpy as np
+
+# 간단한 텍스트 에이전트 (오프라인)
+class TextAgent:
+    def __init__(self, name, corpus):
+        self.name = name
+        self.corpus = corpus  # 문서 리스트
+        # 단어 집합 만들기
+        self.vocab = sorted(set(" ".join(corpus).split()))
+
+    def vectorize(self, text):
+        # 단어를 벡터로 (출현 횟수)
+        words = text.split()
+        return np.array([words.count(w) for w in self.vocab], dtype=float)
+
+    def cosine_sim(self, a, b):
+        # 코사인 유사도
+        denom = np.linalg.norm(a) * np.linalg.norm(b)
+        if denom == 0: return 0
+        return np.dot(a, b) / denom
+
+    def search(self, query, top_k=2):
+        qv = self.vectorize(query)
+        scores = []
+        for doc in self.corpus:
+            dv = self.vectorize(doc)
+            scores.append((self.cosine_sim(qv, dv), doc))
+        scores.sort(reverse=True)
+        return scores[:top_k]
+
+    def answer(self, query):
+        results = self.search(query)
+        print(f"🤖 [{self.name}] 질문: '{query}'")
+        print(f"📚 가장 관련 있는 문서 (유사도 {results[0][0]*100:.1f}%):")
+        print(f'   "{results[0][1]}"')
+        return results[0][1]
+
+# 문서 준비
+corpus = [
+    "광화문은 조선시대 경복궁의 정문이다",
+    "경복궁은 1395년에 창건된 조선의 법궁이다",
+    "숭례문은 국보 제1호이다",
+]
+agent = TextAgent("역사도우미", corpus)
+agent.answer("경복궁 정문은?")</div>
+  </div>
+
+  <footer>배화여자고등학교 AI Life 4일차 백업 — 오금고 연수용</footer>
+</div>
+<script>
+function copyText(id) {
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => alert("📋 복사되었습니다!"));
+}
+</script>
+</body>
+</html>
