@@ -32,7 +32,14 @@
       .mobile-label{font-size:12px !important;}
     }
   </style>
-<style>.concept-tip{cursor:help;font-size:11px}.concept-desc{font-size:10px;color:#888;display:block;margin-top:2px;line-height:1.4}</style></head>
+<style>.concept-tip{cursor:help;font-size:11px}.concept-desc{font-size:10px;color:#888;display:block;margin-top:2px;line-height:1.4}</style><script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']] },
+  chtml: { scale: 1.05 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
 
   <!-- ========================================== -->
@@ -400,7 +407,7 @@ ipd.Audio(sound_wave, rate=sampling_rate)</pre>
               <span class="text-xs font-bold text-slate-500">생성된 고유 ID</span>
               <span class="px-2.5 py-0.5 rounded-md text-xs font-black bg-purple-100 text-purple-800 mono" id="badgeSoundID">ID: VOICE-01</span>
             </div>
-            <div class="text-xs font-black text-slate-800">5차원 정규화 특징 벡터 \(ec{v}\)</div>
+            <div class="text-xs font-black text-slate-800">5차원 정규화 특징 벡터 \(\vec{v}\)</div>
 
             <div class="space-y-2 text-xs">
               <div>
