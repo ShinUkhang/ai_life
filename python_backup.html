@@ -206,14 +206,19 @@ let pyodide = null;
 
 const BOOTSTRAP = `
 import io, sys, base64, traceback
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 from contextlib import redirect_stdout, redirect_stderr
 
 def __run__(user_code, stdin_text):
     out, err = io.StringIO(), io.StringIO()
     figs = []
+    # matplotlib은 필요할 때만 로드되므로 여기서 시도
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        __has_mpl = True
+    except ImportError:
+        __has_mpl = False
     # input() 지원: 입력값 칸의 줄들을 순서대로 전달 + 입력 내용 에코
     __lines = iter(stdin_text.splitlines())
     def __input(prompt=""):
@@ -222,7 +227,7 @@ def __run__(user_code, stdin_text):
             val = next(__lines)
         except StopIteration:
             raise EOFError("입력값이 부족합니다. '프로그램 입력값' 칸에 값을 한 줄에 하나씩 미리 적어주세요.")
-        out.write(val + "\n")
+        out.write(val + "\\n")
         return val
     __ns = {"__name__": "__main__", "input": __input}
     try:
@@ -231,35 +236,61 @@ def __run__(user_code, stdin_text):
         with redirect_stdout(out), redirect_stderr(err):
             exec(compile(user_code, "<cell>", "exec"), __ns)
         sys.stdin = __old_stdin
-        for n in plt.get_fignums():
-            buf = io.BytesIO()
-            plt.figure(n).savefig(buf, format="png", bbox_inches="tight", dpi=110)
-            figs.append(base64.b64encode(buf.getvalue()).decode("ascii"))
-        plt.close("all")
+        if __has_mpl:
+            for n in plt.get_fignums():
+                buf = io.BytesIO()
+                plt.figure(n).savefig(buf, format="png", bbox_inches="tight", dpi=110)
+                figs.append(base64.b64encode(buf.getvalue()).decode("ascii"))
+            plt.close("all")
     except Exception:
         traceback.print_exc(file=err)
-        plt.close("all")
+        if __has_mpl:
+            plt.close("all")
     return out.getvalue(), err.getvalue(), figs
 `;
 
-async function init() {
-  try {
-    pyodide = await loadPyodide();
-    statusEl.textContent = '⏳ 계산 라이브러리 로딩 중...';
-    await pyodide.loadPackage(['numpy', 'matplotlib', 'pandas']);
-    await pyodide.runPythonAsync(BOOTSTRAP);
-    // 한글 폰트 시도 (실패해도 계속 진행)
+const loadedPkgs = new Set();
+
+// 코드에서 numpy / matplotlib / pandas import를 찾아냄 (필요할 때만 로드)
+function detectPackages(code) {
+  const pkgs = new Set();
+  const re = /(?:^|\n)\s*(?:import|from)\s+([a-zA-Z_][\w.]*)/g;
+  let m;
+  while ((m = re.exec(code))) {
+    const top = m[1].split('.')[0];
+    if (top === 'numpy' || top === 'matplotlib' || top === 'pandas') pkgs.add(top);
+  }
+  return [...pkgs];
+}
+
+async function ensurePackages(code) {
+  const need = detectPackages(code).filter(p => !loadedPkgs.has(p));
+  if (!need.length) return;
+  outputEl.textContent = '📦 ' + need.join(', ') + ' 불러오는 중... (처음 한 번만)';
+  await pyodide.loadPackage(need);
+  // matplotlib 한글 폰트 (실패해도 계속 진행)
+  if (need.includes('matplotlib') && !loadedPkgs.has('koreanize')) {
     try {
       await pyodide.loadPackage('micropip');
       const mp = pyodide.pyimport('micropip');
       await mp.install('koreanize-matplotlib');
       await pyodide.runPythonAsync('import koreanize_matplotlib');
+      loadedPkgs.add('koreanize');
     } catch (e) { console.log('korean font skipped', e); }
+  }
+  need.forEach(p => loadedPkgs.add(p));
+}
+
+async function init() {
+  try {
+    pyodide = await loadPyodide();
+    await pyodide.runPythonAsync(BOOTSTRAP);
     statusEl.textContent = '✅ 준비 완료! 코드를 붙여넣고 실행을 눌러보세요.';
     statusEl.classList.add('ready');
     runBtn.disabled = false;
   } catch (e) {
-    statusEl.textContent = '❌ 로딩 실패: ' + e.message;
+    statusEl.innerHTML = '❌ 로딩 실패: ' + escapeHtml(e.message) +
+      ' <button class="btn-sub" style="padding:6px 12px; font-size:13px;" onclick="location.reload()">🔄 다시 시도</button>';
   }
 }
 
@@ -269,6 +300,7 @@ runBtn.onclick = async () => {
   outputEl.textContent = '실행 중...';
   plotsEl.innerHTML = '';
   try {
+    await ensurePackages(codeEl.value);
     pyodide.globals.set('__user_code__', codeEl.value);
     pyodide.globals.set('__user_stdin__', document.getElementById('stdinBox').value);
     const res = await pyodide.runPythonAsync('__run__(__user_code__, __user_stdin__)');
