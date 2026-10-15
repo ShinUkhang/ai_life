@@ -49,11 +49,13 @@
       <span id="status">⏳ 파이썬 준비 중... (첫 로딩에 20~30초 걸려요)</span>
     </div>
     <textarea id="code" spellcheck="false" placeholder="여기에 파이썬 코드를 붙여넣으세요"></textarea>
+    <h2 style="margin-top:14px;">⌨️ 프로그램 입력값 <span style="font-size:12px; color:#888; font-weight:normal;">(input() 쓸 때만 · 한 줄에 하나씩 미리 적어두세요)</span></h2>
+    <textarea id="stdinBox" spellcheck="false" placeholder="예)&#10;철수&#10;3" style="width:100%; height:80px; font-family:'Consolas','D2Coding',monospace; font-size:15px; line-height:1.6; padding:12px; border:2px solid #dfe3ea; border-radius:8px; resize:vertical;"></textarea>
     <div class="row" style="margin-top:12px; margin-bottom:0;">
       <button class="btn-run" id="runBtn" disabled>▶ 실행</button>
       <button class="btn-clear" id="clearBtn">지우기</button>
     </div>
-    <p class="hint">Tab 키로 들여쓰기 가능 · <code>input()</code>은 지원하지 않아요 · 그래프는 아래에 자동 표시됩니다</p>
+    <p class="hint">Tab 키로 들여쓰기 가능 · <code>input()</code> 사용 시 위 입력값 칸에 값을 미리 적어두세요 · 그래프는 아래에 자동 표시됩니다</p>
   </div>
   <div class="card">
     <h2>📟 실행 결과</h2>
@@ -209,12 +211,26 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from contextlib import redirect_stdout, redirect_stderr
 
-def __run__(user_code):
+def __run__(user_code, stdin_text):
     out, err = io.StringIO(), io.StringIO()
     figs = []
+    # input() 지원: 입력값 칸의 줄들을 순서대로 전달 + 입력 내용 에코
+    __lines = iter(stdin_text.splitlines())
+    def __input(prompt=""):
+        out.write(str(prompt))
+        try:
+            val = next(__lines)
+        except StopIteration:
+            raise EOFError("입력값이 부족합니다. '프로그램 입력값' 칸에 값을 한 줄에 하나씩 미리 적어주세요.")
+        out.write(val + "\n")
+        return val
+    __ns = {"__name__": "__main__", "input": __input}
     try:
+        __old_stdin = sys.stdin
+        sys.stdin = io.StringIO(stdin_text)
         with redirect_stdout(out), redirect_stderr(err):
-            exec(compile(user_code, "<cell>", "exec"), {"__name__": "__main__"})
+            exec(compile(user_code, "<cell>", "exec"), __ns)
+        sys.stdin = __old_stdin
         for n in plt.get_fignums():
             buf = io.BytesIO()
             plt.figure(n).savefig(buf, format="png", bbox_inches="tight", dpi=110)
@@ -254,7 +270,8 @@ runBtn.onclick = async () => {
   plotsEl.innerHTML = '';
   try {
     pyodide.globals.set('__user_code__', codeEl.value);
-    const res = await pyodide.runPythonAsync('__run__(__user_code__)');
+    pyodide.globals.set('__user_stdin__', document.getElementById('stdinBox').value);
+    const res = await pyodide.runPythonAsync('__run__(__user_code__, __user_stdin__)');
     const [stdout, stderr, figs] = res.toJs();
     let html = '';
     if (stdout) html += escapeHtml(stdout);
