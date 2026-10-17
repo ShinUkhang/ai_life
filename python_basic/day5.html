@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>🚀 Python 기초 5일차 — 미니 프로젝트</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -46,8 +46,14 @@
   footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
   @media (max-width: 600px) { header h1 { font-size: 22px; } .card { padding: 16px; } }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/theme.css">
 </head>
 <body>
+<nav class="lesson-nav"><div class="ln-in"><a class="brand" href="index.html"><span class="brand-mark">py</span><span><b>Python 기초</b><small>5일차 수업</small></span></a><div class="days"><a href="day1.html">1일차</a><a href="day2.html">2일차</a><a href="day3.html">3일차</a><a href="day4.html">4일차</a><a href="day5.html" aria-current="page">5일차</a><a href="submit.html?day=5" style="color:var(--yellow)">과제 제출</a></div></div></nav>
 <div class="container">
   <header>
     <h1>🚀 5일차: 미니 프로젝트</h1>
@@ -453,8 +459,7 @@ def 통계보기():
       <p>5일 동안 배운 것을 <strong>모두 연결</strong>하면 더 멋진 프로그램이 돼요!</p>
     </div>
 
-    <div class="notice">📤 <strong>제출:</strong> 발전시킨 프로젝트 코드를 <code>학번_이름_과제5.py</code> 파일로 저장한 뒤, 아래 5일차 과제 폴더에 업로드하세요. <strong>추가한 기능이 뭔지</strong> 코드 맨 위 주석에 적어주세요! (예: # 추가 기능: 난이도 조절, 통계 보기)</div>
-    <p><a class="link-btn btn-blue" href="https://drive.google.com/drive/folders/1i-c3N9KCES_qX54xtF37BPGeJicfUT5J" target="_blank">📤 5일차 과제 제출하기 (구글 드라이브)</a></p>
+    <div class="submit-box"><div><b>5일차 과제는 코딩 제출실에서</b><p>파일을 드라이브에 올리지 않아도 돼요. 제출실에서 생각을 정리하고, 코드를 쓰고, 자동 확인까지 한 뒤 바로 제출해요.</p></div><a class="link-btn btn-green" href="submit.html?day=5">5일차 과제 제출하기</a></div>
   </div>
 
   <footer>배화여자고등학교 — Python 기초 과정 python_basic (5일차)</footer>

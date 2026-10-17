@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>🐍 Python 기초 3일차 — 자료구조와 함수</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,8 +36,14 @@
   footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
   @media (max-width: 600px) { header h1 { font-size: 20px; } .card { padding: 16px; } }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/theme.css">
 </head>
 <body>
+<nav class="lesson-nav"><div class="ln-in"><a class="brand" href="index.html"><span class="brand-mark">py</span><span><b>Python 기초</b><small>3일차 수업</small></span></a><div class="days"><a href="day1.html">1일차</a><a href="day2.html">2일차</a><a href="day3.html" aria-current="page">3일차</a><a href="day4.html">4일차</a><a href="day5.html">5일차</a><a href="submit.html?day=3" style="color:var(--yellow)">과제 제출</a></div></div></nav>
 <div class="container">
   <header>
     <h1>🐍 Python 기초 3일차</h1>
@@ -315,8 +321,7 @@ print(최소공배수(12, 18))  # 36이 나와야 해요!</div>
       <p>❓ 그렇다면 정렬된 리스트에서는 더 빨리 찾을 수 있을까요? (다음에 배울 이진 탐색을 기대해주세요!)</p>
     </div>
 
-    <div class="notice">📤 <strong>제출:</strong> 완성한 코드를 <code>학번_이름_과제3.py</code> 파일로 저장한 뒤, 아래 3일차 과제 폴더에 업로드하세요.</div>
-    <p><a class="link-btn btn-blue" href="https://drive.google.com/drive/folders/1TgEzYknCaVbc_Pa-vHb9wKbjD2VG8Y8W" target="_blank">📤 3일차 과제 제출하기 (구글 드라이브)</a></p>
+    <div class="submit-box"><div><b>3일차 과제는 코딩 제출실에서</b><p>파일을 드라이브에 올리지 않아도 돼요. 제출실에서 생각을 정리하고, 코드를 쓰고, 자동 확인까지 한 뒤 바로 제출해요.</p></div><a class="link-btn btn-green" href="submit.html?day=3">3일차 과제 제출하기</a></div>
   </div>
 
   <footer>🐍 Python 기초 5일차 — 3일차: 자료구조와 함수</footer>

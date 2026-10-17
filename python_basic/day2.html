@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>🐍 2일차: 조건문과 반복문 — python_basic</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,8 +38,14 @@
   footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
   @media (max-width: 600px) { header h1 { font-size: 22px; } .card { padding: 16px; } }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/theme.css">
 </head>
 <body>
+<nav class="lesson-nav"><div class="ln-in"><a class="brand" href="index.html"><span class="brand-mark">py</span><span><b>Python 기초</b><small>2일차 수업</small></span></a><div class="days"><a href="day1.html">1일차</a><a href="day2.html" aria-current="page">2일차</a><a href="day3.html">3일차</a><a href="day4.html">4일차</a><a href="day5.html">5일차</a><a href="submit.html?day=2" style="color:var(--yellow)">과제 제출</a></div></div></nav>
 <div class="container">
   <header>
     <h1>🐍 2일차: 조건문과 반복문</h1>
@@ -382,8 +388,7 @@ print(f"2번째: {b}")
       <p>💡 힌트: 반복 횟수를 <strong>미리 알 때</strong>는 for문이 편하고, <strong>조건이 만족될 때까지</strong> 반복할 때는 while문이 편해요. 숫자 맞추기 게임은 왜 while문을 썼을까요?</p>
     </div>
 
-    <div class="notice">📤 <strong>제출:</strong> 완성한 코드를 <code>학번_이름_과제2.py</code> 파일로 저장한 뒤, 아래 2일차 과제 폴더에 업로드하세요.</div>
-    <p><a class="link-btn btn-blue" href="https://drive.google.com/drive/folders/1PkXScC_A-w9L3CN9-g78NpYtWO7NfFTr" target="_blank">📤 2일차 과제 제출하기 (구글 드라이브)</a></p>
+    <div class="submit-box"><div><b>2일차 과제는 코딩 제출실에서</b><p>파일을 드라이브에 올리지 않아도 돼요. 제출실에서 생각을 정리하고, 코드를 쓰고, 자동 확인까지 한 뒤 바로 제출해요.</p></div><a class="link-btn btn-green" href="submit.html?day=2">2일차 과제 제출하기</a></div>
   </div>
 
   <footer>배화여자고등학교 — Python 기초 과정 python_basic · 2일차</footer>
