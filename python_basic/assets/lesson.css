@@ -1,0 +1,120 @@
+/* 수업 페이지(day1~5) 전용 — site.css 다음에 불러와요.
+ * 모든 수업 페이지는 같은 뼈대를 써요:
+ *   상단 막대 → 머리말(.lesson-head) → 오늘의 순서(.toc) → 섹션 카드(.card) → 과제(#homework) → 이전/다음(.pager)
+ */
+body { line-height: 1.75; }
+.container { max-width: 940px; margin: 0 auto; padding-block: 24px 60px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* 머리말 */
+.lesson-head { background: var(--code-bg); color: var(--code-ink); border-radius: 18px; padding: 30px 32px; margin-bottom: 16px; position: relative; overflow: hidden; }
+.lesson-head::after { content: ">>>"; position: absolute; right: 24px; bottom: -18px; font-family: var(--f-code); font-weight: 800; font-size: 120px; color: #263244; line-height: 1; pointer-events: none; }
+.lesson-head > * { position: relative; z-index: 1; }
+.lesson-head .eyebrow { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.lesson-head .eyebrow span { font-size: 12.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #263244; color: #dfe6ef; }
+.lesson-head .eyebrow span:first-child { background: var(--yellow); color: #18202c; }
+.lesson-head h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(30px, 5vw, 44px); line-height: 1.15; margin-bottom: 8px; }
+.lesson-head p { font-size: 16px; color: #b9c4d3; margin: 0; max-width: 36em; }
+@media (max-width: 600px) { .lesson-head { padding: 24px 20px; } }
+
+/* 오늘의 순서 */
+.toc { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; margin-bottom: 20px; }
+.toc b { display: block; font-size: 13px; color: var(--ink-3); margin-bottom: 8px; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; counter-reset: t; }
+.toc li { counter-increment: t; }
+.toc a { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink-2); font-size: 13.5px; font-weight: 600; padding: 5px 11px 5px 6px; border-radius: 999px; background: var(--surface-2); }
+.toc a::before { content: counter(t); display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--ink); color: var(--bg); font-size: 11px; font-family: var(--f-code); font-weight: 800; }
+.toc a:hover { color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--blue); }
+.toc li.hw a { background: var(--yellow); color: #18202c; }
+.toc li.hw a::before { background: #18202c; color: var(--yellow); }
+
+/* 섹션 카드 */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 26px 28px; margin-bottom: 20px; }
+@media (max-width: 600px) { .card { padding: 18px; } }
+.card h2 { font-family: var(--f-display); font-weight: 400; font-size: 25px; color: var(--ink); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.card h2::after { content: ""; flex: 1; min-width: 24px; height: 3px; background: repeating-linear-gradient(90deg, var(--line) 0 8px, transparent 8px 14px); }
+.card h3 { color: var(--ink); font-size: 17px; margin: 18px 0 8px; }
+.card p, .card li { font-size: 15px; color: var(--ink-2); }
+.card p { margin: 0 0 8px; }
+.card ol, .card ul { padding-left: 22px; margin: 8px 0; }
+.card li { margin-bottom: 6px; }
+.card strong, .card b { color: var(--ink); }
+
+/* 상자들 */
+.step, .practice, .quiz, .project-card { border-radius: 12px; padding: 16px 20px; margin: 12px 0; }
+.step { background: var(--surface-2); box-shadow: inset 4px 0 0 var(--blue); }
+.step h3, .practice h3, .quiz h3, .project-card h3 { margin-top: 0; color: var(--blue-ink); }
+.step > :last-child, .practice > :last-child, .quiz > :last-child { margin-bottom: 0; }
+.practice, .quiz { background: var(--blue-soft); }
+.hint { color: var(--ink-3) !important; font-size: 13px !important; margin-top: 6px; }
+.notice { background: var(--yellow-soft); color: var(--yellow-ink); border-radius: 12px; padding: 14px 18px; margin: 14px 0; font-size: 14px; }
+.notice strong, .notice b, .notice a { color: inherit; }
+.container > .notice { margin-top: 0; margin-bottom: 20px; }
+
+details.quiz { background: var(--surface-2); border: 1px solid var(--line); }
+details.quiz summary { font-weight: 700; cursor: pointer; font-size: 15px; color: var(--ink); }
+details.quiz .answer { margin-top: 10px; padding: 12px 14px; background: var(--good-soft); border-radius: 8px; font-size: 14px; color: var(--ink); box-shadow: inset 4px 0 0 var(--good); }
+
+.project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 14px 0; }
+.project-card { background: var(--surface-2); box-shadow: inset 4px 0 0 var(--yellow); margin: 0; }
+.project-card p { font-size: 14px; }
+.tag { display: inline-block; background: var(--blue-soft); color: var(--blue-ink); padding: 2px 10px; border-radius: 999px; font-size: 12px; margin: 2px 4px 2px 0; font-weight: 700; }
+.plan-input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 10px; font: inherit; font-size: 15px; color: var(--ink); background: var(--surface); margin: 6px 0 12px; }
+.plan-input:focus { border-color: var(--blue); outline: none; box-shadow: 0 0 0 3px var(--blue-soft); }
+textarea.plan-input { min-height: 80px; resize: vertical; }
+.check-list { list-style: none; padding: 0 !important; }
+.check-list input[type="checkbox"] { transform: scale(1.3); margin-right: 10px; accent-color: var(--blue); }
+
+/* 코드 */
+.code-block { background: var(--code-bg); color: var(--code-ink); border-radius: 12px; font-family: var(--f-code); font-size: 13.5px; line-height: 1.65; padding: 18px; margin: 0 0 14px; white-space: pre; overflow-x: auto; max-height: 520px; overflow-y: auto; }
+.copy-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--ink); color: var(--bg); border: 0; border-radius: 8px 8px 0 0; font-family: var(--f-body); font-weight: 600; font-size: 12.5px; padding: 6px 12px; cursor: pointer; margin: 4px 0 0 14px; }
+.copy-btn:hover { background: var(--blue); }
+.copy-btn.done { background: var(--good); color: #fff; }
+code { font-family: var(--f-code); background: var(--surface-2); border-radius: 5px; padding: 1px 5px; font-size: .92em; }
+.step code, .practice code, .quiz code, .notice code { background: rgba(127, 140, 160, .16); }
+
+/* 표 */
+table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 12px 0; font-size: 14px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+th { background: var(--ink); color: var(--bg); font-weight: 600; }
+tr:nth-child(even) td { background: var(--surface-2); }
+td { color: var(--ink-2); }
+.table-scroll { overflow-x: auto; }
+
+/* 링크 버튼 */
+.link-btn, .runner-link { display: inline-flex; align-items: center; gap: 6px; border-radius: 10px; font-weight: 700; font-size: 14px; padding: 11px 20px; margin: 6px 6px 6px 0; text-decoration: none; }
+.link-btn:hover, .runner-link:hover { filter: brightness(1.06); }
+.btn-green, .runner-link { background: var(--yellow); color: #18202c !important; }
+.btn-blue { background: var(--ink); color: var(--bg); }
+.btn-gray { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
+.notice .runner-link { padding: 3px 12px; margin: 0 2px; font-size: 13.5px; }
+iframe { border: 1px solid var(--line) !important; border-radius: 12px; background: #fff; margin-top: 10px; }
+
+/* 과제 제출 (구글 드라이브) */
+.card.homework { border: 2px solid var(--ink); }
+.submit-box { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; background: var(--code-bg); color: var(--code-ink); border-radius: 14px; padding: 18px 20px; margin-top: 18px; }
+.submit-box b { font-family: var(--f-display); font-weight: 400; font-size: 20px; color: var(--yellow); display: block; }
+.submit-box p { color: #b9c4d3 !important; margin: 4px 0 0; font-size: 14px !important; }
+.submit-box p strong, .submit-box p b { color: #fff; font-family: inherit; font-size: inherit; display: inline; }
+.submit-box code { background: #263244; color: #fff; }
+.submit-box .link-btn { margin: 0; }
+@media (max-width: 640px) { .submit-box { grid-template-columns: 1fr; } .submit-box .link-btn { justify-self: start; } }
+
+/* 이전 · 다음 */
+.pager { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: stretch; margin-top: 28px; }
+.pager a { display: grid; gap: 2px; text-decoration: none; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; color: var(--ink); }
+.pager a:hover { border-color: var(--blue); }
+.pager small { color: var(--ink-3); font-size: 12.5px; font-weight: 600; }
+.pager b { font-size: 15.5px; }
+.pager .next { text-align: right; }
+.pager .home { place-items: center; font-weight: 700; font-size: 14px; }
+.pager .empty { visibility: hidden; }
+@media (max-width: 600px) { .pager { grid-template-columns: 1fr 1fr; } .pager .home { grid-column: 1 / -1; grid-row: 2; } }
+
+footer { text-align: center; color: var(--ink-3); font-size: 13px; padding: 28px 0 0; }
+
+@media print {
+  body { background: #fff; }
+  .topbar, .toc, .copy-btn, .pager { display: none !important; }
+  .code-block { max-height: none; white-space: pre-wrap; }
+}

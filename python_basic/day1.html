@@ -3,63 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>🐍 1일차: Python 첫걸음 — python_basic</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: '맑은 고딕', sans-serif; background: #f0f4f8; color: #333; line-height: 1.7; }
-  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-  header { background: linear-gradient(135deg, #1a5276, #2e86c1); color: white; padding: 40px 20px; text-align: center; border-radius: 14px; margin-bottom: 25px; }
-  header h1 { font-size: 28px; margin-bottom: 10px; }
-  header p { font-size: 15px; opacity: 0.92; }
-  .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-  .card h2 { color: #1a5276; font-size: 19px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 3px solid #2e86c1; }
-  .card h3 { color: #2c3e50; font-size: 16px; margin: 14px 0 8px; }
-  .card p, .card li { font-size: 14px; }
-  .card ol, .card ul { padding-left: 22px; margin: 8px 0; }
-  .card li { margin-bottom: 6px; }
-  .notice { background: #fef9e7; border-left: 5px solid #f39c12; padding: 14px 18px; border-radius: 8px; margin: 14px 0; font-size: 14px; }
-  .step { background: #f8f9fa; border-radius: 8px; padding: 16px 20px; margin: 12px 0; border-left: 5px solid #2e86c1; }
-  .step h3 { margin-top: 0; color: #1a5276; }
-  .code-block { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; font-family: 'Consolas', 'D2Coding', monospace; font-size: 12.5px; overflow-x: auto; margin: 10px 0; white-space: pre; line-height: 1.5; }
-  .copy-btn { background: #34495e; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-bottom: 6px; }
-  .copy-btn:hover { background: #2c3e50; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
-  th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-  th { background: #2e86c1; color: white; }
-  tr:nth-child(even) { background: #f9f9f9; }
-  .link-btn { display: inline-block; padding: 12px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; margin: 6px 6px 6px 0; font-size: 14px; }
-  .link-btn:hover { opacity: 0.88; }
-  .btn-green { background: #27ae60; color: white; }
-  .btn-blue { background: #2e86c1; color: white; }
-  .btn-gray { background: #7f8c8d; color: white; }
-  .quiz { background: #eaf2f8; border-radius: 8px; padding: 16px 20px; margin: 12px 0; }
-  .quiz h3 { color: #1a5276; margin-top: 0; }
-  .quiz .hint { font-size: 12px; color: #666; margin-top: 6px; }
-  footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
-  @media (max-width: 600px) { header h1 { font-size: 22px; } .card { padding: 16px; } }
-</style>
+<title>1일차 · Python 첫걸음 — Python 기초</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap">
-<link rel="stylesheet" href="assets/app.css">
-<link rel="stylesheet" href="assets/theme.css">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/lesson.css">
 </head>
 <body>
-<nav class="lesson-nav"><div class="ln-in"><a class="brand" href="index.html"><span class="brand-mark">py</span><span><b>Python 기초</b><small>1일차 수업</small></span></a><div class="days"><a href="day1.html" aria-current="page">1일차</a><a href="day2.html">2일차</a><a href="day3.html">3일차</a><a href="day4.html">4일차</a><a href="day5.html">5일차</a><a href="submit.html?day=1" style="color:var(--yellow)">과제 제출</a></div></div></nav>
-<div class="container">
-  <header>
-    <h1>🐍 1일차: Python 첫걸음</h1>
-    <p>변수, 자료형, 입출력 — 2시간 × 1회</p>
-  </header>
+<header class="topbar"><div class="topbar-in"><a class="brand" href="index.html"><span class="brand-mark">py</span><span><b>Python 기초</b><small>1일차 수업</small></span></a><span class="spacer"></span><nav class="days" aria-label="수업 일차"><a href="day1.html" aria-current="page">1일차</a><a href="day2.html">2일차</a><a href="day3.html">3일차</a><a href="day4.html">4일차</a><a href="day5.html">5일차</a><a class="hw" href="#homework">과제 제출</a></nav></div></header>
+<main class="container">
+  <section class="lesson-head">
+    <div class="eyebrow"><span>1일차</span><span>2시간</span><span>변수</span><span>자료형</span><span>입출력</span></div>
+    <h1>Python 첫걸음</h1>
+    <p>컴퓨터와 대화하는 법을 배워요. 값을 상자에 담고, 화면에 보여주고, 키보드로 입력받아요.</p>
+  </section>
 
-  <div class="card">
+  <nav class="toc" aria-label="오늘의 순서"><b>오늘의 순서</b><ol><li><a href="#s1">수강 전 설문</a></li><li><a href="#s2">수업 흐름</a></li><li><a href="#s3">핵심 개념</a></li><li><a href="#s4">따라 치기 코드</a></li><li><a href="#s5">실습: 자기소개 프로그램 만들기</a></li><li><a href="#s6">연습문제</a></li><li class="hw"><a href="#homework">과제</a></li></ol></nav>
+
+  <div class="card" id="s1">
     <h2>📝 수강 전 설문</h2>
     <p>수업을 시작하기 전에 아래 설문을 작성해주세요. (학번 · 이름 · 수강동기)</p>
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfXOvSUcSpBy5AgA6sxOlDY9ZfDnETPf1J7LZFyr_3icv4m2Q/viewform?embedded=true" width="100%" height="820" frameborder="0" marginheight="0" marginwidth="0" style="border:1px solid #e0e0e0; border-radius:8px; margin-top:10px;">로드 중…</iframe>
-    <p style="margin-top:10px;"><a class="link-btn btn-blue" href="https://docs.google.com/forms/d/e/1FAIpQLSfXOvSUcSpBy5AgA6sxOlDY9ZfDnETPf1J7LZFyr_3icv4m2Q/viewform" target="_blank">📝 새 창에서 설문 열기</a></p>
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfXOvSUcSpBy5AgA6sxOlDY9ZfDnETPf1J7LZFyr_3icv4m2Q/viewform?embedded=true" width="100%" height="820" frameborder="0" marginheight="0" marginwidth="0">로드 중…</iframe>
+    <p><a class="link-btn btn-blue" href="https://docs.google.com/forms/d/e/1FAIpQLSfXOvSUcSpBy5AgA6sxOlDY9ZfDnETPf1J7LZFyr_3icv4m2Q/viewform" target="_blank">📝 새 창에서 설문 열기</a></p>
   </div>
 
-  <div class="card">
+  <div class="card" id="s2">
     <h2>🗺️ 수업 흐름 (120분)</h2>
     <table>
       <tr><th>순서</th><th>내용</th><th>시간</th></tr>
@@ -81,7 +50,7 @@
     </p>
   </div>
 
-  <div class="card">
+  <div class="card" id="s3">
     <h2>📚 핵심 개념</h2>
 
     <div class="step">
@@ -127,7 +96,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="s4">
     <h2>💻 따라 치기 코드</h2>
 
     <h3>① 변수 만들기</h3>
@@ -217,7 +186,7 @@ print(f"내년 나이는 {나이 + 1}살이야.")
 print(f"평균 점수는 {평균:.1f}점이야.")  # 소수점 첫째 자리까지</div>
   </div>
 
-  <div class="card">
+  <div class="card" id="s5">
     <h2>🛠️ 실습: 자기소개 프로그램 만들기</h2>
     <p>배운 것을 총동원해서 나를 소개하는 프로그램을 만들어보세요!</p>
     <button class="copy-btn" onclick="copyText('d1_code7')">📋 복사</button>
@@ -241,7 +210,7 @@ print("-" * 30)
 print("만나서 반가워요! 😊")</div>
   </div>
 
-  <div class="card">
+  <div class="card" id="s6">
     <h2>✏️ 연습문제</h2>
 
     <div class="quiz">
@@ -263,15 +232,7 @@ print("만나서 반가워요! 😊")</div>
     </div>
   </div>
 
-  <div class="card">
-    <h2>🔗 다음 단계</h2>
-    <p>
-      <a class="link-btn btn-blue" href="day2.html">2일차: 조건문과 반복문 →</a>
-      <a class="link-btn btn-gray" href="index.html">← 과정 목차로</a>
-    </p>
-  </div>
-
-  <div class="card">
+  <div class="card homework" id="homework">
     <h2>📝 과제</h2>
     <p>오늘 배운 <strong>변수·자료형·입출력</strong>을 활용해 아래 과제를 풀어보세요!</p>
 
@@ -324,17 +285,14 @@ print(f"{섭씨}°C는 {화씨}°F입니다.")
       <p>💡 힌트: 컴퓨터는 숫자를 <strong>2진수</strong>로 저장해요. 0.1을 2진수로 정확히 표현할 수 있을까요? (10진수에서 1/3 = 0.333...처럼 무한히 이어지는 것과 비슷해요!)</p>
     </div>
 
-    <div class="submit-box"><div><b>1일차 과제는 코딩 제출실에서</b><p>파일을 드라이브에 올리지 않아도 돼요. 제출실에서 생각을 정리하고, 코드를 쓰고, 자동 확인까지 한 뒤 바로 제출해요.</p></div><a class="link-btn btn-green" href="submit.html?day=1">1일차 과제 제출하기</a></div>
+    <div class="submit-box"><div><b>1일차 과제 제출 · 구글 드라이브</b><p>완성한 코드를 <code>학번_이름_과제1.py</code> 파일로 저장한 뒤, 1일차 과제 폴더에 업로드하세요. (과제 1, 2 중 하나만 해도 OK!)</p></div><a class="link-btn btn-green" href="https://drive.google.com/drive/folders/1RhEIL25DZdQ4P2sTcPn9AlhLRyeu9c_I" target="_blank" rel="noopener">📤 1일차 과제 폴더 열기</a></div>
   </div>
 
-  <footer>배화여자고등학교 — Python 기초 과정 python_basic · 1일차</footer>
-</div>
+  <nav class="pager" aria-label="수업 이동"><span class="empty"></span><a class="home" href="index.html">전체 목차</a><a class="next" href="day2.html"><small>다음 수업 →</small><b>2일차 · 조건과 반복</b></a></nav>
 
-<script>
-function copyText(id) {
-  const text = document.getElementById(id).textContent;
-  navigator.clipboard.writeText(text).then(() => alert("📋 코드가 복사되었습니다!"));
-}
-</script>
+  <footer>배화여자고등학교 · Python 기초 과정 · 1일차</footer>
+</main>
+
+<script src="assets/lesson.js"></script>
 </body>
 </html>

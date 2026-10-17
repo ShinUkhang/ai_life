@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Python 기초 5일차 — python_basic</title>
+<title>Python 기초 5일 — 배화여자고등학교</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap">
-<link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/site.css">
 <style>
-  .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 32px; align-items: center; padding-block: 28px 36px; }
+  .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 32px; align-items: center; padding-block: 28px 40px; }
   @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
   .hero h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(44px, 7vw, 84px); line-height: 1.02; letter-spacing: -0.01em; }
   .hero h1 .py { display: inline-block; background: var(--yellow); color: #18202c; padding: 0 .14em; border-radius: .12em; }
@@ -21,21 +21,22 @@
   .term-bar i { width: 11px; height: 11px; border-radius: 50%; background: #334156; }
   .term-bar span { margin-left: 8px; font-size: 12px; color: #93a1b5; }
   .term pre { margin: 0; padding: 16px 18px; white-space: pre-wrap; line-height: 1.7; }
-  .term .o { color: #93a1b5; }
+  .term .k { color: var(--tk); } .term .b { color: var(--tb); } .term .s { color: var(--ts); } .term .n { color: var(--tn); } .term .o { color: #93a1b5; }
   .caret { display: inline-block; width: .55em; height: 1.1em; background: var(--yellow); vertical-align: -0.15em; animation: blink 1s steps(1) infinite; }
   @keyframes blink { 50% { opacity: 0; } }
   @media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
 
-  .track-h { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin: 12px 0 14px; }
-  .track-h h2 { font-family: var(--f-display); font-weight: 400; font-size: 28px; }
-  .track-h p { margin: 0; color: var(--ink-3); font-size: 14px; }
+  .sec-h { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin: 12px 0 14px; }
+  .sec-h h2 { font-family: var(--f-display); font-weight: 400; font-size: 28px; }
+  .sec-h p { margin: 0; color: var(--ink-3); font-size: 14px; }
+
   .track { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; position: relative; }
   .track::before { content: ""; position: absolute; left: 24px; right: 24px; top: 33px; height: 3px; background: repeating-linear-gradient(90deg, var(--ink) 0 10px, transparent 10px 18px); opacity: .35; }
   @media (max-width: 1000px) { .track { grid-template-columns: 1fr; } .track::before { left: 33px; right: auto; top: 24px; bottom: 24px; width: 3px; height: auto; background: repeating-linear-gradient(180deg, var(--ink) 0 10px, transparent 10px 18px); } }
   .station { position: relative; display: grid; gap: 10px; align-content: start; }
   .station .n { width: 66px; height: 66px; border-radius: 50%; background: var(--surface); border: 3px solid var(--ink); display: grid; place-items: center; font-family: var(--f-display); font-size: 30px; line-height: 1; position: relative; z-index: 1; }
   .station:last-child .n { background: var(--yellow); color: #18202c; border-color: #18202c; }
-  .station .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 6px; }
+  .station .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 6px; align-content: start; height: 100%; }
   @media (max-width: 1000px) { .station { grid-template-columns: 66px 1fr; gap: 14px; align-items: start; } }
   .station h3 { font-size: 18px; }
   .station .topics { font-size: 13.5px; color: var(--ink-2); margin: 0; }
@@ -43,16 +44,22 @@
   .station .proj b { color: var(--ink); font-weight: 600; }
   .station .acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
 
-  .flow { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; margin-top: 28px; }
-  @media (max-width: 900px) { .flow { grid-template-columns: 1fr; } }
-  .flow h2 { font-family: var(--f-display); font-weight: 400; font-size: 24px; margin-bottom: 6px; }
-  .flow ol { list-style: none; padding: 0; margin: 16px 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; counter-reset: s; }
-  @media (max-width: 640px) { .flow ol { grid-template-columns: 1fr 1fr; } }
-  .flow li { counter-increment: s; background: var(--surface-2); border-radius: 12px; padding: 12px; font-size: 13.5px; color: var(--ink-2); }
-  .flow li::before { content: counter(s); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: var(--bg); font-family: var(--f-display); font-size: 14px; margin-bottom: 8px; }
-  .flow li b { display: block; color: var(--ink); font-size: 14.5px; }
+  .two { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; margin-top: 32px; }
+  @media (max-width: 900px) { .two { grid-template-columns: 1fr; } }
+  .two h2 { font-family: var(--f-display); font-weight: 400; font-size: 24px; margin-bottom: 6px; }
+  .steps { list-style: none; padding: 0; margin: 16px 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; counter-reset: s; }
+  @media (max-width: 640px) { .steps { grid-template-columns: 1fr 1fr; } }
+  .steps li { counter-increment: s; background: var(--surface-2); border-radius: 12px; padding: 12px; font-size: 13.5px; color: var(--ink-2); }
+  .steps li::before { content: counter(s); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: var(--bg); font-family: var(--f-display); font-size: 14px; margin-bottom: 8px; }
+  .steps li b { display: block; color: var(--ink); font-size: 14.5px; }
+  .steps code, .fname { font-family: var(--f-code); font-size: 12.5px; background: var(--yellow-soft); color: var(--yellow-ink); border-radius: 5px; padding: 1px 5px; }
+  .fname { display: inline-block; font-size: 15px; padding: 6px 12px; border-radius: 8px; margin: 12px 0 4px; }
+  .folders { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+  @media (max-width: 640px) { .folders { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .folders a { display: grid; gap: 2px; place-items: center; text-decoration: none; background: var(--surface-2); color: var(--ink); border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 6px; font-weight: 700; font-size: 14px; }
+  .folders a small { font-weight: 600; font-size: 11.5px; color: var(--ink-3); }
+  .folders a:hover { border-color: var(--blue); }
   .foot { text-align: center; color: var(--ink-3); font-size: 13px; padding-top: 36px; }
-  .foot a { color: var(--ink-3); }
 </style>
 </head>
 <body>
@@ -60,8 +67,8 @@
   <div class="topbar-in">
     <a class="brand" href="index.html"><span class="brand-mark">py</span><span><b>Python 기초</b><small>배화여자고등학교</small></span></a>
     <span class="spacer"></span>
-    <a class="btn btn-ghost btn-sm" href="../python_backup.html" target="_blank">실행기</a>
-    <a class="btn btn-run btn-sm" href="submit.html">코딩 제출실</a>
+    <nav class="days" aria-label="수업 일차"><a href="day1.html">1일차</a><a href="day2.html">2일차</a><a href="day3.html">3일차</a><a href="day4.html">4일차</a><a href="day5.html">5일차</a></nav>
+    <a class="btn btn-run btn-sm" href="../python_backup.html" target="_blank">실행기 열기</a>
   </div>
 </header>
 
@@ -71,16 +78,16 @@
       <h1><span class="py">파이썬</span><br>기초 5일</h1>
       <p class="lead">프로그래밍이 처음인 사람을 위한 과정이에요. 2시간씩 다섯 번, 코랩 계정 없이 브라우저만으로 변수부터 나만의 게임까지 만들어요.</p>
       <div class="cta">
-        <a class="btn btn-primary" href="day1.html">1일차부터 시작하기</a>
-        <a class="btn btn-ghost" href="submit.html">과제 하러 가기</a>
+        <a class="btn btn-run" href="day1.html">1일차부터 시작하기</a>
+        <a class="btn btn-ghost" href="#homework">과제 제출 방법</a>
       </div>
     </div>
     <div class="term" aria-label="파이썬 실행 예시">
-      <div class="term-bar"><i></i><i></i><i></i><span>day1.py</span></div>
-      <pre><span class="tk">for</span> 일차 <span class="tk">in</span> <span class="tb">range</span>(<span class="tn">1</span>, <span class="tn">6</span>):
-    <span class="tb">print</span>(<span class="ts">f"{일차}일차 완료!"</span>)
+      <div class="term-bar"><i></i><i></i><i></i><span>python_basic.py</span></div>
+      <pre><span class="k">for</span> 일차 <span class="k">in</span> <span class="b">range</span>(<span class="n">1</span>, <span class="n">6</span>):
+    <span class="b">print</span>(<span class="s">f"{일차}일차 완료!"</span>)
 
-<span class="tb">print</span>(<span class="ts">"이제 나만의 게임을 만들 수 있어요"</span>)
+<span class="b">print</span>(<span class="s">"이제 나만의 게임을 만들 수 있어요"</span>)
 <span class="o">─────────────────────────
 1일차 완료!
 2일차 완료!
@@ -93,45 +100,69 @@
   </section>
 
   <section>
-    <div class="track-h"><h2>다섯 번의 수업</h2><p>각 수업 끝에 알고리즘 과제 1개, 수학 과제 1개가 있어요.</p></div>
-    <div class="track" id="track"></div>
+    <div class="sec-h"><h2>다섯 번의 수업</h2><p>모든 수업은 같은 순서예요 — 개념 → 따라 치기 → 실습 → 연습문제 → 과제</p></div>
+    <div class="track">
+      <article class="station"><div class="n" aria-label="1일차">1</div><div class="card">
+        <h3>Python 첫걸음</h3><p class="topics">변수 · 자료형 · 입출력</p>
+        <p class="proj">실습 <b>자기소개 프로그램</b></p>
+        <p class="proj">과제 거스름돈 계산기 · 섭씨↔화씨</p>
+        <div class="acts"><a class="btn btn-primary btn-sm" href="day1.html">수업 보기</a><a class="btn btn-ghost btn-sm" href="day1.html#homework">과제</a></div>
+      </div></article>
+      <article class="station"><div class="n" aria-label="2일차">2</div><div class="card">
+        <h3>조건문과 반복문</h3><p class="topics">if · for · while</p>
+        <p class="proj">실습 <b>숫자 맞추기 게임</b></p>
+        <p class="proj">과제 소수 판별기 · 피보나치 수열</p>
+        <div class="acts"><a class="btn btn-primary btn-sm" href="day2.html">수업 보기</a><a class="btn btn-ghost btn-sm" href="day2.html#homework">과제</a></div>
+      </div></article>
+      <article class="station"><div class="n" aria-label="3일차">3</div><div class="card">
+        <h3>자료구조와 함수</h3><p class="topics">리스트 · 딕셔너리 · 함수</p>
+        <p class="proj">실습 <b>성적 관리 프로그램</b></p>
+        <p class="proj">과제 버블 정렬 · 최대공약수/최소공배수</p>
+        <div class="acts"><a class="btn btn-primary btn-sm" href="day3.html">수업 보기</a><a class="btn btn-ghost btn-sm" href="day3.html#homework">과제</a></div>
+      </div></article>
+      <article class="station"><div class="n" aria-label="4일차">4</div><div class="card">
+        <h3>파일과 모듈</h3><p class="topics">파일 · 모듈 · 예외 처리 · 시각화</p>
+        <p class="proj">실습 <b>가계부 프로그램</b></p>
+        <p class="proj">과제 단어 빈도 분석기 · 몬테카를로 π</p>
+        <div class="acts"><a class="btn btn-primary btn-sm" href="day4.html">수업 보기</a><a class="btn btn-ghost btn-sm" href="day4.html#homework">과제</a></div>
+      </div></article>
+      <article class="station"><div class="n" aria-label="5일차">5</div><div class="card">
+        <h3>미니 프로젝트</h3><p class="topics">기획 · 코딩 · 발표</p>
+        <p class="proj">실습 <b>단어 퀴즈 게임 + 발표</b></p>
+        <p class="proj">과제 난이도 조절 · 통계 보기 기능</p>
+        <div class="acts"><a class="btn btn-primary btn-sm" href="day5.html">수업 보기</a><a class="btn btn-ghost btn-sm" href="day5.html#homework">과제</a></div>
+      </div></article>
+    </div>
   </section>
 
-  <section class="flow">
+  <section class="two" id="homework">
     <div class="panel"><div class="panel-b">
-      <h2>과제는 코딩 제출실에서</h2>
-      <p class="muted" style="margin:0">파일을 저장해 드라이브에 올리지 않아도 돼요. 제출실에서 바로 코드를 쓰고, 실행하고, 선생님께 보내요. AI나 복사 없이 스스로 생각하는 힘을 기르는 게 목표예요.</p>
-      <ol>
-        <li><b>생각 먼저</b>문제를 나누고 순서를 한국어로 적어요</li>
-        <li><b>코드 쓰기</b>붙여넣기 없이 직접 입력해요</li>
-        <li><b>자동 확인</b>여러 입력값으로 맞는지 봐요</li>
-        <li><b>돌아보기</b>중요한 줄과 막힌 곳을 적고 제출해요</li>
+      <h2>과제는 구글 드라이브에 올려요</h2>
+      <p class="muted" style="margin:0">각 수업 페이지 맨 아래 <b>과제</b>에 문제와 스타터 코드가 있어요. 실행기에서 풀고, 파일로 저장해 그날의 폴더에 올리면 끝이에요.</p>
+      <ol class="steps">
+        <li><b>문제 읽기</b>수업 페이지의 과제 칸에서 스타터 코드를 복사해요</li>
+        <li><b>풀고 실행</b>실행기에 붙여넣고 TODO를 채워 실행해요</li>
+        <li><b>파일로 저장</b>이름은 <code>학번_이름_과제N.py</code></li>
+        <li><b>폴더에 올리기</b>아래에서 그날의 폴더를 열어 업로드해요</li>
       </ol>
-      <div style="margin-top:16px"><a class="btn btn-run" href="submit.html">코딩 제출실 열기</a></div>
+      <div class="folders">
+        <a href="https://drive.google.com/drive/folders/1RhEIL25DZdQ4P2sTcPn9AlhLRyeu9c_I" target="_blank" rel="noopener">1일차<small>과제 폴더</small></a>
+        <a href="https://drive.google.com/drive/folders/1PkXScC_A-w9L3CN9-g78NpYtWO7NfFTr" target="_blank" rel="noopener">2일차<small>과제 폴더</small></a>
+        <a href="https://drive.google.com/drive/folders/1TgEzYknCaVbc_Pa-vHb9wKbjD2VG8Y8W" target="_blank" rel="noopener">3일차<small>과제 폴더</small></a>
+        <a href="https://drive.google.com/drive/folders/1kCfCU3pR9gT1bTb-PgGDVWnrvzq6fMJ1" target="_blank" rel="noopener">4일차<small>과제 폴더</small></a>
+        <a href="https://drive.google.com/drive/folders/1i-c3N9KCES_qX54xtF37BPGeJicfUT5J" target="_blank" rel="noopener">5일차<small>과제 폴더</small></a>
+      </div>
     </div></div>
     <div class="panel"><div class="panel-b" style="display:grid; gap:10px; align-content:start">
       <h2>준비물은 브라우저 하나</h2>
-      <p class="muted" style="margin:0">수업 중 따라 치는 코드는 파이썬 실행기에 붙여넣어 실행해요. 처음 열 때 20~30초쯤 준비 시간이 걸려요.</p>
-      <a class="btn btn-ghost" style="justify-self:start" href="../python_backup.html" target="_blank">파이썬 실행기 열기</a>
+      <p class="muted" style="margin:0">수업 중 따라 치는 코드는 <b>📋 복사</b> 버튼으로 복사해 파이썬 실행기에 붙여넣어 실행해요. 처음 열 때 20~30초쯤 준비 시간이 걸려요.</p>
+      <a class="btn btn-run" style="justify-self:start" href="../python_backup.html" target="_blank">파이썬 실행기 열기</a>
+      <p class="muted" style="margin:6px 0 0; font-size:13.5px">파일 이름 예시</p>
+      <span class="fname" style="justify-self:start; margin-top:0">20517_김파이_과제1.py</span>
     </div></div>
   </section>
 
-  <p class="foot">배화여자고등학교 · Python 기초 과정 · <a href="teacher.html">교사 관리</a></p>
+  <p class="foot">배화여자고등학교 · Python 기초 과정</p>
 </main>
-
-<script src="assets/tasks.js"></script>
-<script>
-  const PROJ = { 1: "자기소개 프로그램", 2: "숫자 맞추기 게임", 3: "성적 관리 프로그램", 4: "가계부 프로그램", 5: "단어 퀴즈 게임 + 발표" };
-  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  document.getElementById("track").innerHTML = PYCLASS_DAYS.map((d) => {
-    const tasks = PYCLASS_TASKS.filter((t) => t.day === d.day).map((t) => t.title);
-    return `<article class="station"><div class="n" aria-label="${d.day}일차">${d.day}</div><div class="card">
-      <h3>${esc(d.title)}</h3><p class="topics">${esc(d.topics)}</p>
-      <p class="proj">실습 <b>${esc(PROJ[d.day])}</b></p>
-      <p class="proj">과제 ${tasks.map(esc).join(" · ")}</p>
-      <div class="acts"><a class="btn btn-primary btn-sm" href="${d.page}">수업 보기</a><a class="btn btn-ghost btn-sm" href="submit.html?day=${d.day}">과제 제출</a></div>
-    </div></article>`;
-  }).join("");
-</script>
 </body>
 </html>

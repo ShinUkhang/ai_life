@@ -3,52 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>🐍 Python 기초 4일차 — 파일과 모듈</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: '맑은 고딕', sans-serif; background: #f0f4f8; color: #333; line-height: 1.7; }
-  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-  header { background: linear-gradient(135deg, #1a5276, #2e86c1); color: white; padding: 35px 20px; text-align: center; border-radius: 14px; margin-bottom: 25px; }
-  header h1 { font-size: 26px; margin-bottom: 10px; }
-  header p { font-size: 15px; opacity: 0.92; }
-  .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-  .card h2 { color: #1a5276; font-size: 19px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 3px solid #2e86c1; }
-  .card h3 { color: #2c3e50; font-size: 16px; margin: 16px 0 8px; }
-  .card p, .card li { font-size: 14px; }
-  .card ol, .card ul { padding-left: 22px; margin: 8px 0; }
-  .card li { margin-bottom: 6px; }
-  .step { background: #f8f9fa; border-radius: 8px; padding: 16px 20px; margin: 12px 0; border-left: 5px solid #2e86c1; }
-  .step h3 { margin-top: 0; color: #1a5276; }
-  .code-block { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; font-family: 'Consolas', 'D2Coding', monospace; font-size: 13px; overflow-x: auto; margin: 10px 0; white-space: pre; line-height: 1.6; }
-  .copy-btn { background: #34495e; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-bottom: 6px; }
-  .copy-btn:hover { background: #2c3e50; }
-  .notice { background: #fef9e7; border-left: 5px solid #f39c12; padding: 14px 18px; border-radius: 8px; margin: 14px 0; font-size: 14px; }
-  .practice { background: #eaf2f8; border-radius: 8px; padding: 16px 20px; margin: 12px 0; }
-  .practice h3 { color: #1a5276; margin-top: 0; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
-  th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-  th { background: #2e86c1; color: white; }
-  tr:nth-child(even) { background: #f9f9f9; }
-  .nav { text-align: center; margin: 20px 0; }
-  .nav a { display: inline-block; padding: 10px 22px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; margin: 0 6px; }
-  .nav-prev { background: #7f8c8d; color: white; }
-  .nav-next { background: #2e86c1; color: white; }
-  footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
-  @media (max-width: 600px) { header h1 { font-size: 20px; } .card { padding: 16px; } }
-</style>
+<title>4일차 · 파일과 모듈 — Python 기초</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap">
-<link rel="stylesheet" href="assets/app.css">
-<link rel="stylesheet" href="assets/theme.css">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/lesson.css">
 </head>
 <body>
-<nav class="lesson-nav"><div class="ln-in"><a class="brand" href="index.html"><span class="brand-mark">py</span><span><b>Python 기초</b><small>4일차 수업</small></span></a><div class="days"><a href="day1.html">1일차</a><a href="day2.html">2일차</a><a href="day3.html">3일차</a><a href="day4.html" aria-current="page">4일차</a><a href="day5.html">5일차</a><a href="submit.html?day=4" style="color:var(--yellow)">과제 제출</a></div></div></nav>
-<div class="container">
-  <header>
-    <h1>🐍 Python 기초 4일차</h1>
-    <p>파일과 모듈 — 데이터를 저장하고, 남의 코드를 빌려 써요</p>
-  </header>
+<header class="topbar"><div class="topbar-in"><a class="brand" href="index.html"><span class="brand-mark">py</span><span><b>Python 기초</b><small>4일차 수업</small></span></a><span class="spacer"></span><nav class="days" aria-label="수업 일차"><a href="day1.html">1일차</a><a href="day2.html">2일차</a><a href="day3.html">3일차</a><a href="day4.html" aria-current="page">4일차</a><a href="day5.html">5일차</a><a class="hw" href="#homework">과제 제출</a></nav></div></header>
+<main class="container">
+  <section class="lesson-head">
+    <div class="eyebrow"><span>4일차</span><span>2시간</span><span>파일</span><span>모듈</span><span>예외 처리</span><span>시각화</span></div>
+    <h1>파일과 모듈</h1>
+    <p>데이터를 저장하고, 남의 코드를 빌려 써요</p>
+  </section>
+
+  <nav class="toc" aria-label="오늘의 순서"><b>오늘의 순서</b><ol><li><a href="#s1">수업 흐름</a></li><li><a href="#s2">파일 읽기/쓰기</a></li><li><a href="#s3">모듈과 import</a></li><li><a href="#s4">pip와 외부 라이브러리</a></li><li><a href="#s5">예외 처리</a></li><li><a href="#s6">종합 실습: 가계부 프로그램</a></li><li><a href="#s7">시각화</a></li><li><a href="#s8">연습 문제</a></li><li class="hw"><a href="#homework">과제</a></li></ol></nav>
 
   <div class="notice">
     <strong>💡 실습 방법:</strong> 아래 코드는 <strong>📋 복사</strong> 버튼으로 복사해서
@@ -56,7 +27,7 @@
     ※ 브라우저 실행기에서는 파일 저장이 제한될 수 있어요. 파일 실습은 PC의 파이썬에서 해보세요!
   </div>
 
-  <div class="card">
+  <div class="card" id="s1">
     <h2>🗺️ 수업 흐름 (2시간)</h2>
     <table>
       <tr><th>시간</th><th>내용</th><th>분량</th></tr>
@@ -69,7 +40,7 @@
     </table>
   </div>
 
-  <div class="card">
+  <div class="card" id="s2">
     <h2>📁 1. 파일 읽기/쓰기 — 메모장에 저장하기</h2>
     <div class="step">
       <h3>파일이란?</h3>
@@ -106,7 +77,7 @@ with open("일기.txt", "r", encoding="utf-8") as f:
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="s3">
     <h2>🧩 2. 모듈과 import — 남의 코드를 빌려 쓰기</h2>
     <div class="step">
       <h3>모듈이란?</h3>
@@ -161,7 +132,7 @@ print(pi)                  # math. 없이 바로 사용!
 print(sqrt(25))            # 5.0</div>
   </div>
 
-  <div class="card">
+  <div class="card" id="s4">
     <h2>📦 3. pip와 외부 라이브러리</h2>
     <div class="step">
       <h3>pip란?</h3>
@@ -174,7 +145,7 @@ pip install numpy        # 숫자 계산 도구</div>
     <p>설치한 뒤에는 <code>import</code>로 가져와서 쓰면 됩니다. (코랩에서는 셀에 <code>!pip install</code>로 설치!)</p>
   </div>
 
-  <div class="card">
+  <div class="card" id="s5">
     <h2>🛡️ 4. 예외 처리 — 오류가 나도 멈추지 않기</h2>
     <div class="step">
       <h3>예외 처리란?</h3>
@@ -214,7 +185,7 @@ except Exception as e:
     print("⚠️ 알 수 없는 오류:", e)</div>
   </div>
 
-  <div class="card">
+  <div class="card" id="s6">
     <h2>🎯 종합 실습: 가계부 프로그램</h2>
     <p>지금까지 배운 <strong>파일 + 함수 + 예외 처리</strong>를 합쳐서 가계부를 만들어봅시다!</p>
     <button class="copy-btn" onclick="copyText('c46')">📋 복사</button>
@@ -266,23 +237,7 @@ def 총합계():
 print("💰 총 지출:", 총합계(), "원")</div>
   </div>
 
-  <div class="card">
-    <h2>✏️ 연습 문제</h2>
-    <div class="practice">
-      <h3>문제 1. 명언 저장소 (파일 쓰기)</h3>
-      <p>좋아하는 명언 3개를 <code>"명언.txt"</code> 파일에 저장하고, 다시 읽어서 출력하세요.</p>
-    </div>
-    <div class="practice">
-      <h3>문제 2. 로또 번호 (random)</h3>
-      <p><code>random</code> 모듈을 사용해서 1~45 중에서 중복 없이 6개의 로또 번호를 뽑아 출력하세요. (힌트: <code>random.sample</code>)</p>
-    </div>
-    <div class="practice">
-      <h3>문제 3. 안전한 계산기 (try/except)</h3>
-      <p>두 숫자를 입력받아 나누는 계산기를 만드세요. 0으로 나누거나 문자를 입력해도 프로그램이 죽지 않게 <code>try/except</code>를 사용하세요.</p>
-    </div>
-  </div>
-
-  <div class="card">
+  <div class="card" id="s7">
     <h2>📊 5. 시각화 — matplotlib으로 그래프 그리기</h2>
     <div class="step">
       <h3>왜 시각화인가?</h3>
@@ -346,13 +301,23 @@ plt.show()
 
 # 💡 생각할 거리: sin과 cos 그래프는 어떤 관계인가요?</div>
   </div>
-
-  <div class="nav">
-    <a class="nav-prev" href="day3.html">← 3일차</a>
-    <a class="nav-next" href="day5.html">5일차 →</a>
+  <div class="card" id="s8">
+    <h2>✏️ 연습 문제</h2>
+    <div class="practice">
+      <h3>문제 1. 명언 저장소 (파일 쓰기)</h3>
+      <p>좋아하는 명언 3개를 <code>"명언.txt"</code> 파일에 저장하고, 다시 읽어서 출력하세요.</p>
+    </div>
+    <div class="practice">
+      <h3>문제 2. 로또 번호 (random)</h3>
+      <p><code>random</code> 모듈을 사용해서 1~45 중에서 중복 없이 6개의 로또 번호를 뽑아 출력하세요. (힌트: <code>random.sample</code>)</p>
+    </div>
+    <div class="practice">
+      <h3>문제 3. 안전한 계산기 (try/except)</h3>
+      <p>두 숫자를 입력받아 나누는 계산기를 만드세요. 0으로 나누거나 문자를 입력해도 프로그램이 죽지 않게 <code>try/except</code>를 사용하세요.</p>
+    </div>
   </div>
 
-  <div class="card">
+  <div class="card homework" id="homework">
     <h2>📝 과제</h2>
     <p>오늘 배운 <strong>파일·모듈</strong>을 활용해 아래 과제를 풀어보세요!</p>
 
@@ -424,17 +389,14 @@ print(f"오차: {abs(추정파이 - 3.14159265):.6f}")
       <p>💡 힌트: 무작위라서 매번 결과가 달라져요. 하지만 점을 <strong>많이 찍을수록</strong> 오차가 줄어드는 경향이 있어요. 이게 바로 <strong>확률과 통계</strong>의 힘이에요!</p>
     </div>
 
-    <div class="submit-box"><div><b>4일차 과제는 코딩 제출실에서</b><p>파일을 드라이브에 올리지 않아도 돼요. 제출실에서 생각을 정리하고, 코드를 쓰고, 자동 확인까지 한 뒤 바로 제출해요.</p></div><a class="link-btn btn-green" href="submit.html?day=4">4일차 과제 제출하기</a></div>
+    <div class="submit-box"><div><b>4일차 과제 제출 · 구글 드라이브</b><p>완성한 코드를 <code>학번_이름_과제4.py</code> 파일로 저장한 뒤, 4일차 과제 폴더에 업로드하세요. (몬테카를로 실행 결과 화면 캡처도 함께 올리면 👍)</p></div><a class="link-btn btn-green" href="https://drive.google.com/drive/folders/1kCfCU3pR9gT1bTb-PgGDVWnrvzq6fMJ1" target="_blank" rel="noopener">📤 4일차 과제 폴더 열기</a></div>
   </div>
 
-  <footer>🐍 Python 기초 5일차 — 4일차: 파일과 모듈</footer>
-</div>
+  <nav class="pager" aria-label="수업 이동"><a class="prev" href="day3.html"><small>← 이전 수업</small><b>3일차 · 자료구조와 함수</b></a><a class="home" href="index.html">전체 목차</a><a class="next" href="day5.html"><small>다음 수업 →</small><b>5일차 · 미니 프로젝트</b></a></nav>
 
-<script>
-function copyText(id) {
-  const text = document.getElementById(id).textContent;
-  navigator.clipboard.writeText(text).then(() => alert("📋 코드가 복사되었습니다!"));
-}
-</script>
+  <footer>배화여자고등학교 · Python 기초 과정 · 4일차</footer>
+</main>
+
+<script src="assets/lesson.js"></script>
 </body>
 </html>
