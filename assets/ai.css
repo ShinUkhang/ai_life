@@ -38,6 +38,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 html, body { margin: 0; }
@@ -136,10 +137,10 @@ code { font-family: var(--f-code); background: var(--surface-2); border-radius: 
 
 /* ── 실험 위젯 ── */
 .lab { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; align-items: start; }
-@media (max-width: 820px) { .lab { grid-template-columns: 1fr; } }
+@media (max-width: 820px) { .lab { grid-template-columns: minmax(0, 1fr); } }
 .lab-stage { background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 14px; min-width: 0; }
 .lab-stage canvas { width: 100%; height: auto; display: block; border-radius: 10px; background: var(--surface); }
-.lab-ctrl { display: grid; gap: 12px; min-width: 0; }
+.lab-ctrl { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; min-width: 0; }
 .ctrl { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
 .ctrl label { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-weight: 600; font-size: 14px; color: var(--ink); }
 .ctrl label code { background: none; padding: 0; color: var(--blue); font-weight: 700; }

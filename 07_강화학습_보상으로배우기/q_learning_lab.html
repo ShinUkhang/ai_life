@@ -9,19 +9,37 @@
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/ai.css">
 <style>
-  .grid-wrap { position: relative; }
-  #grid { cursor: pointer; touch-action: manipulation; }
-  .legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12.5px; color: var(--ink-3); margin-top: 8px; }
-  .legend span { display: inline-flex; align-items: center; gap: 4px; }
-  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
-  .upd { font-family: var(--f-code); font-size: 12.5px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-top: 10px; white-space: pre-wrap; overflow-x: auto; color: var(--ink-2); line-height: 1.7; min-height: 70px; }
+  .mode { display: inline-flex; border: 1.5px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 12px; }
+  .mode button { font: inherit; font-size: 14px; font-weight: 700; border: 0; padding: 8px 16px; background: var(--surface); cursor: pointer; color: var(--ink-2); }
+  .mode button[aria-pressed=true] { background: var(--ink); color: var(--bg); }
+  .machines { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .mc { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 12px 10px; text-align: center; display: grid; gap: 6px; transition: border-color .2s, transform .1s; }
+  .mc.best { border-color: var(--blue); }
+  .mc.hit { animation: pop .35s; }
+  @keyframes pop { 50% { transform: scale(1.04); } }
+  .mc .face { font-size: 40px; line-height: 1; }
+  .mc .name { font-family: var(--f-display); font-size: 20px; }
+  .mc .res { min-height: 26px; font-size: 20px; }
+  .mc button.pull { font: inherit; font-weight: 700; font-size: 14px; border: 0; border-radius: 10px; padding: 9px 6px; background: var(--yellow); color: #18202c; cursor: pointer; }
+  .mc button.pull:disabled { opacity: .45; cursor: not-allowed; }
+  .mc .row { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-3); gap: 4px; white-space: nowrap; }
+  .mc .row b { font-family: var(--f-code); color: var(--ink); }
+  .qbar { height: 12px; background: var(--surface-2); border-radius: 4px; position: relative; overflow: hidden; border: 1px solid var(--line); }
+  .qbar i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--blue); border-radius: 3px; transition: width .25s; }
+  .qbar u { position: absolute; top: -2px; bottom: -2px; width: 3px; background: var(--good); display: none; }
+  .revealed .qbar u { display: block; }
+  .true-p { font-size: 12.5px; font-weight: 700; color: var(--good); min-height: 18px; }
+  .log { display: flex; flex-wrap: wrap; gap: 3px; min-height: 30px; margin-top: 12px; padding: 6px 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; font-size: 13px; align-items: center; }
+  .log span { font-family: var(--f-code); padding: 1px 5px; border-radius: 5px; background: var(--surface-2); }
+  .log span.w { background: var(--yellow-soft); }
+  .upd { font-family: var(--f-code); font-size: 12.5px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-top: 10px; white-space: pre-wrap; color: var(--ink-2); line-height: 1.7; min-height: 70px; }
   .upd b { color: var(--blue); }
-  .cellq { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
-  .cellq div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-align: center; padding: 4px; font-family: var(--f-code); font-size: 13px; }
-  .cellq div small { display: block; color: var(--ink-3); font-family: var(--f-body); font-size: 11px; }
-  .cellq div.best { border-color: var(--blue); box-shadow: inset 0 0 0 1px var(--blue); }
+  .score-cmp { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 8px; }
+  .score-cmp .stat { min-width: 0; }
+  .score-cmp .stat b { font-size: 18px; }
   .formula { font-family: var(--f-code); background: var(--code-bg); color: var(--code-ink); border-radius: 12px; padding: 14px 16px; font-size: 14px; overflow-x: auto; white-space: pre; line-height: 1.8; }
   .formula .y { color: var(--tn); } .formula .b { color: var(--tb); } .formula .c { color: var(--tc); }
+  @media (max-width: 520px) { .machines { gap: 6px; } .mc { padding: 10px 6px; } .mc .face { font-size: 30px; } .mc .name { font-size: 17px; } .mc button.pull { font-size: 13px; } .mc .row { font-size: 11.5px; } .mc .res { font-size: 15px; } }
 </style>
 </head>
 <body data-lesson="07" data-no="7" data-title="7차시 · 보상으로 배우는 AI (강화학습)">
@@ -45,14 +63,14 @@
   <section class="lesson-head" data-mark="Q(s,a)">
     <div class="eyebrow"><span>7차시</span><span>강화학습</span><span>45~50분</span><span>1차시 학습률과 연결</span></div>
     <h1>보상으로 배우는 AI</h1>
-    <p>정답을 알려 주지 않아도 AI가 배울 수 있을까요? 게임 AI, 로봇, 자율주행이 쓰는 <b>강화학습</b>은 "잘하면 +점수, 못하면 −점수"만으로 스스로 길을 찾습니다. 오늘은 미로를 탈출하는 AI를 코딩하고, 점수 규칙(보상)을 바꾸면 AI의 행동이 어떻게 달라지는지 추리합니다.</p>
+    <p>정답을 알려 주지 않아도 AI가 배울 수 있을까요? 게임 AI, 로봇, 자율주행이 쓰는 <b>강화학습</b>은 "잘하면 +점수, 못하면 −점수"만으로 스스로 길을 찾습니다. 오늘은 사탕 뽑기 게임으로 원리를 익힌 뒤 미로를 탈출하는 AI를 코딩하고, 점수 규칙(보상)을 바꾸면 AI의 행동이 어떻게 달라지는지 추리합니다.</p>
     <div class="bigq"><small>오늘의 탐구 질문</small>AI에게 "점수"만 주면 우리가 원하는 대로 행동할까? 점수 규칙을 잘못 만들면 무슨 일이 생길까?</div>
   </section>
 
   <nav class="toc" aria-label="오늘의 순서"><b>오늘의 순서</b><ol>
     <li><a href="#s1">예측해 보기 <span class="min">5분</span></a></li>
+    <li><a href="#s3">사탕 뽑기 게임 <span class="min">10분</span></a></li>
     <li><a href="#s2">원리: Q표 한 줄 <span class="min">10분</span></a></li>
-    <li><a href="#s3">손으로 실험 <span class="min">10분</span></a></li>
     <li><a href="#s4">코드 실험실 <span class="min">15분</span></a></li>
     <li><a href="#s5">생각 넓히기 <span class="min">5분</span></a></li>
     <li><a href="#submit">제출</a></li>
@@ -71,68 +89,78 @@
     </div>
   </section>
 
+  <section class="card" id="s3">
+    <h2>사탕 뽑기 게임</h2>
+    <p>뽑기 기계가 3대 있어요. 사탕(+1점)이 나올 확률은 기계마다 다르지만 <b>비밀</b>입니다. <b>20번</b>만 뽑을 수 있다면, 사탕을 가장 많이 받으려면 어떻게 해야 할까요? 먼저 <b>내가</b> 해 보고, 같은 기계를 <b>AI</b>에게 맡겨 비교해 봅시다.</p>
+    <div class="mode" role="group" aria-label="누가 뽑을까">
+      <button id="mMe" aria-pressed="true">👤 내가 뽑기</button><button id="mAi" aria-pressed="false">🤖 AI에게 맡기기</button>
+    </div>
+    <div class="lab">
+      <div class="lab-stage" id="stage">
+        <div class="machines" id="machines"></div>
+        <div class="log" id="log" aria-live="polite"></div>
+        <div id="meBar" class="btn-row" style="margin-top:10px">
+          <span class="muted" style="font-size:14px;align-self:center">남은 기회 <b id="left" style="font-family:var(--f-code);color:var(--ink)">20</b>번</span>
+          <button class="btn btn-ghost btn-sm" id="bMeReset">↺ 다시 하기</button>
+        </div>
+        <div id="aiBar" class="btn-row" style="margin-top:10px" hidden>
+          <button class="btn btn-ghost btn-sm" id="bAi1">🤖 1번 뽑기</button>
+          <button class="btn btn-run btn-sm" id="bAi20">🤖 20번 (나와 비교)</button>
+          <button class="btn btn-primary btn-sm" id="bAi200">⏩ 200번</button>
+          <button class="btn btn-ghost btn-sm" id="bAiReset">↺ AI 기억 지우기</button>
+        </div>
+        <div class="upd" id="upd">기계의 [뽑기] 버튼을 눌러 보세요.</div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn btn-ghost btn-sm" id="bReveal">👀 진짜 확률 보기</button>
+          <button class="btn btn-ghost btn-sm" id="bNew">🔀 새 기계로 바꾸기</button>
+        </div>
+      </div>
+      <div class="lab-ctrl">
+        <div class="score-cmp">
+          <div class="stat"><small>👤 나: 사탕 / 뽑은 수</small><b id="stMe">0 / 0</b></div>
+          <div class="stat"><small>🤖 AI: 사탕 / 뽑은 수</small><b id="stAi">0 / 0</b></div>
+        </div>
+        <div class="ctrl"><label for="rE"><span><code>EPSILON</code> 탐험률</span><output id="oE">0.1</output></label><input type="range" id="rE" min="0" max="1" step="0.05" value="0.1"><p>이 확률만큼은 일부러 아무 기계나 뽑아 봐요.</p></div>
+        <div class="ctrl"><label for="rA"><span><code>ALPHA</code> 학습률</span><output id="oA">0.1</output></label><input type="range" id="rA" min="0.01" max="1" step="0.01" value="0.1"><p>한 번 결과를 점수(Q)에 얼마나 크게 반영할까?</p></div>
+        <div>
+          <div class="live-code" id="live"></div>
+          <p class="live-cap">↑ AI가 쓰는 변수와 규칙 (코드 실험실 미로에도 똑같이 나와요)</p>
+        </div>
+      </div>
+    </div>
+    <div class="split" style="margin-top:14px">
+      <label class="field"><span><i>관찰</i>내가 20번 뽑을 때 어떤 전략을 썼나? (여러 기계를 골고루 vs 좋아 보이는 기계만) 결과는?</span><textarea data-save="h1" data-group="사탕 뽑기 게임" data-label="나의 전략과 결과"></textarea></label>
+      <label class="field"><span><i>관찰</i><code>EPSILON = 0</code>으로 [AI 기억 지우기 → 20번]을 여러 번 해 보자. AI가 가장 좋은 기계를 못 찾을 때가 있나? 왜?</span><textarea data-save="h2" data-group="사탕 뽑기 게임" data-label="탐험이 없을 때"></textarea></label>
+      <label class="field"><span><i>관찰</i><code>ALPHA</code>를 1.0으로 하면 Q 막대가 어떻게 움직이나? 0.01이면?</span><textarea data-save="h3" data-group="사탕 뽑기 게임" data-label="학습률에 따른 Q 변화"></textarea></label>
+    </div>
+  </section>
+
   <section class="card" id="s2">
     <h2>원리: Q표 한 줄</h2>
-    <p>AI는 칸마다, 방향마다 <b>"이쪽으로 가면 앞으로 얼마나 좋을까?"</b>라는 점수표(Q표)를 가지고 있어요. 처음엔 모두 0. 움직일 때마다 아래 <b>한 줄</b>로 점수표를 고칩니다.</p>
-    <div class="formula"><span class="c"># 새 Q  =  옛 Q  +  학습률 × (실제로 받은 점수 + 할인율 × 다음 칸의 가장 좋은 Q  −  옛 Q)</span>
-Q[s][a] += <span class="y">ALPHA</span> * (r + <span class="y">GAMMA</span> * max(Q[s2]) - Q[s][a])</div>
+    <p>게임에서 AI는 기계마다 <b>"이 기계는 얼마나 좋을까?"</b>라는 점수 Q를 기억했어요(처음엔 모두 0). 한 번 뽑을 때마다 아래 <b>한 줄</b>로 점수를 고칩니다.</p>
+    <div class="formula"><span class="c"># 새 Q  =  옛 Q  +  학습률 × (받은 점수 − 옛 Q)      ← "예상보다 좋았으면 올리고, 나빴으면 내린다"</span>
+Q[기계] += <span class="y">ALPHA</span> * (r - Q[기계])</div>
+    <div class="step">
+      <p><b>직접 계산해 보기</b> — ALPHA = 0.5. 처음(Q = 0) 기계 B를 뽑아 사탕이 나왔어요(r = 1). 다음에 또 B를 뽑았더니 꽝(r = 0). Q[B]는 어떻게 변할까?</p>
+      <label class="field"><span>계산 과정과 답 (두 번 모두)</span><input data-save="q1" data-group="원리" data-label="Q 직접 계산" placeholder="① 0 + 0.5 × (1 − 0) = ?   ② ? + 0.5 × (0 − ?) = ?"></label>
+      <details class="tip"><summary>정답 확인</summary><div>① 0 + 0.5 × (1 − 0) = <b>0.5</b> &nbsp; ② 0.5 + 0.5 × (0 − 0.5) = <b>0.25</b>. 게임의 [🤖 1번 뽑기]를 누르면 같은 계산이 화면에 나와요.</div></details>
+    </div>
+    <h3>미로에서는 "앞으로 받을 점수"가 더해져요</h3>
+    <p>코드 실험실의 미로는 한 번 움직여서 끝나지 않아요. 그래서 칸마다, 방향마다 Q를 두고, 다음 칸에서 기대할 수 있는 가장 좋은 점수까지 더합니다. 게임 공식에 <code>GAMMA * max(Q[다음 칸])</code>만 붙은 거예요.</p>
+    <div class="formula">Q[s][a] += <span class="y">ALPHA</span> * (r + <span class="y">GAMMA</span> * max(Q[s2]) - Q[s][a])</div>
     <table class="tbl" style="margin-top:14px">
       <thead><tr><th style="width:130px">변수</th><th>뜻</th><th>비유</th></tr></thead>
       <tbody>
         <tr><td class="mono"><b>ALPHA</b></td><td>학습률: 새 경험을 얼마나 크게 반영할까</td><td>1차시 경사하강법의 보폭과 같은 역할</td></tr>
-        <tr><td class="mono"><b>GAMMA</b></td><td>할인율: 미래 점수를 얼마나 중요하게 볼까 (0~1)</td><td>"지금 놀기" vs "나중을 위해 공부하기"</td></tr>
-        <tr><td class="mono"><b>EPSILON</b></td><td>탐험률: 일부러 아무 길이나 가 볼 확률</td><td>늘 가던 식당 vs 새 식당 도전</td></tr>
+        <tr><td class="mono"><b>EPSILON</b></td><td>탐험률: 일부러 아무거나 해 볼 확률</td><td>늘 가던 식당 vs 새 식당 도전</td></tr>
+        <tr><td class="mono"><b>GAMMA</b></td><td>할인율: 미래 점수를 얼마나 중요하게 볼까 (0~1) — 미로에서만</td><td>"지금 놀기" vs "나중을 위해 공부하기"</td></tr>
       </tbody>
     </table>
-    <div class="step">
-      <p><b>직접 계산해 보기</b> — 처음 출발한 AI가 오른쪽(→)으로 한 칸 갔어요. 받은 점수 r = −1, 다음 칸의 Q는 아직 모두 0입니다. ALPHA = 0.5, GAMMA = 0.9일 때 Q[출발][→]는?</p>
-      <label class="field"><span>계산 과정과 답</span><input data-save="q1" data-group="원리" data-label="Q 직접 계산" placeholder="0 + 0.5 × (−1 + 0.9 × 0 − 0) = ?"></label>
-      <details class="tip"><summary>정답 확인</summary><div>0 + 0.5 × (−1 + 0 − 0) = <b>−0.5</b>. 아래 손 실험에서 [한 걸음]을 누르면 같은 계산이 화면에 나와요.</div></details>
-    </div>
-  </section>
-
-  <section class="card" id="s3">
-    <h2>손으로 실험</h2>
-    <p>칸의 색은 그 칸에서 <b>가장 큰 Q 값</b>(파랑 = 좋음, 빨강 = 나쁨), 화살표는 AI가 지금 고를 방향이에요. 칸을 누르면 그 칸의 Q 네 개가 보입니다. <b>빈칸을 두 번 누르면</b> 벽(#) → 함정(X) → 빈칸 순서로 지도를 바꿀 수 있어요.</p>
-    <div class="lab">
-      <div class="lab-stage">
-        <canvas id="grid" width="500" height="500" aria-label="미로와 Q표"></canvas>
-        <div class="legend"><span><i style="background:#2f5d8a"></i>Q 높음</span><span><i style="background:#c13f33"></i>Q 낮음</span><span>🤖 AI</span><span>S 출발 · G 도착 · X 함정 · # 벽</span></div>
-        <div class="btn-row" style="margin-top:10px">
-          <button class="btn btn-ghost btn-sm" id="bStep">👣 한 걸음</button>
-          <button class="btn btn-run btn-sm" id="bEp">▶ 1판</button>
-          <button class="btn btn-primary btn-sm" id="b50">⏩ 50판 학습</button>
-          <button class="btn btn-ghost btn-sm" id="bGreedy">🎯 배운 대로 가 보기</button>
-          <button class="btn btn-ghost btn-sm" id="bReset">↺ 기억 지우기</button>
-        </div>
-        <div class="upd" id="upd">[한 걸음]을 누르면 Q가 어떻게 바뀌는지 계산식이 여기에 나와요.</div>
-      </div>
-      <div class="lab-ctrl">
-        <div class="ctrl"><label for="rA"><span><code>ALPHA</code> 학습률</span><output id="oA">0.5</output></label><input type="range" id="rA" min="0.01" max="1" step="0.01" value="0.5"></div>
-        <div class="ctrl"><label for="rG"><span><code>GAMMA</code> 할인율</span><output id="oG">0.9</output></label><input type="range" id="rG" min="0" max="1" step="0.05" value="0.9"></div>
-        <div class="ctrl"><label for="rE"><span><code>EPSILON</code> 탐험률</span><output id="oE">0.1</output></label><input type="range" id="rE" min="0" max="1" step="0.05" value="0.1"></div>
-        <div class="ctrl"><label for="rS"><span><code>STEP_REWARD</code> 이동 비용</span><output id="oS">-1</output></label><input type="range" id="rS" min="-6" max="0" step="1" value="-1"><div class="ends"><span>−6</span><span>0</span></div></div>
-        <div>
-          <div class="live-code" id="live"></div>
-          <p class="live-cap">↑ 슬라이더 = 코드 실험실의 변수</p>
-        </div>
-        <div class="stat-row">
-          <div class="stat"><small>연습한 판</small><b id="stEp">0</b></div>
-          <div class="stat"><small>최근 20판 평균</small><b id="stAvg">-</b></div>
-          <div class="stat"><small>함정에 빠진 판</small><b id="stTrap">0</b></div>
-        </div>
-        <div id="cellBox" class="ctrl" hidden><b style="font-size:14px" id="cellTitle"></b><div class="cellq" id="cellQ"></div></div>
-      </div>
-    </div>
-    <div class="split" style="margin-top:14px">
-      <label class="field"><span><i>관찰</i>처음 [한 걸음]을 여러 번 눌렀을 때 Q 값은 주로 어떤 부호(+/−)였나? 도착 근처 칸은?</span><textarea data-save="h1" data-group="손으로 실험" data-label="Q 값의 변화"></textarea></label>
-      <label class="field"><span><i>관찰</i>50판 학습 뒤 색깔 지도는 어떤 모양인가? 파란색은 어디서부터 퍼졌나?</span><textarea data-save="h2" data-group="손으로 실험" data-label="학습 후 지도 모양"></textarea></label>
-    </div>
   </section>
 
   <section class="card" id="s4">
     <h2>코드 실험실</h2>
-    <p>위 미로를 파이썬으로 만든 코드예요. 대문자 변수만 바꿔 실행하고 <b>변수 실험 기록표</b>의 마지막 줄(결과 · 걸음 수 · 점수)을 비교하세요. 그래프는 판마다 받은 점수(학습 곡선)입니다.</p>
+    <p>이번엔 게임보다 한 단계 어려운 <b>미로 탈출</b>이에요. 지도는 코드 안의 <code>MAP</code>에 있고(S 출발 · G 도착 +10 · X 함정 −10 · # 벽), 게임과 같은 Q 공식에 미래 점수(GAMMA)가 더해져요. 대문자 변수만 바꿔 실행하고 <b>변수 실험 기록표</b>의 마지막 줄(결과 · 걸음 수 · 점수)을 비교하세요. 그래프는 판마다 받은 점수(학습 곡선)입니다.</p>
     <div class="runner">
       <div class="runner-bar"><span class="file">q_learning.py</span>
         <button class="btn btn-run btn-sm" onclick="runPythonCode()">▶ 실행 (Ctrl+Enter)</button>
@@ -231,8 +259,9 @@ Q[s][a] += <span class="y">ALPHA</span> * (r + <span class="y">GAMMA</span> * ma
     <summary>🧑‍🏫 교사용 메모 (수업 흐름 · 예상 오개념)</summary>
     <ul>
       <li><b>도입 5분</b> — 강아지 훈련 비유 → "−5면 어떻게 될까?"를 미리 적게 해 두면 M4에서 반전이 생깁니다.</li>
-      <li><b>원리 10분</b> — Q 직접 계산(−0.5)을 함께 하고, 손 실험의 [한 걸음]으로 같은 숫자가 나오는 걸 확인. "도착 바로 옆 칸이 먼저 파래진다 → 점점 출발점 쪽으로 퍼진다"를 관찰시키세요.</li>
-      <li><b>코드 15분</b> — M1·M2 전원, M4는 반드시(오늘의 핵심), M3·M5는 선택. 손 실험에서도 STEP_REWARD −5로 50판 학습하면 같은 현상이 보입니다.</li>
+      <li><b>게임 10분</b> — 학생이 먼저 20번 직접 뽑고 결과를 적은 뒤 진짜 확률 공개. "처음 몇 번은 골고루, 그다음엔 좋은 기계만" 같은 전략이 바로 EPSILON(탐험)과 Q(이용)라는 걸 연결해 주세요. 기계 확률은 35% / 55% / 75%이며 [새 기계로 바꾸기]를 누르면 순서가 섞입니다.</li>
+      <li><b>원리 10분</b> — 게임 공식 Q += α(r − Q)를 손으로 계산(0.5 → 0.25)하고 [🤖 1번 뽑기] 화면과 비교. 미로 공식은 여기에 GAMMA 항만 더한 것이라고 짚어 주면 코드가 훨씬 쉽게 읽힙니다.</li>
+      <li><b>코드 15분</b> — M1·M2 전원, M4는 반드시(오늘의 핵심), M3·M5는 선택.</li>
       <li><b>예상 오개념</b> — ① "AI가 미로를 '본다'" → 칸의 좌표와 점수표만 있을 뿐. ② "탐험률이 높으면 더 잘 배운다" → 연습 비용이 큼(M2). ③ "AI가 고장 났다"(M4) → 규칙대로 최적 행동을 한 것.</li>
       <li><b>참고</b> — 모든 실행은 SEED = 1 기준으로 확인했습니다. SEED를 바꿔도 M1·M3·M4의 결론은 같습니다.</li>
     </ul>
@@ -345,140 +374,122 @@ const STARTER = document.getElementById("starterCode").textContent.trim();
 document.getElementById("codeEditor").value = STARTER;
 initPyodideRunner();
 
-/* ───── 손으로 실험: 파이썬 코드와 같은 Q-러닝 ───── */
+/* ───── 사탕 뽑기 게임: 탐험(EPSILON)과 이용 + Q += ALPHA*(r - Q) ───── */
 const $ = (id) => document.getElementById(id);
-let MAP = ["....G", ".#X..", "...X.", ".X...", "S...."].map((r) => r.split(""));
-const R = 5, C = 5, ACT = [[-1, 0], [1, 0], [0, -1], [0, 1]], ARW = ["↑", "↓", "←", "→"], ANAME = ["위", "아래", "왼쪽", "오른쪽"];
-const P = { ALPHA: 0.5, GAMMA: 0.9, EPSILON: 0.1, STEP: -1, TRAP: -10, GOAL: 10 };
-let Q, agent, epTotal, episodes, scores, traps, sel = null, trail = [];
-const start = () => { for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) if (MAP[r][c] === "S") return [r, c]; };
-const live = new LiveCode($("live"), [["ALPHA", "0.5"], ["GAMMA", "0.9"], ["EPSILON", "0.1"], ["STEP_REWARD", "-1"]]);
+const NAMES = ["A", "B", "C"], FACES = ["🎰", "🎰", "🎰"], RATES = [0.35, 0.55, 0.75];
+let rates = [...RATES].sort(() => Math.random() - 0.5);
+const P = { EPSILON: 0.1, ALPHA: 0.1 };
+const me = { left: 20, n: [0, 0, 0], win: [0, 0, 0] };
+let ai = { Q: [0, 0, 0], n: [0, 0, 0], win: [0, 0, 0] };
+let mode = "me", revealed = false, log = [];
+const live = new LiveCode($("live"), [["EPSILON", "0.1", "탐험률"], ["ALPHA", "0.1", "학습률"], ["Q", "[0.00, 0.00, 0.00]", "기계 A, B, C의 점수"]]);
+const f2 = (x) => x.toFixed(2);
 
-function resetQ() {
-  Q = Array.from({ length: R }, () => Array.from({ length: C }, () => [0, 0, 0, 0]));
-  agent = start(); epTotal = 0; episodes = 0; scores = []; traps = 0; trail = [agent];
-  $("upd").textContent = "[한 걸음]을 누르면 Q가 어떻게 바뀌는지 계산식이 여기에 나와요.";
-  stats(); draw();
+function buildMachines() {
+  $("machines").innerHTML = NAMES.map((n, i) => `
+    <div class="mc" id="mc${i}">
+      <div class="face">${FACES[i]}</div><div class="name">기계 ${n}</div>
+      <div class="res" id="res${i}">&nbsp;</div>
+      <button class="pull" data-i="${i}">뽑기</button>
+      <div class="row"><span>나</span><b id="my${i}">0/0</b></div>
+      <div class="row"><span>AI의 Q</span><b id="q${i}">0.00</b></div>
+      <div class="qbar"><i id="qb${i}" style="width:0%"></i><u id="tp${i}"></u></div>
+      <div class="row"><span>AI 횟수</span><b id="an${i}">0</b></div>
+      <div class="true-p" id="true${i}"></div>
+    </div>`).join("");
+  $("machines").querySelectorAll(".pull").forEach((bt) => bt.onclick = () => myPull(+bt.dataset.i));
 }
-function move(s, a) {
-  let r = s[0] + ACT[a][0], c = s[1] + ACT[a][1];
-  if (r < 0 || r >= R || c < 0 || c >= C || MAP[r][c] === "#") [r, c] = s;
-  const ch = MAP[r][c];
-  if (ch === "G") return [[r, c], P.GOAL, true];
-  if (ch === "X") return [[r, c], P.TRAP, true];
-  return [[r, c], P.STEP, false];
+function flashRes(i, r) {
+  const el = $("res" + i); el.textContent = r ? "🍬 사탕!" : "💨 꽝";
+  const mc = $("mc" + i); mc.classList.remove("hit"); void mc.offsetWidth; mc.classList.add("hit");
 }
-function best(s) {
-  const q = Q[s[0]][s[1]], m = Math.max(...q);
-  const ties = [0, 1, 2, 3].filter((a) => q[a] === m);
-  return ties[Math.floor(Math.random() * ties.length)];
+function addLog(who, i, r) {
+  log.push(`<span class="${r ? "w" : ""}">${who}${NAMES[i]}${r ? "🍬" : "·"}</span>`);
+  if (log.length > 40) log.shift();
+  $("log").innerHTML = log.join("");
 }
-function learnStep(explain) {
-  const s = agent;
+function myPull(i) {
+  if (mode !== "me" || me.left <= 0) return;
+  const r = Math.random() < rates[i] ? 1 : 0;
+  me.left--; me.n[i]++; me.win[i] += r;
+  flashRes(i, r); addLog("👤", i, r);
+  $("upd").textContent = me.left > 0
+    ? `기계 ${NAMES[i]}에서 ${r ? "사탕이 나왔어요! 🍬" : "꽝이에요. 💨"}  (남은 기회 ${me.left}번)`
+    : `끝! 20번 중 사탕 ${sum(me.win)}개. 이제 [🤖 AI에게 맡기기]로 AI도 20번 뽑게 해서 비교해 보세요.`;
+  if (me.left === 0) reveal();
+  render();
+}
+const sum = (a) => a.reduce((x, y) => x + y, 0);
+function aiPull(explain) {
   const explore = Math.random() < P.EPSILON;
-  const a = explore ? Math.floor(Math.random() * 4) : best(s);
-  const [s2, r, done] = move(s, a);
-  const old = Q[s[0]][s[1]][a];
-  const fut = done ? 0 : Math.max(...Q[s2[0]][s2[1]]);
-  const nw = old + P.ALPHA * (r + P.GAMMA * fut - old);
-  Q[s[0]][s[1]][a] = nw;
-  epTotal += r; agent = s2; trail.push(s2);
+  let a;
+  if (explore) a = Math.floor(Math.random() * 3);
+  else { const m = Math.max(...ai.Q); const ties = [0, 1, 2].filter((k) => ai.Q[k] === m); a = ties[Math.floor(Math.random() * ties.length)]; }
+  const r = Math.random() < rates[a] ? 1 : 0;
+  const old = ai.Q[a];
+  ai.Q[a] = old + P.ALPHA * (r - old);
+  ai.n[a]++; ai.win[a] += r;
   if (explain) {
-    const f = (x) => (Math.round(x * 100) / 100).toFixed(2);
-    $("upd").innerHTML = `${explore ? "🎲 탐험" : "🧭 이용"}: (${s}) 에서 <b>${ANAME[a]}</b> → (${s2}), 받은 점수 r = ${r}${done ? " (판 끝)" : ""}\n` +
-      `Q 새 값 = ${f(old)} + ${P.ALPHA} × (${r} + ${P.GAMMA} × ${f(fut)} − ${f(old)}) = <b>${f(nw)}</b>`;
+    flashRes(a, r); addLog("🤖", a, r);
+    $("upd").innerHTML = `${explore ? "🎲 탐험: 아무 기계나" : "🧭 이용: Q가 가장 큰 기계"} → <b>기계 ${NAMES[a]}</b>, ${r ? "사탕(r = 1)" : "꽝(r = 0)"}\n` +
+      `Q[${NAMES[a]}] = ${f2(old)} + ${P.ALPHA} × (${r} − ${f2(old)}) = <b>${f2(ai.Q[a])}</b>`;
   }
-  if (done || trail.length > 100) endEpisode(r === P.TRAP && done);
-  return done;
+  return [a, r];
 }
-function endEpisode(fell) {
-  scores.push(epTotal); episodes++; if (fell) traps++;
-  epTotal = 0; agent = start(); trail = [agent];
+function aiMany(k) {
+  let got = 0, last;
+  for (let t = 0; t < k; t++) { last = aiPull(false); got += last[1]; }
+  flashRes(last[0], last[1]);
+  const total = sum(ai.n);
+  $("upd").innerHTML = `🤖 ${k}번 뽑아서 사탕 ${got}개 (${Math.round(got / k * 100)}%)` +
+    (k === 20 && me.left === 0 ? `  ·  👤 나는 20번에 ${sum(me.win)}개` : "") +
+    `\n지금까지 AI가 가장 많이 뽑은 기계: <b>${NAMES[ai.n.indexOf(Math.max(...ai.n))]}</b> (총 ${total}번 중 ${Math.max(...ai.n)}번)`;
+  render();
 }
-function runEpisode() { let n = 0; while (n++ < 100) { if (learnStep(false)) return; } endEpisode(false); }
-function stats() {
-  $("stEp").textContent = episodes;
-  const last = scores.slice(-20);
-  $("stAvg").textContent = last.length ? (last.reduce((a, b) => a + b, 0) / last.length).toFixed(1) : "-";
-  $("stTrap").textContent = traps;
-  if (sel) showCell(sel);
+function reveal() { revealed = true; render(); }
+function render() {
+  const best = ai.Q.indexOf(Math.max(...ai.Q));
+  NAMES.forEach((_, i) => {
+    $("my" + i).textContent = `${me.win[i]}/${me.n[i]}`;
+    $("q" + i).textContent = f2(ai.Q[i]);
+    $("qb" + i).style.width = Math.max(0, Math.min(100, ai.Q[i] * 100)) + "%";
+    $("an" + i).textContent = ai.n[i];
+    $("tp" + i).style.left = `calc(${rates[i] * 100}% - 1px)`;
+    $("true" + i).textContent = revealed ? `진짜 확률 ${Math.round(rates[i] * 100)}%` : "";
+    $("mc" + i).classList.toggle("best", mode === "ai" && sum(ai.n) > 0 && i === best);
+    $("mc" + i).querySelector(".pull").disabled = mode !== "me" || me.left <= 0;
+  });
+  $("stage").classList.toggle("revealed", revealed);
+  $("left").textContent = me.left;
+  $("stMe").textContent = `${sum(me.win)} / ${sum(me.n)}`;
+  $("stAi").textContent = `${sum(ai.win)} / ${sum(ai.n)}`;
+  live.set("Q", "[" + ai.Q.map(f2).join(", ") + "]");
 }
-
-const cv = $("grid"), ctx = cv.getContext("2d");
-function color(v) {
-  const t = Math.max(-1, Math.min(1, v / 10));
-  return t >= 0 ? `rgba(47,93,138,${0.08 + t * 0.62})` : `rgba(193,63,51,${0.08 - t * 0.55})`;
+function setMode(m) {
+  mode = m;
+  $("mMe").setAttribute("aria-pressed", m === "me"); $("mAi").setAttribute("aria-pressed", m === "ai");
+  $("meBar").hidden = m !== "me"; $("aiBar").hidden = m !== "ai";
+  $("upd").textContent = m === "me" ? "기계의 [뽑기] 버튼을 눌러 보세요." : "[🤖 1번 뽑기]를 누르면 AI가 기계를 고르는 이유와 Q 계산식이 나와요.";
+  render();
 }
-function draw(path) {
-  const W = cv.width, cs = W / C;
-  const dark = matchMedia("(prefers-color-scheme: dark)").matches && document.documentElement.dataset.theme !== "light";
-  ctx.clearRect(0, 0, W, W);
-  ctx.fillStyle = dark ? "#161d27" : "#fff"; ctx.fillRect(0, 0, W, W);
-  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
-    const x = c * cs, y = r * cs, ch = MAP[r][c];
-    if (ch === "#") { ctx.fillStyle = dark ? "#3a4659" : "#4b5669"; ctx.fillRect(x, y, cs, cs); }
-    else if (ch === "X") { ctx.fillStyle = "rgba(193,63,51,.85)"; ctx.fillRect(x, y, cs, cs); }
-    else if (ch === "G") { ctx.fillStyle = "rgba(29,133,89,.85)"; ctx.fillRect(x, y, cs, cs); }
-    else { ctx.fillStyle = color(Math.max(...Q[r][c])); ctx.fillRect(x, y, cs, cs); }
-    ctx.strokeStyle = dark ? "#29344a" : "#d6dde7"; ctx.lineWidth = 1; ctx.strokeRect(x + .5, y + .5, cs - 1, cs - 1);
-    ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    if ("XG#".includes(ch)) { ctx.fillStyle = "#fff"; ctx.font = "bold 30px 'JetBrains Mono', monospace"; ctx.fillText(ch, x + cs / 2, y + cs / 2); continue; }
-    const q = Q[r][c], m = Math.max(...q), touched = q.some((v) => v !== 0);
-    ctx.fillStyle = dark ? "#e4e9f0" : "#172133";
-    if (touched) { ctx.font = "bold 34px sans-serif"; ctx.fillText(ARW[q.indexOf(m)], x + cs / 2, y + cs / 2 - 4); }
-    ctx.font = "12px 'JetBrains Mono', monospace"; ctx.fillStyle = dark ? "#a5b0bf" : "#4b5669";
-    ctx.fillText(touched ? m.toFixed(1) : "0", x + cs / 2, y + cs - 14);
-    if (ch === "S") { ctx.font = "bold 14px sans-serif"; ctx.fillText("S", x + 12, y + 14); }
-  }
-  if (path && path.length > 1) {
-    ctx.strokeStyle = "#f2c230"; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath();
-    path.forEach(([r, c], i) => { const px = c * cs + cs / 2, py = r * cs + cs / 2; i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
-    ctx.stroke();
-  }
-  if (sel) { ctx.strokeStyle = "#f2c230"; ctx.lineWidth = 4; ctx.strokeRect(sel[1] * cs + 2, sel[0] * cs + 2, cs - 4, cs - 4); }
-  ctx.font = "34px sans-serif"; ctx.fillText("🤖", agent[1] * cs + cs / 2, agent[0] * cs + cs / 2);
-}
-function showCell([r, c]) {
-  const ch = MAP[r][c];
-  if ("XG#".includes(ch)) { $("cellBox").hidden = true; return; }
-  const q = Q[r][c], m = Math.max(...q);
-  $("cellBox").hidden = false;
-  $("cellTitle").textContent = `칸 (${r}, ${c})의 Q 값 네 개`;
-  $("cellQ").innerHTML = q.map((v, a) => `<div class="${v === m && v !== 0 ? "best" : ""}"><small>${ARW[a]} ${ANAME[a]}</small>${v.toFixed(2)}</div>`).join("");
-}
-let lastClick = { k: "", t: 0 };
-cv.addEventListener("click", (e) => {
-  const rc = cv.getBoundingClientRect();
-  const c = Math.floor((e.clientX - rc.left) / rc.width * C), r = Math.floor((e.clientY - rc.top) / rc.height * R);
-  if (r < 0 || r >= R || c < 0 || c >= C) return;
-  const k = r + "," + c, now = Date.now();
-  if (lastClick.k === k && now - lastClick.t < 450 && !"SG".includes(MAP[r][c])) {
-    MAP[r][c] = { ".": "#", "#": "X", "X": "." }[MAP[r][c]];
-    Q[r][c] = [0, 0, 0, 0]; lastClick = { k: "", t: 0 };
-  } else lastClick = { k, t: now };
-  sel = [r, c]; showCell(sel); draw();
-});
-$("bStep").onclick = () => { learnStep(true); stats(); draw(); };
-$("bEp").onclick = () => { runEpisode(); stats(); draw(); };
-$("b50").onclick = () => { for (let i = 0; i < 50; i++) runEpisode(); stats(); draw(); };
-$("bReset").onclick = resetQ;
-$("bGreedy").onclick = () => {
-  let s = start(), path = [s], total = 0, msg = "30걸음 안에 도착 못 함";
-  for (let i = 0; i < 30; i++) {
-    const [s2, r, done] = move(s, best(s)); path.push(s2); total += r; s = s2;
-    if (done) { msg = MAP[s[0]][s[1]] === "G" ? "도착 성공! 🎉" : "함정에 빠짐 😵"; break; }
-  }
-  draw(path);
-  $("upd").innerHTML = `🎯 탐험 없이 배운 대로: <b>${msg}</b> · ${path.length - 1}걸음 · 점수 ${total}`;
+$("mMe").onclick = () => setMode("me");
+$("mAi").onclick = () => setMode("ai");
+$("bMeReset").onclick = () => { me.left = 20; me.n = [0, 0, 0]; me.win = [0, 0, 0]; log = log.filter((x) => !x.includes("👤")); $("log").innerHTML = log.join(""); setMode("me"); };
+$("bAi1").onclick = () => { aiPull(true); render(); };
+$("bAi20").onclick = () => aiMany(20);
+$("bAi200").onclick = () => aiMany(200);
+$("bAiReset").onclick = () => { ai = { Q: [0, 0, 0], n: [0, 0, 0], win: [0, 0, 0] }; log = log.filter((x) => !x.includes("🤖")); $("log").innerHTML = log.join(""); $("upd").textContent = "AI의 기억(Q)을 지웠어요."; render(); };
+$("bReveal").onclick = reveal;
+$("bNew").onclick = () => {
+  rates = [...RATES].sort(() => Math.random() - 0.5); revealed = false; log = [];
+  me.left = 20; me.n = [0, 0, 0]; me.win = [0, 0, 0]; ai = { Q: [0, 0, 0], n: [0, 0, 0], win: [0, 0, 0] };
+  $("log").innerHTML = ""; NAMES.forEach((_, i) => $("res" + i).innerHTML = "&nbsp;"); setMode("me");
 };
-const bind = (id, out, key, name, fmt) => $(id).addEventListener("input", (e) => {
-  P[key] = +e.target.value; const v = fmt(P[key]); $(out).textContent = v; live.set(name, v);
+const bind = (id, out, key) => $(id).addEventListener("input", (e) => {
+  P[key] = +e.target.value; const v = String(+P[key].toFixed(2)); $(out).textContent = v; live.set(key, v);
 });
-bind("rA", "oA", "ALPHA", "ALPHA", (v) => v.toFixed(2).replace(/0$/, ""));
-bind("rG", "oG", "GAMMA", "GAMMA", (v) => v.toFixed(2).replace(/0$/, ""));
-bind("rE", "oE", "EPSILON", "EPSILON", (v) => v.toFixed(2).replace(/0$/, ""));
-bind("rS", "oS", "STEP", "STEP_REWARD", (v) => String(v));
-resetQ();
+bind("rE", "oE", "EPSILON"); bind("rA", "oA", "ALPHA");
+buildMachines(); render();
 </script>
 </body>
 </html>
