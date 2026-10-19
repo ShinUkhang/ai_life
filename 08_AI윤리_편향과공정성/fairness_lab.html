@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8차시 · AI는 공정할까? | AI Life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/ai.css">
+<style>
+  .toggle { display: inline-flex; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 8px; }
+  .toggle button { font: inherit; font-size: 13.5px; font-weight: 700; border: 0; padding: 6px 14px; background: transparent; cursor: pointer; color: var(--ink-2); font-family: var(--f-code); }
+  .toggle button[aria-pressed=true] { background: var(--ink); color: var(--bg); }
+  .wbars { display: grid; gap: 6px; margin-top: 6px; }
+  .wbar { display: grid; grid-template-columns: 70px 1fr 54px; gap: 8px; align-items: center; font-size: 13.5px; }
+  .wbar .track { position: relative; height: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; }
+  .wbar .track::before { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1.5px; background: var(--ink-3); }
+  .wbar .track i { position: absolute; top: 1px; bottom: 1px; border-radius: 3px; }
+  .wbar .v { font-family: var(--f-code); text-align: right; font-weight: 700; }
+  .cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .cmp > div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+  .cmp h4 { margin: 0 0 6px; font-size: 13px; color: var(--ink-3); }
+  .gbar { display: grid; grid-template-columns: 52px 1fr 48px; gap: 6px; align-items: center; font-size: 13px; margin: 4px 0; }
+  .gbar .t { height: 12px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+  .gbar .t i { display: block; height: 100%; border-radius: 4px; transition: width .3s; }
+  .gbar .v { font-family: var(--f-code); text-align: right; font-weight: 700; }
+  .ga { background: var(--blue); } .gb { background: var(--warn); }
+  .applicant { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .applicant > div { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; }
+  .applicant b { font-size: 15px; }
+</style>
+</head>
+<body data-lesson="08" data-no="8" data-title="8차시 · AI는 공정할까? (데이터 편향과 공정성)">
+
+<header class="topbar"><div class="topbar-in">
+  <a class="brand" href="../index.html"><span class="brand-mark">AI</span><span><b>AI Life</b><small>인공지능과 일상</small></span></a>
+  <span class="spacer"></span>
+  <nav class="days" aria-label="차시">
+    <a href="../01_머신러닝_선형회귀/linear_regression_simulator.html">1</a>
+    <a href="../02_컴퓨터비전_물체인식/object_detection_simulator.html">2</a>
+    <a href="../03_CNN_합성곱신경망/cnn_classifier_simulator.html">3</a>
+    <a href="../04_자연어처리_AI에이전트/text_agent_simulator.html">4</a>
+    <a href="../05_음성인식_인공지능/음성인식_인공지능_수업교재.html">5</a>
+    <a href="../06_생성형AI_다음단어예측/next_word_lab.html">6</a>
+    <a href="../07_강화학습_보상으로배우기/q_learning_lab.html">7</a>
+    <a href="fairness_lab.html" aria-current="page">8</a>
+  </nav>
+</div></header>
+
+<main class="container">
+  <section class="lesson-head" data-mark="A≠B">
+    <div class="eyebrow"><span>8차시</span><span>AI 윤리 · 데이터 편향</span><span>45~50분</span><span>1·4·6차시와 연결</span></div>
+    <h1>AI는 공정할까?</h1>
+    <p>AI는 사람처럼 감정이 없으니 공정할 것 같지만, AI가 배우는 <b>정답</b>은 결국 과거 사람들의 기록입니다. 오늘은 과거 장학생 선발 기록으로 학습한 AI를 직접 만들고, 변수를 바꿔 가며 편향이 어디서 들어오고 어디로 숨는지 추적합니다.</p>
+    <div class="bigq"><small>오늘의 탐구 질문</small>정확도가 높은 AI는 공정한 AI일까? 민감한 정보(그룹)를 빼면 편향이 사라질까?</div>
+  </section>
+
+  <nav class="toc" aria-label="오늘의 순서"><b>오늘의 순서</b><ol>
+    <li><a href="#s1">예측해 보기 <span class="min">5분</span></a></li>
+    <li><a href="#s2">실험 설계 <span class="min">8분</span></a></li>
+    <li><a href="#s3">손으로 실험 <span class="min">12분</span></a></li>
+    <li><a href="#s4">코드 실험실 <span class="min">15분</span></a></li>
+    <li><a href="#s5">토론 <span class="min">5분</span></a></li>
+    <li><a href="#submit">제출</a></li>
+  </ol></nav>
+
+  <section class="card" id="s1">
+    <h2>예측해 보기</h2>
+    <p>어느 장학 재단이 지원자 서류를 AI로 먼저 걸러 내기로 했어요. AI는 <b>지난 10년 동안 심사위원이 뽑은 기록</b>으로 학습합니다.</p>
+    <div class="applicant">
+      <div><b>지원자 민서</b><br>시험 점수 78점 · 가동 거주 · A그룹</div>
+      <div><b>지원자 도윤</b><br>시험 점수 78점 · 나동 거주 · B그룹</div>
+    </div>
+    <div class="split" style="margin-top:12px">
+      <label class="field"><span>AI는 두 사람을 똑같이 평가할까? 그렇게 생각하는 이유는?</span><textarea data-save="q0a" data-group="예측해 보기" data-label="두 지원자 평가 예측"></textarea></label>
+      <label class="field"><span>만약 과거 심사위원이 B그룹을 불리하게 뽑았다면, AI에게 무슨 일이 생길까?</span><textarea data-save="q0b" data-group="예측해 보기" data-label="과거 편견의 영향 예측"></textarea></label>
+    </div>
+  </section>
+
+  <section class="card" id="s2">
+    <h2>실험 설계</h2>
+    <p>진짜 데이터로는 "편견이 있었는지" 확인하기 어렵기 때문에, <b>규칙을 우리가 정한 가상의 지원자 2000명</b>으로 실험합니다. 과학 실험처럼 변인을 통제할 수 있어요.</p>
+    <table class="tbl">
+      <thead><tr><th style="width:150px">무엇</th><th>코드에서의 규칙</th><th>AI가 볼 수 있나?</th></tr></thead>
+      <tbody>
+        <tr><td><b>진짜 실력</b></td><td class="mono">skill ~ 정규분포(0, 1) — A, B 그룹 똑같이</td><td>❌ 못 봄</td></tr>
+        <tr><td><b>시험 점수</b></td><td class="mono">score = skill + 운(잡음)</td><td>✅</td></tr>
+        <tr><td><b>사는 동네</b></td><td class="mono">PROXY 확률로 그룹과 같은 동네</td><td>✅</td></tr>
+        <tr><td><b>그룹 (A/B)</b></td><td class="mono">30%가 B그룹</td><td><code>USE_GROUP</code>가 True일 때만</td></tr>
+        <tr><td><b>과거 선발 기록</b></td><td class="mono">skill + 운 − HISTORY_BIAS × (B그룹이면 1) &gt; 0</td><td>✅ AI가 배우는 "정답"</td></tr>
+      </tbody>
+    </table>
+    <p>AI는 1차시처럼 <b>경사하강법</b>으로 가중치를 학습하는 로지스틱 회귀예요. 가중치가 <b>음수</b>인 정보는 선발에 <b>불리</b>하게 작용합니다.</p>
+    <div class="step"><p><b>두 가지 잣대</b> — <b>정확도</b> = AI가 과거 기록과 얼마나 같게 판단했나 / <b>자격 있는데 탈락한 비율</b> = 진짜 실력이 기준 이상인데 떨어진 학생의 비율 (현실에서는 알기 어려운 값!)</p></div>
+  </section>
+
+  <section class="card" id="s3">
+    <h2>손으로 실험</h2>
+    <p>값을 바꿀 때마다 AI가 처음부터 다시 학습해요. 아래 막대에서 <b>가중치</b>와 <b>두 그룹의 결과</b>를 비교하세요.</p>
+    <div class="lab">
+      <div class="lab-stage">
+        <b style="font-size:14px">AI가 배운 가중치</b> <span class="muted" style="font-size:12.5px">(가운데 선 기준: 오른쪽 + 유리 / 왼쪽 − 불리)</span>
+        <div class="wbars" id="wbars"></div>
+        <div class="cmp">
+          <div><h4>선발률</h4><div id="selBars"></div></div>
+          <div><h4>자격 있는데 탈락한 비율</h4><div id="missBars"></div></div>
+        </div>
+        <div class="stat-row" style="margin-top:10px">
+          <div class="stat"><small>정확도 (과거 기록과 일치)</small><b id="stAcc">-</b></div>
+          <div class="stat"><small>선발률 차이 A−B</small><b id="stGap">-</b></div>
+        </div>
+        <canvas id="dots" width="640" height="200" style="margin-top:12px" aria-label="시험 점수별 선발 결과"></canvas>
+        <p class="muted" style="font-size:12.5px;margin:6px 0 0">점 하나 = 시험용 지원자 한 명 · 가로 = 시험 점수 · <b style="color:var(--blue)">●</b> 선발 / <b style="color:var(--ink-3)">○</b> 탈락. <b>같은 점수</b>에서 두 줄을 비교해 보세요.</p>
+      </div>
+      <div class="lab-ctrl">
+        <div class="ctrl"><label for="rH"><span><code>HISTORY_BIAS</code> 과거 편견</span><output id="oH">1.0</output></label><input type="range" id="rH" min="0" max="2" step="0.1" value="1"><div class="ends"><span>0 편견 없음</span><span>2 심함</span></div></div>
+        <div class="ctrl"><label><span><code>USE_GROUP</code> 그룹 정보 사용</span><output id="oU">True</output></label>
+          <div class="toggle" id="tgU"><button aria-pressed="true" data-v="1">True</button><button aria-pressed="false" data-v="0">False</button></div></div>
+        <div class="ctrl"><label for="rP"><span><code>PROXY</code> 동네-그룹 겹침</span><output id="oP">0.9</output></label><input type="range" id="rP" min="0.5" max="1" step="0.05" value="0.9"><div class="ends"><span>0.5 상관없음</span><span>1.0 완전히 같음</span></div></div>
+        <div class="ctrl"><label for="rT"><span><code>THRESHOLD</code> 선발 기준</span><output id="oT">0.5</output></label><input type="range" id="rT" min="0.1" max="0.9" step="0.05" value="0.5"></div>
+        <div><div class="live-code" id="live"></div><p class="live-cap">↑ 코드 실험실의 변수와 같아요. 손 실험은 무작위 데이터가 달라서 숫자가 조금 다를 수 있어요.</p></div>
+      </div>
+    </div>
+    <div class="split" style="margin-top:14px">
+      <label class="field"><span><i>관찰</i>HISTORY_BIAS를 0 ↔ 1로 바꿀 때 정확도와 선발률 차이는 각각 얼마나 변했나?</span><textarea data-save="h1" data-group="손으로 실험" data-label="편견에 따른 정확도·선발률 변화"></textarea></label>
+      <label class="field"><span><i>관찰</i>USE_GROUP = False로 했을 때 '사는동네' 가중치는 어떻게 변했나?</span><textarea data-save="h2" data-group="손으로 실험" data-label="그룹 정보를 뺐을 때"></textarea></label>
+    </div>
+  </section>
+
+  <section class="card" id="s4">
+    <h2>코드 실험실</h2>
+    <p>위 실험의 파이썬 코드예요. 대문자 변수를 바꿔 실행하고, <b>변수 실험 기록표</b>의 마지막 줄(선발률 차이 · 정확도)을 비교하세요.</p>
+    <div class="runner">
+      <div class="runner-bar"><span class="file">fairness.py</span>
+        <button class="btn btn-run btn-sm" onclick="runPythonCode()">▶ 실행 (Ctrl+Enter)</button>
+        <button class="btn btn-ghost btn-sm" style="color:#dfe6ef;border-color:#334156" onclick="resetRunnerCode('codeEditor', STARTER)">↺ 처음 코드</button>
+        <button class="btn btn-ghost btn-sm" style="color:#dfe6ef;border-color:#334156" onclick="copyRunnerCode()">📋 복사</button>
+        <a class="btn btn-colab btn-sm" target="_blank" rel="noopener" href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/08_AI%EC%9C%A4%EB%A6%AC_%ED%8E%B8%ED%96%A5%EA%B3%BC%EA%B3%B5%EC%A0%95%EC%84%B1/08_AI%ED%8E%B8%ED%96%A5_%EA%B3%B5%EC%A0%95%EC%84%B1%EC%8B%A4%ED%97%98.ipynb">코랩에서 열기</a>
+      </div>
+      <textarea id="codeEditor" spellcheck="false" aria-label="파이썬 코드"></textarea>
+      <div class="runner-status" id="codeStatus">Python 준비 중...</div>
+      <div class="runner-out" id="codeOutput">▶ 실행을 누르면 결과가 여기에 나와요.</div>
+    </div>
+
+    <div class="missions">
+      <div class="mission">
+        <div class="mission-h"><span class="no">M1</span><b>정확도 ≠ 공정성</b><span class="lv">기본</span></div>
+        <p class="change"><code>HISTORY_BIAS</code>를 <code>1.0 → 0.0</code></p>
+        <div class="pred-grid">
+          <label class="field"><span><i>1</i>예측 — 정확도는 오를까 내릴까?</span><textarea data-save="m1p" data-group="M1 정확도와 공정성" data-label="예측"></textarea></label>
+          <label class="field"><span><i>2</i>결과 — 정확도, 선발률 차이, '그룹' 가중치</span><textarea data-save="m1r" data-group="M1 정확도와 공정성" data-label="결과"></textarea></label>
+          <label class="field"><span><i>3</i>설명 — 편견이 있을 때 정확도가 오히려 높은 이유는?</span><textarea data-save="m1e" data-group="M1 정확도와 공정성" data-label="설명"></textarea></label>
+        </div>
+        <details class="tip"><summary>힌트</summary><div>정확도는 "과거 기록을 얼마나 잘 따라 했나"예요. 과거 기록이 편견을 담고 있으면, 편견까지 잘 따라 할수록 정확도가 높아집니다. 편견이 있을 때 '그룹' 가중치는 −2 근처, 없을 때는 0 근처예요. AI는 우리가 준 <b>정답</b>을 그대로 배웁니다.</div></details>
+      </div>
+
+      <div class="mission">
+        <div class="mission-h"><span class="no">M2</span><b>그룹 정보를 지우면 해결될까?</b><span class="lv">핵심</span></div>
+        <p class="change"><code>HISTORY_BIAS = 1.0</code>으로 돌리고 <code>USE_GROUP</code>을 <code>True → False</code></p>
+        <div class="pred-grid">
+          <label class="field"><span><i>1</i>예측</span><textarea data-save="m2p" data-group="M2 그룹 정보 삭제" data-label="예측"></textarea></label>
+          <label class="field"><span><i>2</i>결과 — 선발률 차이와 '사는동네' 가중치</span><textarea data-save="m2r" data-group="M2 그룹 정보 삭제" data-label="결과"></textarea></label>
+          <label class="field"><span><i>3</i>설명 — AI는 그룹을 모르는데 왜 여전히 차이가 날까?</span><textarea data-save="m2e" data-group="M2 그룹 정보 삭제" data-label="설명"></textarea></label>
+        </div>
+        <details class="tip"><summary>힌트</summary><div>'사는동네'가 그룹과 90% 겹치기 때문에 AI가 동네를 <b>그룹의 대리 변수(proxy)</b>로 써요. 가중치가 약 −0.5에서 약 −1.8로 커집니다. 민감한 열을 지우는 것만으로는 편향이 사라지지 않고 <b>숨을 뿐</b>이에요.</div></details>
+      </div>
+
+      <div class="mission">
+        <div class="mission-h"><span class="no">M3</span><b>대리 변수의 힘</b><span class="lv">심화</span></div>
+        <p class="change"><code>USE_GROUP = False</code> 그대로 <code>PROXY</code>를 <code>0.9 → 0.7 → 0.5</code></p>
+        <div class="pred-grid">
+          <label class="field"><span><i>1</i>예측</span><textarea data-save="m3p" data-group="M3 대리 변수" data-label="예측"></textarea></label>
+          <label class="field"><span><i>2</i>결과</span><textarea data-save="m3r" data-group="M3 대리 변수" data-label="결과"></textarea></label>
+          <label class="field"><span><i>3</i>설명 — 현실에서 '사는 동네'처럼 대리 변수가 될 수 있는 정보는?</span><textarea data-save="m3e" data-group="M3 대리 변수" data-label="설명"></textarea></label>
+        </div>
+        <details class="tip"><summary>힌트</summary><div>PROXY = 0.5이면 동네와 그룹이 아무 관계가 없어서 AI가 그룹을 추측할 수 없어요. 그러면 선발률 차이가 거의 사라지지만 정확도(과거 기록과의 일치)는 조금 떨어집니다. 현실의 대리 변수 예: 이름, 출신 학교, 우편번호, 사용하는 단어, 취미…</div></details>
+      </div>
+
+      <div class="mission">
+        <div class="mission-h"><span class="no">M4</span><b>코드 수정: 그룹별 기준선</b><span class="lv">코딩 도전</span></div>
+        <p class="change"><code>pick = prob &gt;= THRESHOLD</code> 줄을 고쳐 <b>B그룹에는 다른 기준 <code>THRESHOLD_B</code></b>를 적용해 보세요. 선발률 차이를 10%p 안으로 줄이려면 THRESHOLD_B는 얼마여야 할까?</p>
+        <div class="pred-grid">
+          <label class="field"><span><i>1</i>고친 코드</span><textarea data-save="m4p" data-group="M4 그룹별 기준선" data-label="고친 코드" style="font-family:var(--f-code);font-size:13px"></textarea></label>
+          <label class="field"><span><i>2</i>THRESHOLD_B 값별 결과</span><textarea data-save="m4r" data-group="M4 그룹별 기준선" data-label="결과"></textarea></label>
+          <label class="field"><span><i>3</i>이 방법은 공정한가? 찬성/반대 이유</span><textarea data-save="m4e" data-group="M4 그룹별 기준선" data-label="설명"></textarea></label>
+        </div>
+        <details class="tip"><summary>힌트</summary><div><code>THRESHOLD_B = 0.15</code><br><code>pick = np.where(group == 1, prob &gt;= THRESHOLD_B, prob &gt;= THRESHOLD)</code><br>차이는 줄지만 "과거 기록과의 정확도"는 내려가요. 무엇을 정답으로 볼지가 결국 사람의 선택이라는 뜻입니다.</div></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="s5">
+    <h2>토론</h2>
+    <div class="think">
+      <div><b>무엇이 "공정"일까?</b><p>① 두 그룹의 선발률이 같아야 공정하다 ② 같은 점수면 같은 결과여야 공정하다 ③ 자격 있는 사람이 떨어지는 비율이 같아야 공정하다 — 세 가지가 동시에 성립하지 않을 때가 많아요. 나는 무엇을 고를까?</p></div>
+      <div><b>현실의 사례</b><p>과거 채용 기록으로 학습한 이력서 심사 AI가 특정 성별을 불리하게 평가해 폐기된 사례가 보도된 적이 있어요. 오늘 실험의 어느 변수와 닮았나요?</p></div>
+      <div><b>6·7차시와의 연결</b><p>6차시: 치우친 글을 배우면 치우친 글을 쓴다. 7차시: AI는 점수 규칙을 그대로 따른다. 8차시: AI는 과거의 정답을 그대로 배운다. 공통점은?</p></div>
+    </div>
+    <label class="field" style="margin-top:14px"><span>오늘의 탐구 질문에 대한 나의 결론 (3문장 이상)</span><textarea data-save="final" data-group="결론" data-label="탐구 질문에 대한 결론" style="min-height:96px" placeholder="정확도가 높아도 … M2에서 그룹 정보를 지웠을 때 … 그래서 AI를 공정하게 만들려면 …"></textarea></label>
+  </section>
+
+  <section class="card homework" id="submit">
+    <h2>제출</h2>
+    <p>학번과 이름을 적고 <b>활동지 내려받기</b>를 누르면 적은 내용과 변수 실험 기록이 한 파일로 저장돼요.</p>
+    <div class="who">
+      <label class="field"><span>학번</span><input id="stuId" data-save="stuId" placeholder="10101"></label>
+      <label class="field"><span>이름</span><input id="stuName" data-save="stuName" placeholder="홍길동"></label>
+    </div>
+    <div class="btn-row"><button class="btn btn-primary" data-download-sheet>📄 활동지 내려받기 (.txt)</button><button class="btn btn-ghost" onclick="window.print()">🖨 인쇄 / PDF</button></div>
+    <div class="submit-box">
+      <div><b>실습 결과물 제출하기</b><p>파일 이름: <code>학번_이름_8차시_활동지.txt</code> (자동으로 붙어요)</p></div>
+      <a class="btn btn-submit" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/18Qdhngu2Z377V7-RutB87lhquziifYA-">📤 제출 폴더 열기</a>
+    </div>
+  </section>
+
+  <details class="teacher">
+    <summary>🧑‍🏫 교사용 메모 (수업 흐름 · 예상 오개념)</summary>
+    <ul>
+      <li><b>도입 5분</b> — 민서·도윤 비교로 "같은 점수 = 같은 결과?"를 묻고 예측을 적게 합니다. 실험 데이터는 가상이며 실제 집단을 가리키지 않는다는 점을 먼저 안내해 주세요.</li>
+      <li><b>설계 8분</b> — "진짜 실력은 AI가 못 본다"가 핵심. 현실에서는 '자격 있는데 탈락' 비율을 알기 어렵기 때문에 편향 발견이 어렵다는 점을 강조.</li>
+      <li><b>손 실험·코드 27분</b> — M1·M2 전원(오늘의 핵심), M3·M4 선택. 확인된 값(SEED = 0): 기본 선발률 차이 약 35%p·정확도 83% / HISTORY_BIAS 0 → 약 2%p·80% / USE_GROUP False → 약 23%p / 여기에 PROXY 0.5 → 약 5%p.</li>
+      <li><b>예상 오개념</b> — ① "컴퓨터는 감정이 없으니 공정하다" ② "민감한 열만 지우면 된다"(M2) ③ "정확도가 높으면 좋은 모델"(M1) ④ "보정하면 무조건 공정"(M4 — 공정의 정의가 여러 개).</li>
+      <li><b>토론 팁</b> — 정답을 정하기보다 "어떤 공정의 정의를, 누가, 왜 고르는가"를 근거와 함께 말하게 하세요.</li>
+    </ul>
+  </details>
+
+  <nav class="pager">
+    <a href="../07_강화학습_보상으로배우기/q_learning_lab.html"><small>← 이전 차시</small><b>7. 보상으로 배우는 AI</b></a>
+    <a class="home" href="../index.html">전체 차시</a>
+    <a class="next" href="../index.html"><small>마무리 →</small><b>전체 차시 다시 보기</b></a>
+  </nav>
+  <footer class="foot">AI Life · 인공지능과 일상</footer>
+</main>
+
+<script type="text/plain" id="starterCode">
+# 8차시 · AI는 공정할까? (과거 기록으로 배운 장학생 선발 AI)
+# 🔧 대문자 변수만 바꿔 가며 실험해 보세요. 한 번에 '하나만'!
+HISTORY_BIAS = 1.0  # 과거 심사의 편견: B그룹 학생을 얼마나 깎아서 뽑았나 (0 = 편견 없음)
+USE_GROUP = True    # AI에게 '그룹(A/B)' 정보를 입력으로 줄까?
+PROXY = 0.9         # '사는 동네'가 그룹과 얼마나 겹치나 (0.5 = 상관없음, 1.0 = 완전히 같음)
+THRESHOLD = 0.5     # AI 확률이 이 값 이상이면 '선발'
+SEED = 0
+
+import numpy as np
+import matplotlib.pyplot as plt
+rng = np.random.default_rng(SEED)
+
+# ① 가상의 지원자 2000명 만들기 (A, B 그룹의 실력 분포는 똑같아요!)
+N = 2000
+group = (rng.random(N) < 0.3).astype(int)              # 0 = A그룹(70%), 1 = B그룹(30%)
+skill = rng.normal(0, 1, N)                             # 진짜 실력 (AI는 못 봐요)
+score = skill + rng.normal(0, 0.5, N)                   # 시험 점수 (실력 + 운)
+region = np.where(rng.random(N) < PROXY, group, 1 - group)   # 사는 동네 (0 = 가동, 1 = 나동)
+qualified = skill > 0                                   # 실제로 자격이 있는 학생
+
+# ② 과거 사람 심사위원의 선발 기록 = AI가 배울 '정답'
+past = (skill + rng.normal(0, 0.5, N) - HISTORY_BIAS * group) > 0
+
+# ③ AI가 볼 수 있는 정보 (입력)
+cols = [score, region] + ([group] if USE_GROUP else [])
+names = ["시험점수", "사는동네"] + (["그룹"] if USE_GROUP else [])
+X = np.column_stack(cols)
+train, test = np.arange(1400), np.arange(1400, N)
+
+# ④ 로지스틱 회귀를 경사하강법으로 학습 (1차시와 같은 원리!)
+w, b = np.zeros(X.shape[1]), 0.0
+for _ in range(2000):
+    p = 1 / (1 + np.exp(-(X[train] @ w + b)))           # 선발 확률
+    err = p - past[train]
+    w -= 0.1 * X[train].T @ err / len(train)
+    b -= 0.1 * err.mean()
+
+prob = 1 / (1 + np.exp(-(X @ w + b)))
+pick = prob >= THRESHOLD
+
+# ⑤ 결과 보기 (학습에 안 쓴 시험용 600명)
+print("[AI가 배운 가중치]  (+ 클수록 선발에 유리, − 클수록 불리)")
+for n, v in zip(names, w):
+    print(f"  {n:<6} {v:+.2f}")
+
+t = test
+acc = (pick[t] == past[t]).mean()
+print(f"\n과거 기록과 일치하는 비율(정확도): {acc * 100:.0f}%")
+print("\n           선발률   자격 있는데 탈락한 비율")
+sel_rates, miss_rates = [], []
+for g, gname in [(0, "A그룹"), (1, "B그룹")]:
+    m = t[group[t] == g]                  # 시험용 중 이 그룹 학생들
+    sel = pick[m].mean()                  # 선발된 비율
+    q = m[qualified[m]]                   # 그중 진짜 자격이 있는 학생들
+    miss = (~pick[q]).mean()              # 자격이 있는데 떨어진 비율
+    sel_rates.append(sel * 100); miss_rates.append(miss * 100)
+    print(f"  {gname}    {sel * 100:5.1f}%        {miss * 100:5.1f}%   ({len(m)}명)")
+
+x = np.arange(2)
+plt.figure(figsize=(6, 3))
+plt.bar(x - 0.2, sel_rates, 0.4, label="selected (%)")
+plt.bar(x + 0.2, miss_rates, 0.4, label="qualified but rejected (%)")
+plt.xticks(x, ["Group A", "Group B"]); plt.ylim(0, 100); plt.legend(); plt.grid(axis="y", alpha=.3)
+plt.title(f"HISTORY_BIAS={HISTORY_BIAS}, USE_GROUP={USE_GROUP}, PROXY={PROXY}"); plt.tight_layout(); plt.show()
+
+gap = abs(pick[t][group[t] == 0].mean() - pick[t][group[t] == 1].mean())
+print(f"\n선발률 차이(A − B): {gap * 100:.1f}%p  ·  정확도 {acc * 100:.0f}%")
+</script>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+<script src="../pyodide_runner.js"></script>
+<script src="../assets/ai_lesson.js"></script>
+<script>
+const STARTER = document.getElementById("starterCode").textContent.trim();
+document.getElementById("codeEditor").value = STARTER;
+initPyodideRunner();
+
+/* ───── 손으로 실험: 파이썬 코드와 같은 규칙 (무작위 수열만 다름) ───── */
+const $ = (id) => document.getElementById(id);
+const P = { HB: 1.0, USE: true, PROXY: 0.9, TH: 0.5 };
+const live = new LiveCode($("live"), [["HISTORY_BIAS", "1.0"], ["USE_GROUP", "True"], ["PROXY", "0.9"], ["THRESHOLD", "0.5"]]);
+function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function normal(r) { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); }
+const N = 2000, NTR = 1400;
+// 기본 지원자(실력·운)는 고정해 두고, 변수에 따라 달라지는 부분만 다시 계산 → 비교가 공정해져요
+const base = (() => { const r = rng(2026); return Array.from({ length: N }, () => ({ g: r() < 0.3 ? 1 : 0, skill: normal(r), luck: normal(r) * 0.5, luck2: normal(r) * 0.5, u: r() })); })();
+function simulate() {
+  const rows = base.map((p) => {
+    const region = p.u < P.PROXY ? p.g : 1 - p.g;
+    const x = [p.skill + p.luck, region].concat(P.USE ? [p.g] : []);
+    return { ...p, x, past: (p.skill + p.luck2 - P.HB * p.g) > 0 ? 1 : 0, qual: p.skill > 0 };
+  });
+  const d = rows[0].x.length; const w = new Array(d).fill(0); let b = 0;
+  for (let it = 0; it < 1500; it++) {
+    const gw = new Array(d).fill(0); let gb = 0;
+    for (let i = 0; i < NTR; i++) {
+      const r = rows[i]; let z = b; for (let j = 0; j < d; j++) z += w[j] * r.x[j];
+      const e = 1 / (1 + Math.exp(-z)) - r.past; for (let j = 0; j < d; j++) gw[j] += e * r.x[j]; gb += e;
+    }
+    for (let j = 0; j < d; j++) w[j] -= 0.1 * gw[j] / NTR; b -= 0.1 * gb / NTR;
+  }
+  rows.forEach((r) => { let z = b; for (let j = 0; j < d; j++) z += w[j] * r.x[j]; r.prob = 1 / (1 + Math.exp(-z)); r.pick = r.prob >= P.TH; });
+  return { rows, w };
+}
+function render() {
+  const { rows, w } = simulate();
+  const test = rows.slice(NTR);
+  const names = ["시험점수", "사는동네", "그룹"];
+  $("wbars").innerHTML = w.map((v, i) => {
+    const pct = Math.min(50, Math.abs(v) / 3 * 50);
+    const col = v >= 0 ? "var(--good)" : "var(--bad)";
+    return `<div class="wbar"><span>${names[i]}</span><span class="track"><i style="background:${col};${v >= 0 ? `left:50%;width:${pct}%` : `right:50%;width:${pct}%`}"></i></span><span class="v">${v >= 0 ? "+" : ""}${v.toFixed(2)}</span></div>`;
+  }).join("") + (P.USE ? "" : `<div class="wbar"><span class="muted">그룹</span><span class="muted" style="font-size:12.5px">AI에게 주지 않음</span><span></span></div>`);
+  const acc = test.filter((r) => r.pick === !!r.past).length / test.length;
+  const stat = [0, 1].map((g) => {
+    const m = test.filter((r) => r.g === g), q = m.filter((r) => r.qual);
+    return { sel: m.filter((r) => r.pick).length / m.length, miss: q.filter((r) => !r.pick).length / q.length };
+  });
+  const bar = (lab, v, cls) => `<div class="gbar"><span>${lab}</span><span class="t"><i class="${cls}" style="width:${(v * 100).toFixed(1)}%"></i></span><span class="v">${(v * 100).toFixed(0)}%</span></div>`;
+  $("selBars").innerHTML = bar("A그룹", stat[0].sel, "ga") + bar("B그룹", stat[1].sel, "gb");
+  $("missBars").innerHTML = bar("A그룹", stat[0].miss, "ga") + bar("B그룹", stat[1].miss, "gb");
+  $("stAcc").textContent = (acc * 100).toFixed(0) + "%";
+  $("stGap").textContent = ((stat[0].sel - stat[1].sel) * 100).toFixed(1) + "%p";
+  drawDots(test);
+}
+function drawDots(test) {
+  const cv = $("dots"), ctx = cv.getContext("2d"), W = cv.width, H = cv.height;
+  const css = getComputedStyle(document.documentElement);
+  const ink = css.getPropertyValue("--ink-3").trim() || "#6f7a8a", blue = css.getPropertyValue("--blue").trim() || "#2f5d8a", warn = css.getPropertyValue("--warn").trim() || "#a86b12";
+  ctx.clearRect(0, 0, W, H);
+  const x0 = 70, x1 = W - 16, sx = (v) => x0 + (Math.max(-3, Math.min(3, v)) + 3) / 6 * (x1 - x0);
+  ctx.font = "13px 'IBM Plex Sans KR', sans-serif"; ctx.textBaseline = "middle"; ctx.fillStyle = ink;
+  [["A그룹", 0, 50], ["B그룹", 1, 135]].forEach(([lab, g, cy]) => {
+    ctx.fillStyle = g ? warn : blue; ctx.fillText(lab, 8, cy);
+    let k = 0;
+    test.filter((r) => r.g === g).forEach((r) => {
+      const y = cy + ((k++ * 37) % 60 - 30) * 0.9;
+      ctx.beginPath(); ctx.arc(sx(r.x[0]), y, 3.2, 0, 7);
+      if (r.pick) { ctx.fillStyle = blue; ctx.fill(); } else { ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.stroke(); }
+    });
+  });
+  ctx.fillStyle = ink; ctx.textAlign = "center"; ctx.font = "11px 'JetBrains Mono', monospace";
+  [-2, -1, 0, 1, 2].forEach((v) => ctx.fillText(v, sx(v), H - 8));
+  ctx.textAlign = "left"; ctx.fillText("시험 점수 →", x1 - 72, H - 22);
+}
+let tmr; const later = () => { clearTimeout(tmr); tmr = setTimeout(render, 60); };
+$("rH").addEventListener("input", (e) => { P.HB = +e.target.value; $("oH").textContent = P.HB.toFixed(1); live.set("HISTORY_BIAS", P.HB.toFixed(1)); later(); });
+$("rP").addEventListener("input", (e) => { P.PROXY = +e.target.value; $("oP").textContent = P.PROXY.toFixed(2).replace(/0$/, ""); live.set("PROXY", $("oP").textContent); later(); });
+$("rT").addEventListener("input", (e) => { P.TH = +e.target.value; $("oT").textContent = P.TH.toFixed(2).replace(/0$/, ""); live.set("THRESHOLD", $("oT").textContent); later(); });
+document.querySelectorAll("#tgU button").forEach((bt) => bt.onclick = () => {
+  document.querySelectorAll("#tgU button").forEach((x) => x.setAttribute("aria-pressed", x === bt));
+  P.USE = bt.dataset.v === "1"; const v = P.USE ? "True" : "False"; $("oU").textContent = v; live.set("USE_GROUP", v); later();
+});
+render();
+</script>
+</body>
+</html>

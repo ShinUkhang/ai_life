@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6차시 · 다음 단어를 맞히는 기계 | AI Life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/ai.css">
+<style>
+  .story { min-height: 92px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 17px; line-height: 1.9; }
+  .story span { padding: 1px 3px; border-radius: 4px; }
+  .story span.ctx { background: var(--yellow-soft); box-shadow: inset 0 -2px 0 var(--yellow); }
+  .story span.new { animation: flash .8s; }
+  .cand-h { display: flex; justify-content: space-between; align-items: baseline; margin: 14px 0 6px; font-size: 13.5px; font-weight: 700; color: var(--ink-2); gap: 8px; flex-wrap: wrap; }
+  .cands { display: grid; gap: 4px; }
+  .cand { display: grid; grid-template-columns: minmax(70px, 110px) 34px 1fr 52px; align-items: center; gap: 8px; font-size: 14px; padding: 4px 6px; border-radius: 8px; border: 0; background: transparent; font: inherit; text-align: left; cursor: pointer; color: var(--ink); }
+  .cand:hover { background: var(--blue-soft); }
+  .cand .w { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cand .n { font-family: var(--f-code); font-size: 12px; color: var(--ink-3); text-align: right; }
+  .cand .bar { height: 14px; background: var(--line); border-radius: 4px; overflow: hidden; }
+  .cand .bar i { display: block; height: 100%; background: var(--blue); border-radius: 4px; transition: width .25s; }
+  .cand.picked .bar i { background: var(--yellow); }
+  .cand .p { font-family: var(--f-code); font-size: 12.5px; text-align: right; }
+  .empty-c { font-size: 14px; color: var(--ink-3); padding: 8px 4px; }
+  .data-box textarea { width: 100%; min-height: 130px; font: inherit; font-size: 14px; padding: 10px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface-2); color: var(--ink); }
+  .seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 8px; }
+  .seg button { font: inherit; font-size: 14px; font-weight: 700; border: 0; padding: 6px 14px; background: transparent; cursor: pointer; color: var(--ink-2); font-family: var(--f-code); }
+  .seg button[aria-pressed=true] { background: var(--ink); color: var(--bg); }
+  .calc { font-family: var(--f-code); font-size: 13px; background: var(--surface-2); border-radius: 10px; padding: 10px 12px; overflow-x: auto; white-space: pre; color: var(--ink-2); }
+</style>
+</head>
+<body data-lesson="06" data-no="6" data-title="6차시 · 다음 단어를 맞히는 기계 (생성형 AI)">
+
+<header class="topbar"><div class="topbar-in">
+  <a class="brand" href="../index.html"><span class="brand-mark">AI</span><span><b>AI Life</b><small>인공지능과 일상</small></span></a>
+  <span class="spacer"></span>
+  <nav class="days" aria-label="차시">
+    <a href="../01_머신러닝_선형회귀/linear_regression_simulator.html">1</a>
+    <a href="../02_컴퓨터비전_물체인식/object_detection_simulator.html">2</a>
+    <a href="../03_CNN_합성곱신경망/cnn_classifier_simulator.html">3</a>
+    <a href="../04_자연어처리_AI에이전트/text_agent_simulator.html">4</a>
+    <a href="../05_음성인식_인공지능/음성인식_인공지능_수업교재.html">5</a>
+    <a href="next_word_lab.html" aria-current="page">6</a>
+    <a href="../07_강화학습_보상으로배우기/q_learning_lab.html">7</a>
+    <a href="../08_AI윤리_편향과공정성/fairness_lab.html">8</a>
+  </nav>
+</div></header>
+
+<main class="container">
+  <section class="lesson-head" data-mark="P(w)">
+    <div class="eyebrow"><span>6차시</span><span>생성형 AI · 언어 모델</span><span>45~50분</span><span>4차시와 연결</span></div>
+    <h1>다음 단어를 맞히는 기계</h1>
+    <p>챗GPT 같은 생성형 AI는 "생각"해서 글을 쓰는 걸까요? 오늘은 단어 수를 세는 것만으로 글을 만드는 아주 작은 언어 모델을 직접 코딩하고, 변수 하나를 바꿀 때마다 무엇이 달라지는지 추리합니다.</p>
+    <div class="bigq"><small>오늘의 탐구 질문</small>같은 질문을 해도 AI의 답이 매번 다른 이유는 무엇일까? 그리고 그럴듯한 거짓말(환각)은 왜 생길까?</div>
+  </section>
+
+  <nav class="toc" aria-label="오늘의 순서"><b>오늘의 순서</b><ol>
+    <li><a href="#s1">예측해 보기 <span class="min">5분</span></a></li>
+    <li><a href="#s2">원리: 세고, 나누고, 뽑기 <span class="min">10분</span></a></li>
+    <li><a href="#s3">손으로 실험 <span class="min">10분</span></a></li>
+    <li><a href="#s4">코드 실험실 <span class="min">15분</span></a></li>
+    <li><a href="#s5">생각 넓히기 <span class="min">5분</span></a></li>
+    <li><a href="#submit">제출</a></li>
+  </ol></nav>
+
+  <section class="card" id="s1">
+    <h2>예측해 보기</h2>
+    <p>아래 빈칸에 들어갈 단어를 떠올려 보세요. <b>왜</b> 그 단어가 떠올랐나요?</p>
+    <div class="step"><p style="font-size:18px;margin:0">"나는 아침마다 ______"</p></div>
+    <div class="split">
+      <label class="field"><span>내가 고른 단어와 이유</span><textarea data-save="q0a" data-group="예측해 보기" data-label="빈칸 단어와 이유" placeholder="예) '학교에' — 아침마다 가는 곳이니까"></textarea></label>
+      <label class="field"><span>반 친구들은 모두 같은 단어를 골랐을까? 그렇게 생각하는 이유는?</span><textarea data-save="q0b" data-group="예측해 보기" data-label="친구들도 같을까?" placeholder="예) 대부분 같겠지만 '운동한다'처럼 다른 답도 있을 것 같다"></textarea></label>
+    </div>
+    <p class="muted" style="font-size:14px;margin-top:10px">사람도 "많이 들어 본 말"을 먼저 떠올립니다. 언어 모델은 이 감각을 <b>숫자(확률)</b>로 바꾼 것이에요.</p>
+  </section>
+
+  <section class="card" id="s2">
+    <h2>원리: 세고, 나누고, 뽑기</h2>
+    <p>가장 단순한 언어 모델은 세 단계로 움직입니다. 오늘 코드도 정확히 이 순서예요.</p>
+    <table class="tbl">
+      <thead><tr><th style="width:120px">단계</th><th>하는 일</th><th>코드에서</th></tr></thead>
+      <tbody>
+        <tr><td><b>① 세기 (학습)</b></td><td>글에서 "나는" 바로 뒤에 어떤 단어가 몇 번 나왔는지 센다</td><td class="mono">counts[key][nxt] += 1</td></tr>
+        <tr><td><b>② 나누기 (확률)</b></td><td>횟수를 전체 합으로 나눠 확률로 만든다</td><td class="mono">n / total</td></tr>
+        <tr><td><b>③ 뽑기 (생성)</b></td><td>확률이 클수록 잘 나오는 주사위를 굴려 다음 단어를 고른다</td><td class="mono">random.choices(...)</td></tr>
+      </tbody>
+    </table>
+    <h3>온도(Temperature)는 주사위를 기울이는 손잡이</h3>
+    <p>각 횟수를 <code>1 / 온도</code> 만큼 거듭제곱한 다음 다시 비율로 나눕니다. 직접 계산해 봅시다. "나는" 뒤에 <b>학교에 5번, 책을 2번</b>이 나왔다면:</p>
+    <div class="calc">온도 1.0 →  5¹ : 2¹   =  5 : 2    →  학교에 71%, 책을 29%
+온도 0.5 →  5² : 2²   = 25 : 4    →  학교에 86%, 책을 14%   (흔한 단어가 더 유리)
+온도 2.0 →  √5 : √2   = 2.24 : 1.41 →  학교에 61%, 책을 39%   (차이가 줄어듦)</div>
+    <div class="field" style="margin-top:12px"><span><i>?</i>온도를 0에 아주 가깝게 하면 확률은 어떻게 될까? 온도가 아주 크면?</span><textarea data-save="q1" data-group="원리" data-label="온도가 극단일 때 예측" placeholder="계산해 보고 예측해 보세요"></textarea></div>
+  </section>
+
+  <section class="card" id="s3">
+    <h2>손으로 실험</h2>
+    <p>왼쪽 아래 막대는 <b>지금 노랗게 칠해진 문맥 다음에 올 단어의 확률</b>입니다. 막대를 눌러 직접 고르거나, 주사위 버튼으로 AI에게 맡겨 보세요. 슬라이더는 오른쪽 코드 속 변수와 같은 값이에요.</p>
+    <div class="lab">
+      <div class="lab-stage">
+        <div class="story" id="story" aria-live="polite"></div>
+        <div class="cand-h"><span id="candTitle">다음 단어 후보</span><span class="muted" style="font-weight:500">횟수 · 확률</span></div>
+        <div class="cands" id="cands"></div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn btn-run btn-sm" id="bRoll">🎲 확률대로 1단어</button>
+          <button class="btn btn-primary btn-sm" id="bRoll10">🎲 10단어</button>
+          <button class="btn btn-ghost btn-sm" id="bMax">⬆ 가장 높은 것</button>
+          <button class="btn btn-ghost btn-sm" id="bReset">↺ 처음부터</button>
+        </div>
+      </div>
+      <div class="lab-ctrl">
+        <div class="ctrl">
+          <label for="rT"><span><code>TEMPERATURE</code> 온도</span><output id="oT">1.0</output></label>
+          <input type="range" id="rT" min="0.1" max="3" step="0.1" value="1">
+          <div class="ends"><span>0.1 뻔한 글</span><span>3.0 엉뚱한 글</span></div>
+        </div>
+        <div class="ctrl">
+          <label><span><code>CONTEXT</code> 문맥 길이</span><output id="oC">1</output></label>
+          <div class="seg" role="group" aria-label="문맥 길이">
+            <button data-c="1" aria-pressed="true">1단어</button><button data-c="2" aria-pressed="false">2단어</button><button data-c="3" aria-pressed="false">3단어</button>
+          </div>
+          <p>앞의 몇 단어를 보고 다음 단어를 고를지 정해요.</p>
+        </div>
+        <div class="ctrl">
+          <label for="iStart"><span><code>START</code> 첫 단어</span></label>
+          <input class="inp" id="iStart" value="나는" style="margin-top:6px">
+        </div>
+        <div>
+          <div class="live-code" id="live"></div>
+          <p class="live-cap">↑ 화면을 조작하면 코드 속 변수 값이 바뀌어요.</p>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><small>학습한 단어 수</small><b id="stWords">0</b></div>
+          <div class="stat"><small>문맥 종류</small><b id="stKeys">0</b></div>
+          <div class="stat"><small>원문 베끼기</small><b id="stCopy">-</b></div>
+        </div>
+      </div>
+    </div>
+
+    <details class="tip data-box" style="margin-top:16px">
+      <summary>📚 학습 데이터 바꿔 보기 (모델은 데이터가 전부!)</summary>
+      <div style="background:var(--surface-2)">
+        <textarea id="dataText" aria-label="학습 데이터"></textarea>
+        <div class="btn-row" style="margin-top:8px">
+          <button class="btn btn-primary btn-sm" id="bRetrain">이 글로 다시 학습</button>
+          <button class="btn btn-ghost btn-sm" id="bBom">김유정 「봄봄」(1935) 불러오기</button>
+          <button class="btn btn-ghost btn-sm" id="bDiary">처음 데이터로</button>
+        </div>
+        <p class="muted" style="font-size:13px;margin:8px 0 0">「봄봄」은 저작권 보호 기간이 끝난 작품이에요. 4차시 에이전트 실습에서 쓴 바로 그 글입니다.</p>
+      </div>
+    </details>
+
+    <div class="split" style="margin-top:14px">
+      <label class="field"><span><i>관찰</i>온도를 0.1 → 3.0으로 바꿨을 때 막대 모양은 어떻게 변했나?</span><textarea data-save="h1" data-group="손으로 실험" data-label="온도에 따른 막대 변화"></textarea></label>
+      <label class="field"><span><i>관찰</i>문맥을 1 → 3단어로 늘리면 후보 수는? 글은 원문과 얼마나 비슷해졌나?</span><textarea data-save="h2" data-group="손으로 실험" data-label="문맥 길이에 따른 변화"></textarea></label>
+    </div>
+  </section>
+
+  <section class="card" id="s4">
+    <h2>코드 실험실</h2>
+    <p>위 실험을 파이썬 60줄로 만든 코드입니다. 맨 위 <b>대문자 변수</b>만 바꿔서 실행하면, 아래 <b>변수 실험 기록표</b>에 "바꾼 값 → 결과"가 자동으로 쌓여요. <b>실행 전에 예측을 먼저 적는 것</b>이 오늘의 규칙입니다.</p>
+    <div class="runner">
+      <div class="runner-bar"><span class="file">next_word.py</span>
+        <button class="btn btn-run btn-sm" onclick="runPythonCode()">▶ 실행 (Ctrl+Enter)</button>
+        <button class="btn btn-ghost btn-sm" style="color:#dfe6ef;border-color:#334156" onclick="resetRunnerCode('codeEditor', STARTER)">↺ 처음 코드</button>
+        <button class="btn btn-ghost btn-sm" style="color:#dfe6ef;border-color:#334156" onclick="copyRunnerCode()">📋 복사</button>
+        <a class="btn btn-colab btn-sm" target="_blank" rel="noopener" href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/06_%EC%83%9D%EC%84%B1%ED%98%95AI_%EB%8B%A4%EC%9D%8C%EB%8B%A8%EC%96%B4%EC%98%88%EC%B8%A1/06_%EB%8B%A4%EC%9D%8C%EB%8B%A8%EC%96%B4_%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8.ipynb">코랩에서 열기</a>
+      </div>
+      <textarea id="codeEditor" spellcheck="false" aria-label="파이썬 코드"></textarea>
+      <div class="runner-status" id="codeStatus">Python 준비 중...</div>
+      <div class="runner-out" id="codeOutput">▶ 실행을 누르면 결과가 여기에 나와요.</div>
+    </div>
+
+    <div class="missions">
+      <div class="mission">
+        <div class="mission-h"><span class="no">M1</span><b>온도만 바꾸기</b><span class="lv">기본</span></div>
+        <p class="change"><code>TEMPERATURE</code>를 <code>1.0 → 0.2 → 3.0</code> 으로 바꿔 세 번 실행 (SEED는 그대로!)</p>
+        <div class="pred-grid">
+          <label class="field"><span><i>1</i>예측 — 글이 어떻게 달라질까?</span><textarea data-save="m1p" data-group="M1 온도" data-label="예측"></textarea></label>
+          <label class="field"><span><i>2</i>결과 — 확률표와 글에서 본 것</span><textarea data-save="m1r" data-group="M1 온도" data-label="결과"></textarea></label>
+          <label class="field"><span><i>3</i>설명 — 왜 그렇게 됐을까? (코드의 어느 줄 때문?)</span><textarea data-save="m1e" data-group="M1 온도" data-label="설명"></textarea></label>
+        </div>
+        <details class="tip"><summary>힌트</summary><div><code>n ** (1 / TEMPERATURE)</code>에서 온도가 작으면 지수가 커져요. 5와 2의 차이가 5⁵ : 2⁵ = 3125 : 32 처럼 벌어집니다. 그래서 온도 0.2에서는 같은 문장이 반복돼요.</div></details>
+      </div>
+
+      <div class="mission">
+        <div class="mission-h"><span class="no">M2</span><b>주사위 번호(SEED) 바꾸기</b><span class="lv">기본</span></div>
+        <p class="change"><code>TEMPERATURE = 1.0</code>으로 두고 <code>SEED</code>만 <code>7 → 8 → 9</code></p>
+        <div class="pred-grid">
+          <label class="field"><span><i>1</i>예측</span><textarea data-save="m2p" data-group="M2 SEED" data-label="예측"></textarea></label>
+          <label class="field"><span><i>2</i>결과 — 확률표는 바뀌었나? 글은?</span><textarea data-save="m2r" data-group="M2 SEED" data-label="결과"></textarea></label>
+          <label class="field"><span><i>3</i>설명 — 챗GPT 답이 매번 다른 이유와 연결해 보기</span><textarea data-save="m2e" data-group="M2 SEED" data-label="설명"></textarea></label>
+        </div>
+        <details class="tip"><summary>힌트</summary><div>확률표(①②, 학습 결과)는 그대로이고 ③ 뽑기만 달라져요. 생성형 AI도 같은 확률에서 매번 다르게 뽑기 때문에 답이 달라집니다. SEED를 고정하면 실험을 똑같이 재현할 수 있어요 — 과학 실험의 "변인 통제"!</div></details>
+      </div>
+
+      <div class="mission">
+        <div class="mission-h"><span class="no">M3</span><b>문맥 길이와 베끼기</b><span class="lv">심화</span></div>
+        <p class="change"><code>CONTEXT</code>를 <code>1 → 2 → 3</code>. 마지막 줄의 <b>원문 베끼기 비율</b>과 <b>문맥 종류</b> 수를 기록표에서 비교</p>
+        <div class="pred-grid">
+          <label class="field"><span><i>1</i>예측</span><textarea data-save="m3p" data-group="M3 문맥" data-label="예측"></textarea></label>
+          <label class="field"><span><i>2</i>결과</span><textarea data-save="m3r" data-group="M3 문맥" data-label="결과"></textarea></label>
+          <label class="field"><span><i>3</i>설명 — 문맥이 길면 더 "똑똑"한가, 더 "외우는" 것인가?</span><textarea data-save="m3e" data-group="M3 문맥" data-label="설명"></textarea></label>
+        </div>
+        <details class="tip"><summary>힌트</summary><div>문맥이 길수록 그 문맥이 나온 곳이 거의 한 군데뿐이라, 다음 단어 후보가 1개가 돼요(확률 100%). 그러면 원문을 그대로 외워 말하게 됩니다. 진짜 언어 모델은 엄청나게 많은 글로 학습해서 긴 문맥도 "외우지 않고" 다룰 수 있어요. 이것이 데이터의 양이 중요한 이유이자, 저작권 문제가 생기는 지점이기도 합니다.</div></details>
+      </div>
+
+      <div class="mission">
+        <div class="mission-h"><span class="no">M4</span><b>오류를 고쳐라: 온도 0</b><span class="lv">코딩 도전</span></div>
+        <p class="change"><code>TEMPERATURE = 0</code> 으로 실행하면 오류가 납니다. 오류 이름과 줄 번호를 읽고, <b>온도가 0이면 가장 많이 나온 단어를 고르도록</b> <code>next_probs</code> 함수를 고쳐 보세요.</p>
+        <div class="pred-grid">
+          <label class="field"><span><i>1</i>오류 이름과 원인</span><textarea data-save="m4p" data-group="M4 오류 고치기" data-label="오류와 원인"></textarea></label>
+          <label class="field"><span><i>2</i>내가 추가한 코드</span><textarea data-save="m4r" data-group="M4 오류 고치기" data-label="추가한 코드" style="font-family:var(--f-code);font-size:13px"></textarea></label>
+          <label class="field"><span><i>3</i>고친 뒤 결과</span><textarea data-save="m4e" data-group="M4 오류 고치기" data-label="고친 뒤 결과"></textarea></label>
+        </div>
+        <details class="tip"><summary>힌트</summary><div><code>1 / 0</code>은 계산할 수 없어서 <code>ZeroDivisionError</code>가 나요. 함수 맨 앞에 다음 두 줄을 넣어 보세요.<br><code>if TEMPERATURE == 0 and c:</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;best = max(c, key=c.get)</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;return {best: 1.0}</code></div></details>
+      </div>
+
+      <div class="mission">
+        <div class="mission-h"><span class="no">M5</span><b>데이터를 바꾸면 모델이 바뀐다</b><span class="lv">도전</span></div>
+        <p class="change"><code>TEXT</code> 안에 "나는 게임을 한다." 같은 문장을 <b>여러 번</b> 추가해 실행해 보세요. "나는" 다음 확률표가 어떻게 바뀌나요?</p>
+        <div class="pred-grid">
+          <label class="field"><span><i>1</i>추가한 문장과 횟수</span><textarea data-save="m5p" data-group="M5 데이터" data-label="추가한 문장"></textarea></label>
+          <label class="field"><span><i>2</i>확률표 변화</span><textarea data-save="m5r" data-group="M5 데이터" data-label="결과"></textarea></label>
+          <label class="field"><span><i>3</i>실제 AI에서 "한쪽으로 치우친 데이터"가 많다면?</span><textarea data-save="m5e" data-group="M5 데이터" data-label="설명"></textarea></label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="s5">
+    <h2>생각 넓히기</h2>
+    <div class="think">
+      <div><b>환각(Hallucination)</b><p>손으로 실험에서 원문에 없던 문장("나는 친구와 코딩을 한다. 축구는 재미있다." 같은)이 나왔나요? 말은 자연스럽지만 사실인지는 확인하지 않습니다. AI가 그럴듯한 거짓말을 하는 이유와 연결해 보세요.</p></div>
+      <div><b>진짜 LLM과 무엇이 다를까?</b><p>오늘 모델은 단어 횟수를 표로 외웁니다. 진짜 LLM은 수천억 개의 가중치(1차시의 W!)로 확률을 <b>계산</b>해요. 그래도 "다음 단어 확률 → 뽑기"라는 마지막 단계는 같습니다.</p></div>
+      <div><b>누구의 글일까?</b><p>문맥을 길게 하면 원문을 그대로 베꼈어요. 많은 사람의 글을 학습한 AI가 만든 글의 주인은 누구일까요?</p></div>
+    </div>
+    <label class="field" style="margin-top:14px"><span>오늘의 탐구 질문에 대한 나의 결론 (3문장 이상)</span><textarea data-save="final" data-group="결론" data-label="탐구 질문에 대한 결론" style="min-height:96px" placeholder="AI의 답이 매번 다른 이유는 … 왜냐하면 코드에서 … 그래서 AI를 쓸 때 나는 …"></textarea></label>
+  </section>
+
+  <section class="card homework" id="submit">
+    <h2>제출</h2>
+    <p>학번과 이름을 적고 <b>활동지 내려받기</b>를 누르면 이 페이지에 적은 내용과 변수 실험 기록이 한 파일로 저장돼요. 그 파일을 제출 폴더에 올려 주세요.</p>
+    <div class="who">
+      <label class="field"><span>학번</span><input id="stuId" data-save="stuId" placeholder="10101"></label>
+      <label class="field"><span>이름</span><input id="stuName" data-save="stuName" placeholder="홍길동"></label>
+    </div>
+    <div class="btn-row"><button class="btn btn-primary" data-download-sheet>📄 활동지 내려받기 (.txt)</button><button class="btn btn-ghost" onclick="window.print()">🖨 인쇄 / PDF</button></div>
+    <div class="submit-box">
+      <div><b>실습 결과물 제출하기</b><p>파일 이름: <code>학번_이름_6차시_활동지.txt</code> (자동으로 붙어요)</p></div>
+      <a class="btn btn-submit" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/18Qdhngu2Z377V7-RutB87lhquziifYA-">📤 제출 폴더 열기</a>
+    </div>
+  </section>
+
+  <details class="teacher">
+    <summary>🧑‍🏫 교사용 메모 (수업 흐름 · 예상 오개념)</summary>
+    <ul>
+      <li><b>도입 5분</b> — "나는 아침마다 ___" 빈칸을 서너 명에게 묻고, 답이 겹치는 정도로 "확률"을 꺼냅니다.</li>
+      <li><b>원리 10분</b> — 온도 계산(5:2)을 손으로 함께 계산. 0.5와 2.0을 비교하면 대부분 이해합니다.</li>
+      <li><b>손 실험 10분</b> — 온도 0.1에서 "나는 학교에 간다."가 반복되는 장면이 핵심. 문맥 3에서 후보가 1개뿐인 것도 짚어 주세요.</li>
+      <li><b>코드 15분</b> — M1·M2는 전원, M3~M5는 선택. M4는 "오류 메시지를 읽는 법"을 가르치는 기회입니다(실행기가 줄 번호와 힌트를 보여 줌).</li>
+      <li><b>예상 오개념</b> — ① "AI가 의미를 이해해서 고른다" → 오늘 모델은 횟수만 셉니다. ② "SEED를 바꾸면 학습이 달라진다" → 확률표는 그대로, 뽑기만 달라짐. ③ "온도가 높으면 더 창의적이라 좋다" → 문법이 깨지고 사실과 멀어질 수 있음.</li>
+      <li><b>평가 포인트</b> — 결과를 코드의 특정 줄(지수 <code>1/TEMPERATURE</code>, <code>random.choices</code>, <code>CONTEXT</code> 슬라이싱)과 연결해 설명했는가.</li>
+    </ul>
+  </details>
+
+  <nav class="pager">
+    <a href="../05_음성인식_인공지능/음성인식_인공지능_수업교재.html"><small>← 이전 차시</small><b>5. 음성인식</b></a>
+    <a class="home" href="../index.html">전체 차시</a>
+    <a class="next" href="../07_강화학습_보상으로배우기/q_learning_lab.html"><small>다음 차시 →</small><b>7. 보상으로 배우는 AI</b></a>
+  </nav>
+  <footer class="foot">AI Life · 인공지능과 일상</footer>
+</main>
+
+<script type="text/plain" id="starterCode">
+# 6차시 · 다음 단어를 맞히는 기계 (아주 작은 언어 모델)
+# 🔧 대문자 변수만 바꿔 가며 실험해 보세요. 한 번에 '하나만' 바꾸는 게 규칙!
+TEMPERATURE = 1.0   # 온도: 작을수록 흔한 단어만, 클수록 드문 단어도 골라요
+CONTEXT = 1         # 문맥 길이: 앞의 몇 단어를 보고 다음 단어를 고를까? (1, 2, 3)
+LENGTH = 15         # 새로 만들 단어 수
+START = "나는"       # 첫 단어 (TEXT 안에 있는 단어여야 해요)
+SEED = 7            # 주사위 번호: SEED가 같으면 결과도 같아요
+
+import random
+
+TEXT = """
+월요일. 나는 학교에 간다. 나는 친구와 점심을 먹는다. 나는 도서관에 간다. 나는 책을 읽는다.
+화요일. 나는 학교에 간다. 나는 친구와 코딩을 한다. 코딩은 재미있다.
+수요일. 나는 학교에 간다. 나는 친구와 축구를 한다. 축구는 재미있다.
+목요일. 나는 학교에 간다. 나는 수학을 공부한다. 수학은 어렵다.
+금요일. 나는 학교에 간다. 나는 친구와 인공지능을 공부한다. 인공지능은 재미있다. 인공지능은 다음 단어를 예측한다.
+토요일. 나는 집에 있다. 나는 책을 읽는다. 책은 재미있다.
+일요일. 나는 집에 있다. 나는 코딩을 한다. 코딩은 어렵다.
+"""
+words = TEXT.split()
+
+# ① 학습: "앞 단어(들) → 다음 단어"가 몇 번 나왔는지 세기
+counts = {}
+for i in range(len(words) - CONTEXT):
+    key = tuple(words[i : i + CONTEXT])     # 앞 단어 묶음 (문맥)
+    nxt = words[i + CONTEXT]               # 바로 다음 단어
+    if key not in counts:
+        counts[key] = {}
+    counts[key][nxt] = counts[key].get(nxt, 0) + 1
+
+# ② 횟수 → 확률 (온도 적용: 횟수를 1/온도 제곱한 뒤 비율로)
+def next_probs(key):
+    c = counts.get(key, {})
+    weights = {w: n ** (1 / TEMPERATURE) for w, n in c.items()}
+    total = sum(weights.values())
+    return {w: v / total for w, v in weights.items()}
+
+# ③ 첫 문맥 정하기 + 다음 단어 확률표 보여 주기
+random.seed(SEED)
+first = [k for k in counts if k[0] == START]
+if not first:
+    raise SystemExit(f"'{START}'(이)라는 단어가 TEXT에 없어요. START를 바꿔 보세요.")
+out = list(first[0])
+
+probs = next_probs(tuple(out[-CONTEXT:]))
+print(f"[확률표] '{' '.join(out)}' 다음에 올 단어 (온도 {TEMPERATURE})")
+for w, p in sorted(probs.items(), key=lambda x: -x[1]):
+    print(f"  {p * 100:5.1f}%  {'█' * round(p * 30):<30} {w}")
+
+# ④ 확률대로 한 단어씩 뽑아 문장 만들기
+for _ in range(LENGTH):
+    probs = next_probs(tuple(out[-CONTEXT:]))
+    if not probs:                       # 이 문맥 다음 단어를 본 적이 없으면 멈춤
+        break
+    nxt = random.choices(list(probs), weights=list(probs.values()))[0]
+    out.append(nxt)
+
+print("\n[AI가 만든 글]")
+print(" ", " ".join(out))
+
+# ⑤ 원문을 얼마나 그대로 베꼈을까? (연속 3단어가 원문에 있는 비율)
+tri_text = {tuple(words[i : i + 3]) for i in range(len(words) - 2)}
+tri_out = [tuple(out[i : i + 3]) for i in range(len(out) - 2)]
+copied = sum(t in tri_text for t in tri_out) / max(1, len(tri_out))
+print(f"\n원문 베끼기 비율: {copied * 100:.0f}%  (문맥 종류 {len(counts)}개)")
+</script>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+<script src="../pyodide_runner.js"></script>
+<script src="../assets/ai_lesson.js"></script>
+<script>
+const STARTER = document.getElementById("starterCode").textContent.trim();
+document.getElementById("codeEditor").value = STARTER;
+initPyodideRunner();
+
+/* ───── 손으로 실험: 파이썬 코드와 같은 규칙의 언어 모델 ───── */
+const DIARY = STARTER.split('TEXT = """')[1].split('"""')[0].trim();
+const S = { T: 1.0, C: 1, start: "나는", words: [], counts: new Map(), out: [], picked: null };
+const $ = (id) => document.getElementById(id);
+const live = new LiveCode($("live"), [
+  ["TEMPERATURE", "1.0", "온도"], ["CONTEXT", "1", "문맥 길이"], ["START", '"나는"', "첫 단어"],
+]);
+
+function train(text) {
+  S.words = text.split(/\s+/).filter(Boolean);
+  S.counts = new Map();
+  for (let i = 0; i + S.C < S.words.length; i++) {
+    const key = S.words.slice(i, i + S.C).join(" ");
+    const nxt = S.words[i + S.C];
+    if (!S.counts.has(key)) S.counts.set(key, new Map());
+    const m = S.counts.get(key);
+    m.set(nxt, (m.get(nxt) || 0) + 1);
+  }
+  $("stWords").textContent = S.words.length;
+  $("stKeys").textContent = S.counts.size;
+}
+function probsFor(key) {
+  const c = S.counts.get(key);
+  if (!c) return [];
+  const arr = [...c].map(([w, n]) => [w, n, Math.pow(n, 1 / S.T)]);
+  const tot = arr.reduce((a, x) => a + x[2], 0);
+  return arr.map(([w, n, v]) => ({ w, n, p: v / tot })).sort((a, b) => b.p - a.p);
+}
+function ctxKey() { return S.out.slice(-S.C).join(" "); }
+function reset() {
+  const keys = [...S.counts.keys()].filter((k) => k.split(" ")[0] === S.start);
+  S.out = keys.length ? keys[0].split(" ") : [];
+  S.newFrom = 0; S.picked = null; draw();
+}
+function add(w) { S.newFrom = S.out.length; S.out.push(w); S.picked = w; draw(); }
+function roll() {
+  const ps = probsFor(ctxKey()); if (!ps.length) return false;
+  let r = Math.random(), acc = 0;
+  for (const x of ps) { acc += x.p; if (r <= acc) { add(x.w); return true; } }
+  add(ps[ps.length - 1].w); return true;
+}
+function copyRatio() {
+  if (S.out.length < 3) return "-";
+  const tri = new Set();
+  for (let i = 0; i + 2 < S.words.length; i++) tri.add(S.words.slice(i, i + 3).join(" "));
+  let hit = 0, tot = 0;
+  for (let i = 0; i + 2 < S.out.length; i++) { tot++; if (tri.has(S.out.slice(i, i + 3).join(" "))) hit++; }
+  return Math.round(100 * hit / tot) + "%";
+}
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+function draw() {
+  const story = $("story");
+  if (!S.out.length) {
+    story.innerHTML = `<span class="muted">'${esc(S.start)}'(이)라는 단어가 학습 데이터에 없어요. 첫 단어를 바꿔 보세요.</span>`;
+    $("cands").innerHTML = ""; $("stCopy").textContent = "-"; return;
+  }
+  const ctxStart = Math.max(0, S.out.length - S.C);
+  story.innerHTML = S.out.map((w, i) => `<span class="${i >= ctxStart ? "ctx" : ""}${i === S.out.length - 1 && i >= S.newFrom && S.picked ? " new" : ""}">${esc(w)}</span>`).join(" ");
+  const ps = probsFor(ctxKey());
+  $("candTitle").innerHTML = `'<b>${esc(ctxKey())}</b>' 다음 단어 후보 ${ps.length}개`;
+  $("cands").innerHTML = ps.length ? ps.slice(0, 10).map((x) =>
+    `<button class="cand" data-w="${esc(x.w)}" title="이 단어 고르기"><span class="w">${esc(x.w)}</span><span class="n">${x.n}번</span><span class="bar"><i style="width:${(x.p * 100).toFixed(1)}%"></i></span><span class="p">${(x.p * 100).toFixed(1)}%</span></button>`
+  ).join("") + (ps.length > 10 ? `<div class="empty-c">… 외 ${ps.length - 10}개</div>` : "")
+    : `<div class="empty-c">이 문맥 다음에 나온 단어를 본 적이 없어서 더 이어 갈 수 없어요. (모델이 "모르는" 상황)</div>`;
+  $("stCopy").textContent = copyRatio();
+}
+$("cands").addEventListener("click", (e) => { const b = e.target.closest(".cand"); if (b) add(b.dataset.w); });
+$("bRoll").onclick = roll;
+$("bRoll10").onclick = () => { for (let i = 0; i < 10; i++) if (!roll()) break; };
+$("bMax").onclick = () => { const ps = probsFor(ctxKey()); if (ps.length) add(ps[0].w); };
+$("bReset").onclick = reset;
+$("rT").addEventListener("input", (e) => { S.T = +e.target.value; $("oT").textContent = S.T.toFixed(1); live.set("TEMPERATURE", S.T.toFixed(1)); draw(); });
+document.querySelectorAll(".seg button").forEach((b) => b.onclick = () => {
+  document.querySelectorAll(".seg button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  S.C = +b.dataset.c; $("oC").textContent = S.C; live.set("CONTEXT", S.C);
+  train($("dataText").value); reset();
+});
+$("iStart").addEventListener("change", (e) => { S.start = e.target.value.trim(); live.set("START", `"${S.start}"`); reset(); });
+$("bRetrain").onclick = () => { train($("dataText").value); reset(); };
+$("bDiary").onclick = () => { $("dataText").value = DIARY; train(DIARY); S.start = "나는"; $("iStart").value = "나는"; live.set("START", '"나는"'); reset(); };
+$("bBom").onclick = async () => {
+  try {
+    const r = await fetch("../04_자연어처리_AI에이전트/봄봄_김유정.txt");
+    if (!r.ok) throw new Error(r.status);
+    const t = (await r.text()).replace(/[“”"‘’]/g, "");
+    $("dataText").value = t; train(t);
+    S.start = "나는"; $("iStart").value = "나는"; live.set("START", '"나는"'); reset();
+  } catch (e) { alert("파일을 불러오지 못했어요. 인터넷 연결을 확인해 주세요."); }
+};
+$("dataText").value = DIARY;
+train(DIARY); reset();
+</script>
+</body>
+</html>

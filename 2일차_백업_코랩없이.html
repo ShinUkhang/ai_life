@@ -229,7 +229,7 @@ edges = np.where(diff_total >= THRESHOLD, 255, 0).astype(np.uint8)
 
 print(f"🎯 임계값: {THRESHOLD}")
 print(f"📊 검출된 테두리 픽셀: {np.sum(edges == 255)}개")
-print(f"\n💡 도전 과제:")
+print(f"\\n💡 도전 과제:")
 print(f"   1. THRESHOLD를 30으로 낮추면 어떻게 될까요?")
 print(f"   2. THRESHOLD를 200으로 높이면 어떻게 될까요?")
 print(f"   3. MY_NUMBER에 다른 모양(하트, 별)을 그려보세요!")
