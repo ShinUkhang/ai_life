@@ -11,20 +11,21 @@
 <link rel="stylesheet" href="assets/lesson.css">
 </head>
 <body>
-<header class="topbar"><div class="topbar-in"><a class="brand" href="index.html"><span class="brand-mark">py</span><span><b>Python 기초</b><small>4일차 수업</small></span></a><span class="spacer"></span><nav class="days" aria-label="수업 일차"><a href="day1.html">1일차</a><a href="day2.html">2일차</a><a href="day3.html">3일차</a><a href="day4.html" aria-current="page">4일차</a><a href="day5.html">5일차</a><a class="hw" href="#homework">과제 제출</a></nav></div></header>
+<header class="topbar"><div class="topbar-in"><a class="brand" href="index.html"><span class="brand-mark">py</span><span><b>Python 기초</b><small>4일차 수업</small></span></a><span class="spacer"></span><nav class="days" aria-label="수업 일차"><a href="day1.html">1일차</a><a href="day2.html">2일차</a><a href="day3.html">3일차</a><a href="day4.html" aria-current="page">4일차</a><a href="day5.html">5일차</a><a href="day6.html">6일차</a><a class="hw" href="#homework">과제 제출</a></nav></div></header>
 <main class="container">
   <section class="lesson-head">
-    <div class="eyebrow"><span>4일차</span><span>2시간</span><span>파일</span><span>모듈</span><span>예외 처리</span><span>시각화</span></div>
+    <div class="eyebrow"><span>4일차</span><span>2시간</span><span>파일</span><span>모듈</span><span>예외 처리</span></div>
     <h1>파일과 모듈</h1>
     <p>데이터를 저장하고, 남의 코드를 빌려 써요</p>
+    <p class="colab-row"><a class="colab-btn" href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/python_basic/colab/day4.ipynb" target="_blank" rel="noopener">▶ 구글 코랩에서 열기</a></p>
   </section>
 
-  <nav class="toc" aria-label="오늘의 순서"><b>오늘의 순서</b><ol><li><a href="#s1">수업 흐름</a></li><li><a href="#s2">파일 읽기/쓰기</a></li><li><a href="#s3">모듈과 import</a></li><li><a href="#s4">pip와 외부 라이브러리</a></li><li><a href="#s5">예외 처리</a></li><li><a href="#s6">종합 실습: 가계부 프로그램</a></li><li><a href="#s7">시각화</a></li><li><a href="#s8">연습 문제</a></li><li class="hw"><a href="#homework">과제</a></li></ol></nav>
+  <nav class="toc" aria-label="오늘의 순서"><b>오늘의 순서</b><ol><li><a href="#s1">수업 흐름</a></li><li><a href="#s2">파일 읽기/쓰기</a></li><li><a href="#s3">모듈과 import</a></li><li><a href="#s4">pip와 외부 라이브러리</a></li><li><a href="#s5">예외 처리</a></li><li><a href="#s6">종합 실습: 가계부 프로그램</a></li><li><a href="#s7">연습 문제</a></li><li class="hw"><a href="#homework">과제</a></li></ol></nav>
 
   <div class="notice">
     <strong>💡 실습 방법:</strong> 아래 코드는 <strong>📋 복사</strong> 버튼으로 복사해서
     <a href="../python_backup.html" target="_blank">🐍 Python 백업 실행기</a>에 붙여넣고 실행하세요.<br>
-    ※ 브라우저 실행기에서는 파일 저장이 제한될 수 있어요. 파일 실습은 PC의 파이썬에서 해보세요!
+    ※ 브라우저 실행기에서는 파일 저장이 제한될 수 있어요. 파일 실습은 위의 <strong>▶ 구글 코랩에서 열기</strong>로 코랩에서 해 보세요!
   </div>
 
   <div class="card" id="s1">
@@ -238,70 +239,6 @@ print("💰 총 지출:", 총합계(), "원")</div>
   </div>
 
   <div class="card" id="s7">
-    <h2>📊 5. 시각화 — matplotlib으로 그래프 그리기</h2>
-    <div class="step">
-      <h3>왜 시각화인가?</h3>
-      <p>숫자만 봐서는 모르는 패턴이 <strong>그림</strong>으로 보면 한눈에 보입니다. 데이터 분석의 첫걸음이에요!</p>
-    </div>
-
-    <h3>꺾은선 그래프 (함수 그리기)</h3>
-    <button class="copy-btn" onclick="copyText('viz1')">📋 복사</button>
-    <div class="code-block" id="viz1">import matplotlib.pyplot as plt
-import numpy as np
-
-# x 값 준비 (-10부터 10까지)
-x = np.linspace(-10, 10, 100)
-
-# y = x^2 (이차함수)
-y = x ** 2
-
-plt.figure(figsize=(8, 5))
-plt.plot(x, y, label="y = x²", color="blue", linewidth=2)
-plt.title("Quadratic Function")
-plt.xlabel("x")
-plt.ylabel("y")
-plt.legend()
-plt.grid(True)
-plt.show()</div>
-
-    <h3>막대 그래프 (비교하기)</h3>
-    <button class="copy-btn" onclick="copyText('viz2')">📋 복사</button>
-    <div class="code-block" id="viz2">import matplotlib.pyplot as plt
-
-# 과목별 점수
-subjects = ["국어", "영어", "수학", "과학", "사회"]
-scores = [85, 92, 78, 88, 95]
-
-plt.figure(figsize=(8, 5))
-plt.bar(subjects, scores, color=["#ff9999", "#66b3ff", "#99ff99", "#ffcc99", "#c2c2f0"])
-plt.title("Scores by Subject")
-plt.ylabel("Score")
-plt.ylim(0, 100)
-plt.show()</div>
-
-    <h3>수학 연결: sin 곡선 그리기</h3>
-    <button class="copy-btn" onclick="copyText('viz3')">📋 복사</button>
-    <div class="code-block" id="viz3">import matplotlib.pyplot as plt
-import numpy as np
-
-# 0부터 2π까지
-x = np.linspace(0, 2 * np.pi, 100)
-y_sin = np.sin(x)
-y_cos = np.cos(x)
-
-plt.figure(figsize=(10, 5))
-plt.plot(x, y_sin, label="sin(x)", color="red")
-plt.plot(x, y_cos, label="cos(x)", color="blue", linestyle="--")
-plt.title("Trigonometric Functions")
-plt.xlabel("x (radians)")
-plt.ylabel("y")
-plt.legend()
-plt.grid(True)
-plt.show()
-
-# 💡 생각할 거리: sin과 cos 그래프는 어떤 관계인가요?</div>
-  </div>
-  <div class="card" id="s8">
     <h2>✏️ 연습 문제</h2>
     <div class="practice">
       <h3>문제 1. 명언 저장소 (파일 쓰기)</h3>
@@ -392,7 +329,7 @@ print(f"오차: {abs(추정파이 - 3.14159265):.6f}")
     <div class="submit-box"><div><b>4일차 과제 제출 · 구글 드라이브</b><p><strong>코드와 실행 결과가 함께 보이게</strong> 화면을 캡처해서, 파일 이름을 <code>학번 이름</code>으로 바꿔 4일차 과제 폴더에 올리세요. 한 화면에 안 들어가면 여러 장으로 나눠 올려도 돼요. 몬테카를로 과제는 그래프나 π 결과가 꼭 보이게 찍어 주세요.</p></div><a class="link-btn btn-green" href="https://drive.google.com/drive/folders/1kCfCU3pR9gT1bTb-PgGDVWnrvzq6fMJ1" target="_blank" rel="noopener">📤 4일차 과제 폴더 열기</a></div>
   </div>
 
-  <nav class="pager" aria-label="수업 이동"><a class="prev" href="day3.html"><small>← 이전 수업</small><b>3일차 · 자료구조와 함수</b></a><a class="home" href="index.html">전체 목차</a><a class="next" href="day5.html"><small>다음 수업 →</small><b>5일차 · 미니 프로젝트</b></a></nav>
+  <nav class="pager" aria-label="수업 이동"><a class="prev" href="day3.html"><small>← 이전 수업</small><b>3일차 · 자료구조와 함수</b></a><a class="home" href="index.html">전체 목차</a><a class="next" href="day5.html"><small>다음 수업 →</small><b>5일차 · 데이터 시각화</b></a></nav>
 
   <footer>배화여자고등학교 · Python 기초 과정 · 4일차</footer>
 </main>

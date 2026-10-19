@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>6일차 · 미니 프로젝트 — Python 기초</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/lesson.css">
+</head>
+<body>
+<header class="topbar"><div class="topbar-in"><a class="brand" href="index.html"><span class="brand-mark">py</span><span><b>Python 기초</b><small>6일차 수업</small></span></a><span class="spacer"></span><nav class="days" aria-label="수업 일차"><a href="day1.html">1일차</a><a href="day2.html">2일차</a><a href="day3.html">3일차</a><a href="day4.html">4일차</a><a href="day5.html">5일차</a><a href="day6.html" aria-current="page">6일차</a><a class="hw" href="#homework">과제 제출</a></nav></div></header>
+<main class="container">
+  <section class="lesson-head">
+    <div class="eyebrow"><span>6일차</span><span>2시간</span><span>기획</span><span>코딩</span><span>발표</span></div>
+    <h1>미니 프로젝트</h1>
+    <p>배운 것을 총동원! 나만의 프로그램 만들고 발표하기</p>
+    <p class="colab-row"><a class="colab-btn" href="https://colab.research.google.com/github/ShinUkhang/ai_life/blob/main/python_basic/colab/day6.ipynb" target="_blank" rel="noopener">▶ 구글 코랩에서 열기</a></p>
+  </section>
+
+  <nav class="toc" aria-label="오늘의 순서"><b>오늘의 순서</b><ol><li><a href="#s1">오늘 수업 흐름</a></li><li><a href="#s2">프로젝트 선택하기</a></li><li><a href="#s3">프로젝트 기획서</a></li><li><a href="#s4">프로젝트 1: 영어 단어 퀴즈 게임</a></li><li><a href="#s5">프로젝트 2: 간단한 챗봇</a></li><li><a href="#s6">프로젝트 3: 숫자 야구 게임</a></li><li><a href="#s7">발표 평가 기준</a></li><li><a href="#s8">전체 복습 퀴즈</a></li><li><a href="#s9">과정 마무리</a></li><li class="hw"><a href="#homework">과제</a></li></ol></nav>
+
+  <div class="card" id="s1">
+    <h2>🗺️ 오늘 수업 흐름 (2시간)</h2>
+    <table>
+      <tr><th>순서</th><th>내용</th><th>시간</th></tr>
+      <tr><td>1</td><td>📝 프로젝트 기획 — 무엇을 만들지 정하고 기획서 쓰기</td><td>20분</td></tr>
+      <tr><td>2</td><td>💻 코딩 — 예제 코드를 참고해 나만의 프로그램 만들기</td><td>60분</td></tr>
+      <tr><td>3</td><td>🎤 발표 — 친구들 앞에서 내 프로그램 시연하기</td><td>30분</td></tr>
+      <tr><td>4</td><td>🏁 정리 — 복습 퀴즈와 과정 마무리</td><td>10분</td></tr>
+    </table>
+    <div class="notice">
+      <strong>💡 준비물:</strong> 브라우저만 있으면 됩니다!
+      코드는 <a href="../python_backup.html" target="_blank" class="runner-link">🐍 Python 백업 실행기</a>에 붙여넣어 실행하세요. 위의 <strong>▶ 구글 코랩에서 열기</strong>로 코랩 노트북에서 해도 돼요.
+    </div>
+  </div>
+
+  <div class="card" id="s2">
+    <h2>🎯 프로젝트 선택하기 (하나 골라보세요!)</h2>
+    <div class="project-grid">
+      <div class="project-card">
+        <h3>1️⃣ 영어 단어 퀴즈 게임</h3>
+        <p>영어 단어를 보고 뜻을 맞히는 퀴즈! 점수도 계산해줍니다.</p>
+        <span class="tag">딕셔너리</span><span class="tag">random</span><span class="tag">for문</span>
+      </div>
+      <div class="project-card">
+        <h3>2️⃣ 간단한 챗봇</h3>
+        <p>사용자의 말에 대답하는 나만의 챗봇! 키워드로 대답을 찾아요.</p>
+        <span class="tag">if문</span><span class="tag">while문</span><span class="tag">딕셔너리</span>
+      </div>
+      <div class="project-card">
+        <h3>3️⃣ 숫자 야구 게임</h3>
+        <p>컴퓨터의 3자리 숫자를 스트라이크·볼 힌트로 맞히는 게임!</p>
+        <span class="tag">random</span><span class="tag">for문</span><span class="tag">조건문</span>
+      </div>
+    </div>
+    <p class="hint">※ 난이도 순: 챗봇 ⭐ &lt; 단어 퀴즈 ⭐⭐ &lt; 숫자 야구 ⭐⭐⭐</p>
+  </div>
+
+  <div class="card" id="s3">
+    <h2>📝 프로젝트 기획서</h2>
+    <p>코딩 전에 아래를 먼저 채워보세요. 계획이 있어야 막히지 않아요!</p>
+    <h3>① 내가 선택한 프로젝트</h3>
+    <input type="text" class="plan-input" placeholder="예) 2번 간단한 챗봇">
+    <h3>② 이 프로그램의 목표 (한 줄로!)</h3>
+    <input type="text" class="plan-input" placeholder="예) 사용자와 자연스럽게 대화하는 챗봇 만들기">
+    <h3>③ 필요한 기능 (3개 이상 써보기)</h3>
+    <textarea class="plan-input" placeholder="예)&#10;1. 인사말 출력하기&#10;2. 질문에 맞는 대답 찾기&#10;3. '잘가'라고 하면 대화 끝내기"></textarea>
+    <h3>④ 사용할 문법 체크리스트</h3>
+    <ul class="check-list">
+      <li><label><input type="checkbox"> 변수와 자료형 (1일차)</label></li>
+      <li><label><input type="checkbox"> input() / print() (1일차)</label></li>
+      <li><label><input type="checkbox"> if문 (2일차)</label></li>
+      <li><label><input type="checkbox"> for문 (2일차)</label></li>
+      <li><label><input type="checkbox"> while문 (2일차)</label></li>
+      <li><label><input type="checkbox"> 리스트 (3일차)</label></li>
+      <li><label><input type="checkbox"> 딕셔너리 (3일차)</label></li>
+      <li><label><input type="checkbox"> 함수 (3일차)</label></li>
+      <li><label><input type="checkbox"> random 모듈 (4일차)</label></li>
+      <li><label><input type="checkbox"> 그래프 · CSV (5일차)</label></li>
+    </ul>
+  </div>
+
+  <div class="card" id="s4">
+    <h2>💻 프로젝트 1: 영어 단어 퀴즈 게임</h2>
+    <div class="step">
+      <h3>어떻게 동작하나요?</h3>
+      <ol>
+        <li>딕셔너리에 영어 단어와 뜻을 저장합니다.</li>
+        <li><code>random.shuffle()</code>로 문제 순서를 섞습니다.</li>
+        <li>하나씩 뜻을 물어보고 정답이면 점수를 올립니다.</li>
+        <li>마지막에 총 점수를 보여줍니다.</li>
+      </ol>
+    </div>
+    <button class="copy-btn" onclick="copyText('code1')">📋 코드 복사</button>
+    <div class="code-block" id="code1"># ==========================================
+# 🎮 영어 단어 퀴즈 게임
+# ==========================================
+# 영어 단어를 보고 한국어 뜻을 맞히는 게임!
+# 딕셔너리 + random + for문을 사용합니다.
+
+import random  # 순서를 섞을 때 필요한 도구
+
+# 1. 단어장 만들기 (딕셔너리: 영어 → 한국어)
+words = {
+    "apple": "사과",
+    "banana": "바나나",
+    "computer": "컴퓨터",
+    "python": "파이썬",
+    "school": "학교",
+    "friend": "친구",
+    "happy": "행복한",
+    "book": "책",
+    "water": "물",
+    "music": "음악",
+}
+
+print("=" * 40)
+print("🎮 영어 단어 퀴즈 게임을 시작합니다!")
+print(f"총 {len(words)}문제가 나옵니다.")
+print("=" * 40)
+
+score = 0  # 맞힌 문제 수
+total = 0  # 지금까지 푼 문제 수
+
+# 2. 문제 순서 섞기
+quiz_words = list(words.keys())  # 영어 단어만 꺼내서 리스트로
+random.shuffle(quiz_words)       # 순서를 마구 섞기!
+
+# 3. 하나씩 퀴즈 내기
+for eng in quiz_words:
+    total += 1  # 푼 문제 수 1 증가
+    answer = input(f"[{total}] '{eng}'의 뜻은? ")
+
+    if answer.strip() == words[eng]:  # strip(): 앞뒤 공백 제거
+        print("✅ 정답!")
+        score += 1  # 점수 1점 추가
+    else:
+        print(f"❌ 땡! 정답은 '{words[eng]}'입니다.")
+
+# 4. 최종 결과 보여주기
+print("=" * 40)
+print(f"🏁 결과: {total}문제 중 {score}문제 정답!")
+print(f"점수: {score * 10}점")
+
+if score == total:
+    print("🎉 완벽해요! 단어왕!")
+elif score >= total / 2:
+    print("👍 잘했어요!")
+else:
+    print("💪 조금만 더 연습해봐요!")</div>
+    <div class="notice"><strong>🔧 나만의 버전으로 바꿔보기:</strong> <code>words</code> 딕셔너리에 내가 외우는 영어 단어를 추가해보세요! 문제 수나 점수 계산 방식도 바꿔볼 수 있어요.</div>
+  </div>
+
+  <div class="card" id="s5">
+    <h2>💻 프로젝트 2: 간단한 챗봇</h2>
+    <div class="step">
+      <h3>어떻게 동작하나요?</h3>
+      <ol>
+        <li>딕셔너리에 키워드와 대답을 미리 저장합니다.</li>
+        <li><code>while True</code>로 대화를 계속 이어갑니다.</li>
+        <li>사용자의 말에 키워드가 들어있으면 맞는 대답을 합니다.</li>
+        <li>"잘가"라고 하면 대화를 끝냅니다.</li>
+      </ol>
+    </div>
+    <button class="copy-btn" onclick="copyText('code2')">📋 코드 복사</button>
+    <div class="code-block" id="code2"># ==========================================
+# 🤖 간단한 챗봇 "파이봇"
+# ==========================================
+# 사용자의 말에 대답하는 챗봇!
+# if문 + while문 + 딕셔너리를 사용합니다.
+
+# 1. 키워드 → 대답 딕셔너리 만들기
+answers = {
+    "안녕": "안녕하세요! 저는 파이썬 챗봇이에요 😊",
+    "이름": "제 이름은 파이봇이에요!",
+    "나이": "저는 올해 태어났어요. 아직 아기예요 👶",
+    "좋아하는 음식": "전기를 좋아해요. 맛있어요 ⚡",
+    "날씨": "창문을 열어보세요! 제가 밖은 못 봐요 😅",
+    "취미": "코딩이요! 여러분이랑 노는 게 제일 재밌어요 💻",
+    "잘가": "다음에 또 만나요! 👋",
+}
+
+print("=" * 40)
+print("🤖 파이봇: 안녕! 나랑 대화해봐.")
+print("   (그만하고 싶으면 '잘가'라고 입력해)")
+print("=" * 40)
+
+# 2. while문으로 대화를 계속 이어가기
+while True:
+    user = input("🙋 나: ")
+
+    # 3. 딕셔너리에서 맞는 대답 찾기
+    found = False  # 대답을 찾았는지 기억하는 변수
+    for keyword in answers:
+        if keyword in user:  # 키워드가 말 속에 들어있으면
+            print(f"🤖 파이봇: {answers[keyword]}")
+            found = True
+            break  # 찾았으니 더 찾지 않고 나가기
+
+    # 4. 아무 키워드도 없으면 모른다고 하기
+    if not found:
+        print("🤖 파이봇: 음... 그건 아직 몰라요. 다른 걸 물어봐주세요!")
+
+    # 5. '잘가'라고 하면 대화 끝내기
+    if "잘가" in user:
+        break  # while문 탈출!
+
+print("=" * 40)
+print("🤖 파이봇: 대화가 끝났어요. 즐거웠어요!")</div>
+    <div class="notice"><strong>🔧 나만의 버전으로 바꿔보기:</strong> <code>answers</code> 딕셔너리에 새로운 키워드와 대답을 추가해보세요! 친구 이름, 좋아하는 연예인, 학교 얘기도 넣을 수 있어요.</div>
+  </div>
+
+  <div class="card" id="s6">
+    <h2>💻 프로젝트 3: 숫자 야구 게임</h2>
+    <div class="step">
+      <h3>어떻게 동작하나요?</h3>
+      <ol>
+        <li><code>random.sample()</code>로 겹치지 않는 숫자 3개를 뽑습니다.</li>
+        <li>사용자가 숫자 3개를 입력하면 스트라이크/볼을 셉니다.</li>
+        <li>숫자+자리 모두 맞으면 스트라이크(S), 숫자만 맞으면 볼(B)!</li>
+        <li>3 스트라이크가 되면 게임 클리어!</li>
+      </ol>
+    </div>
+    <button class="copy-btn" onclick="copyText('code3')">📋 코드 복사</button>
+    <div class="code-block" id="code3"># ==========================================
+# ⚾ 숫자 야구 게임
+# ==========================================
+# 컴퓨터가 만든 3자리 숫자를 맞히는 게임!
+# random + for문 + 조건문을 사용합니다.
+# S(스트라이크): 숫자도 자리도 맞음
+# B(볼): 숫자는 맞는데 자리가 다름
+
+import random  # 랜덤 숫자를 뽑을 때 필요한 도구
+
+# 1. 컴퓨터가 1~9 중에서 서로 다른 숫자 3개 뽑기
+# random.sample(범위, 개수): 겹치지 않게 뽑아줘!
+numbers = random.sample(range(1, 10), 3)
+
+print("=" * 40)
+print("⚾ 숫자 야구 게임을 시작합니다!")
+print("1~9 사이의 서로 다른 숫자 3개를 맞히세요.")
+print("입력 예) 3 5 7  (띄어쓰기로 구분)")
+print("=" * 40)
+
+tries = 0  # 시도 횟수
+
+# 2. 맞힐 때까지 계속 반복
+while True:
+    tries += 1
+    guess = input(f"[{tries}번째] 숫자 3개 입력: ").split()
+
+    # 입력이 올바른지 먼저 확인하기
+    if len(guess) != 3:
+        print("❗ 숫자 3개를 입력해주세요!")
+        tries -= 1  # 잘못 입력한 건 횟수에서 빼기
+        continue    # 다시 입력받으러 가기
+
+    guess = [int(n) for n in guess]  # 문자를 숫자로 바꾸기
+
+    # 3. 스트라이크와 볼 세기
+    strike = 0
+    ball = 0
+    for i in range(3):
+        if guess[i] == numbers[i]:
+            strike += 1      # 숫자도 같고 자리도 같으면!
+        elif guess[i] in numbers:
+            ball += 1        # 숫자는 있지만 자리가 다르면!
+
+    print(f"→ {strike}S {ball}B")
+
+    # 4. 3 스트라이크면 게임 끝!
+    if strike == 3:
+        print("=" * 40)
+        print(f"🎉 홈런! {tries}번 만에 맞혔어요!")
+        break</div>
+    <div class="notice"><strong>🔧 나만의 버전으로 바꿔보기:</strong> 숫자를 4개로 늘리거나, 시도 횟수 제한(예: 10번 안에 맞히기)을 추가해보세요!</div>
+  </div>
+
+  <div class="card" id="s7">
+    <h2>🎤 발표 평가 기준</h2>
+    <p>발표할 때 아래 기준으로 서로 평가해봅시다. 각 항목 5점, 총 20점 만점!</p>
+    <table>
+      <tr><th>평가 항목</th><th>5점 (아주 잘함)</th><th>3점 (보통)</th><th>1점 (아쉬움)</th></tr>
+      <tr><td><strong>동작 완성도</strong></td><td>오류 없이 끝까지 잘 동작함</td><td>작은 오류가 있지만 동작함</td><td>자주 멈추거나 동작 안 함</td></tr>
+      <tr><td><strong>창의성</strong></td><td>예제와 다르게 나만의 아이디어 추가</td><td>예제를 조금 변형함</td><td>예제 그대로 복사</td></tr>
+      <tr><td><strong>코드 이해도</strong></td><td>질문에 막힘없이 설명함</td><td>대부분 설명함</td><td>설명이 어려움</td></tr>
+      <tr><td><strong>발표 태도</strong></td><td>자신감 있게 시연하고 설명함</td><td>조금 떨리지만 끝까지 함</td><td>발표가 짧거나 소극적임</td></tr>
+    </table>
+    <div class="notice"><strong>💡 발표 팁:</strong> ① 내 프로그램이 뭔지 한 줄로 소개 → ② 직접 실행하며 보여주기 → ③ 가장 어려웠던 부분과 해결 방법 말하기 → ④ 친구들 질문 받기</div>
+  </div>
+
+  <div class="card" id="s8">
+    <h2>🧠 전체 복습 퀴즈</h2>
+    <p>1~5일차 내용을 복습해봅시다! 문제를 클릭하면 정답이 나와요.</p>
+
+    <details class="quiz">
+      <summary>Q1. 변수와 입출력 (1일차): 사용자에게 이름을 입력받아 "안녕하세요, ○○○님!"이라고 출력하는 코드는?</summary>
+      <div class="answer">✅ <strong>정답:</strong><br><code>name = input("이름을 입력하세요: ")</code><br><code>print("안녕하세요,", name, "님!")</code><br>💡 <code>input()</code>은 사용자의 입력을 <strong>문자</strong>로 받아옵니다.</div>
+    </details>
+
+    <details class="quiz">
+      <summary>Q2. 조건문과 반복문 (2일차): 1부터 10까지 숫자 중 짝수만 출력하는 for문 코드는?</summary>
+      <div class="answer">✅ <strong>정답:</strong><br><code>for i in range(1, 11):</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;if i % 2 == 0:</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(i)</code><br>💡 <code>%</code>는 나머지를 구하는 연산자! <code>i % 2 == 0</code>이면 짝수입니다.</div>
+    </details>
+
+    <details class="quiz">
+      <summary>Q3. 딕셔너리 (3일차): <code>scores = {"철수": 90, "영희": 85}</code>에서 영희의 점수를 꺼내는 코드는?</summary>
+      <div class="answer">✅ <strong>정답:</strong> <code>scores["영희"]</code> → 85가 나옵니다.<br>💡 딕셔너리는 <strong>키(key)</strong>로 <strong>값(value)</strong>을 꺼냅니다. <code>scores["영희"] = 95</code>처럼 값을 바꿀 수도 있어요!</div>
+    </details>
+
+    <details class="quiz">
+      <summary>Q4. 함수 (3일차): 두 수를 더해서 돌려주는 함수 <code>add(a, b)</code>를 만드는 코드는?</summary>
+      <div class="answer">✅ <strong>정답:</strong><br><code>def add(a, b):</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;return a + b</code><br>💡 <code>def</code>로 함수를 정의하고, <code>return</code>으로 결과를 돌려줍니다. <code>add(3, 5)</code>를 부르면 8이 나와요!</div>
+    </details>
+
+    <details class="quiz">
+      <summary>Q5. random 모듈 (4일차): 1부터 10까지 숫자 중 하나를 랜덤으로 뽑는 코드는?</summary>
+      <div class="answer">✅ <strong>정답:</strong><br><code>import random</code><br><code>num = random.randint(1, 10)</code><br>💡 <code>randint(a, b)</code>는 a부터 b까지 <strong>정수</strong> 하나를 뽑습니다. 겹치지 않게 여러 개 뽑으려면 <code>random.sample()</code>을 써요!</div>
+    </details>
+
+    <details class="quiz">
+      <summary>Q6. 그래프 (5일차): 리스트 <code>과목 = ["국어", "수학"]</code>, <code>점수 = [80, 90]</code>로 막대 그래프를 그리는 코드는?</summary>
+      <div class="answer">✅ <strong>정답:</strong><br><code>import matplotlib.pyplot as plt</code><br><code>plt.bar(과목, 점수)</code><br><code>plt.show()</code><br>💡 가로축 리스트와 세로축 리스트의 <strong>길이가 같아야</strong> 해요. 변화는 <code>plot</code>, 비율은 <code>pie</code>, 관계는 <code>scatter</code>!</div>
+    </details>
+  </div>
+
+  <div class="card" id="s9">
+    <h2>🏁 과정 마무리</h2>
+    <p>6일 동안 정말 수고 많았어요! 🎉</p>
+    <ul>
+      <li><strong>1일차:</strong> 변수, 자료형, 입출력 — 컴퓨터와 대화하는 법</li>
+      <li><strong>2일차:</strong> if문, for문, while문 — 컴퓨터에게 일 시키는 법</li>
+      <li><strong>3일차:</strong> 리스트, 딕셔너리, 함수 — 데이터를 정리하고 재사용하는 법</li>
+      <li><strong>4일차:</strong> 파일, 모듈 — 프로그램을 더 크게 만드는 법</li>
+      <li><strong>5일차:</strong> 그래프, CSV — 데이터를 그림으로 보여주는 법</li>
+      <li><strong>6일차:</strong> 미니 프로젝트 — 배운 것을 하나로 합치는 법</li>
+    </ul>
+    <div class="notice"><strong>🚀 다음 단계:</strong> 오늘 만든 프로그램을 친구에게 보여주고, 새로운 기능을 추가해보세요. 프로그래밍은 <strong>만들면서</strong> 느는 거예요!</div>
+  </div>
+
+  <div class="card homework" id="homework">
+    <h2>📝 과제</h2>
+    <p>오늘 만든 <strong>미니 프로젝트를 더 발전</strong>시켜보세요! 배운 것을 응용하는 과제예요.</p>
+
+    <div class="step">
+      <h3>🎚️ 과제 1 (알고리즘): "난이도 조절" 기능 추가하기</h3>
+      <p>내 프로젝트에 <strong>난이도 선택</strong> 기능을 추가하세요.</p>
+      <ul>
+        <li><strong>단어 퀴즈:</strong> 쉬움(짧은 단어) / 보통 / 어려움(긴 단어) — 단어 길이나 문제 수로 조절</li>
+        <li><strong>챗봇:</strong> 쉬움(힌트 제공) / 어려움(힌트 없음)</li>
+        <li><strong>숫자 야구:</strong> 쉬움(3자리) / 어려움(4자리) — 자리수로 조절</li>
+      </ul>
+      <p>💡 힌트: 게임 시작 전에 <code>input()</code>으로 난이도를 입력받고, <code>if</code>문으로 설정을 다르게 하세요!</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('hw1')">📋 스타터 코드 복사</button>
+    <div class="code-block" id="hw1"># 과제 1: 난이도 조절 기능 (스타터 코드)
+# 내 프로젝트에 이 코드를 응용해보세요!
+
+print("=== 난이도 선택 ===")
+print("1. 쉬움 😊")
+print("2. 보통 🙂")
+print("3. 어려움 😈")
+난이도 = input("선택 (1/2/3): ")
+
+# TODO: if문으로 난이도별 설정을 다르게 하세요!
+# 예시 (숫자 맞추기 게임):
+# if 난이도 == "1":
+#     최대숫자 = 50    # 1~50 중에서
+#     기회 = 10       # 기회 10번
+# elif 난이도 == "2":
+#     최대숫자 = 100
+#     기회 = 7
+# else:
+#     최대숫자 = 200
+#     기회 = 5
+
+print(f"선택한 난이도: {난이도}")
+# TODO: 위 설정을 내 게임에 적용하세요!</div>
+
+    <div class="step">
+      <h3>📈 과제 2 (수학): "통계 보기" 기능 추가하기</h3>
+      <p>내 프로젝트에 <strong>게임 통계</strong>를 보여주는 기능을 추가하세요.</p>
+      <ul>
+        <li><strong>평균 점수:</strong> 지금까지의 점수들을 리스트에 저장하고 평균 계산</li>
+        <li><strong>최고 점수:</strong> <code>max()</code>로 최고 기록 찾기</li>
+        <li><strong>플레이 횟수:</strong> <code>len()</code>으로 몇 판 했는지 세기</li>
+      </ul>
+      <p>💡 힌트: 3일차에 배운 <strong>리스트</strong>를 활용! 점수를 리스트에 차곡차곡 쌓아두세요.</p>
+    </div>
+    <button class="copy-btn" onclick="copyText('hw2')">📋 스타터 코드 복사</button>
+    <div class="code-block" id="hw2"># 과제 2: 통계 보기 기능 (스타터 코드)
+# 내 프로젝트에 이 코드를 응용해보세요!
+
+점수기록 = []  # 지금까지의 점수를 저장하는 리스트
+
+# 게임이 끝날 때마다 점수를 추가 (예시)
+# 점수기록.append(이번점수)
+
+# TODO: 아래 통계 코드를 내 프로젝트에 넣어보세요!
+
+def 통계보기():
+    if len(점수기록) == 0:
+        print("아직 기록이 없어요!")
+        return
+    print("=== 📈 게임 통계 ===")
+    print(f"플레이 횟수: {len(점수기록)}번")
+    print(f"평균 점수: {sum(점수기록) / len(점수기록):.1f}점")
+    print(f"최고 점수: {max(점수기록)}점")
+    print(f"최저 점수: {min(점수기록)}점")
+
+# 테스트용 (실제로는 게임 점수가 들어감)
+점수기록 = [80, 95, 70, 100, 85]
+통계보기()</div>
+
+    <div class="step">
+      <h3>🤔 생각할 거리</h3>
+      <p><strong>"내 프로젝트를 더 재미있게 만들려면 어떤 수학/알고리즘을 쓸 수 있을까?"</strong></p>
+      <p>아이디어 예시:</p>
+      <ul>
+        <li>🎲 <strong>확률:</strong> 랜덤 이벤트나 크리티컬 확률 추가하기</li>
+        <li>⏱️ <strong>시간:</strong> 제한 시간 안에 풀기 (datetime 모듈 활용)</li>
+        <li>🏆 <strong>랭킹:</strong> 점수를 파일에 저장해서 친구와 겨루기 (4일차 파일 활용!)</li>
+        <li>🔀 <strong>정렬:</strong> 랭킹을 점수 순으로 정렬하기 (3일차 버블 정렬 활용!)</li>
+      </ul>
+      <p>5일 동안 배운 것을 <strong>모두 연결</strong>하면 더 멋진 프로그램이 돼요!</p>
+    </div>
+
+    <div class="submit-box"><div><b>6일차 과제 제출 · 구글 드라이브</b><p><strong>코드와 실행 결과가 함께 보이게</strong> 화면을 캡처해서, 파일 이름을 <code>학번 이름</code>으로 바꿔 6일차 과제 폴더에 올리세요. 한 화면에 안 들어가면 여러 장으로 나눠 올려도 돼요. <strong>추가한 기능이 뭔지</strong> 코드 맨 위 주석에 적어주세요! (예: # 추가 기능: 난이도 조절, 통계 보기)</p></div><a class="link-btn btn-green" href="https://drive.google.com/drive/folders/1i-c3N9KCES_qX54xtF37BPGeJicfUT5J" target="_blank" rel="noopener">📤 6일차 과제 폴더 열기</a></div>
+  </div>
+
+  <nav class="pager" aria-label="수업 이동"><a class="prev" href="day5.html"><small>← 이전 수업</small><b>5일차 · 데이터 시각화</b></a><a class="home" href="index.html">전체 목차</a><a class="next" href="index.html"><small>과정 끝 →</small><b>처음 화면으로</b></a></nav>
+
+  <footer>배화여자고등학교 · Python 기초 과정 · 6일차</footer>
+</main>
+
+<script src="assets/lesson.js"></script>
+</body>
+</html>
