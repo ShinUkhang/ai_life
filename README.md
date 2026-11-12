@@ -21,6 +21,7 @@
 | [`materials.html`](materials.html) **실습 자료실** | 차시별 수업 페이지·코랩 노트북·데이터 파일을 한곳에서 열고 내려받기 (검색·종류별 보기) |
 | [`challenge.html`](challenge.html) **심화 과제 도전실** | 파이썬 기초만 배운 학생용 심화·추가 과제 10개. 문제 읽기 → 손으로 먼저 → 한 단계씩 코드(자동 확인) → 돌아보기 → 제출 |
 | [`assets/challenge_report.docx`](assets/challenge_report.docx) | 학생이 1쪽으로 쓰는 심화 과제 보고서 양식 (한글·워드에서 열림, 인쇄용 PDF 포함) |
+| [`assets/examples/`](assets/examples) | 보고서 작성 예시 PDF 3개: 경사하강법 · CNN 합성곱 · 목소리 푸리에 (기초 문법만 쓴 코드, 실제 실행 결과) |
 
 - 심화 과제의 문제·힌트·자동 확인 기준은 `assets/challenges.js` 한 파일에 있어요. 과제를 고치거나 더하려면 이 파일만 수정하면 됩니다.
 - 제출 폴더 주소는 같은 파일 맨 위 `CHALLENGE_SUBMIT_URL` 한 줄로 바꿉니다.
