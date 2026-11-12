@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실습 자료실 | AI Life</title>
+<meta name="description" content="AI Life 저장소의 모든 실습 자료를 한곳에. 차시별 수업 페이지, 코랩 노트북, 데이터 파일, 심화 자료를 바로 열거나 내려받아요.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ai.css">
+<link rel="stylesheet" href="assets/challenge.css">
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+  <a class="brand" href="index.html"><span class="brand-mark">AI</span><span><b>AI Life</b><small>실습 자료실</small></span></a>
+  <span class="spacer"></span>
+  <a class="btn btn-ghost btn-sm" href="challenge.html">심화 과제 도전실</a>
+  <a class="btn btn-ghost btn-sm" href="python_basic/index.html">파이썬 기초</a>
+  <a class="btn btn-run btn-sm" href="https://github.com/ShinUkhang/ai_life" target="_blank" rel="noopener">GitHub 저장소</a>
+</div></header>
+
+<main class="container">
+  <div class="lesson-head" data-mark="/">
+    <div class="eyebrow"><span>실습 자료실</span><span id="countTag"></span></div>
+    <h1>실습 자료, 여기 다 있어요</h1>
+    <p>GitHub 저장소에 흩어져 있는 수업 페이지, 코랩 노트북, 데이터 파일을 차시별로 모았어요. 버튼 하나로 바로 열거나 내려받을 수 있어요.</p>
+  </div>
+
+  <div class="mat-tools">
+    <input class="inp" id="q" type="search" placeholder="찾는 자료를 적어요 (예: 코랩, CNN, 영상, 5일차)" aria-label="자료 검색">
+    <div class="kinds" id="kinds" role="group" aria-label="자료 종류"></div>
+  </div>
+
+  <div id="list"></div>
+
+  <div class="card" style="margin-top:28px">
+    <h2>버튼 설명</h2>
+    <div class="table-scroll"><table class="tbl">
+      <tr><th>버튼</th><th>무슨 일이 일어나나요</th></tr>
+      <tr><td><b>열기</b></td><td>브라우저에서 바로 열려요. 설치나 로그인이 필요 없어요.</td></tr>
+      <tr><td><b>코랩에서 열기</b></td><td>구글 코랩에서 노트북이 열려요. 구글 계정으로 로그인하고, <b>파일 → Drive에 사본 저장</b>을 눌러 내 사본에서 실습해요.</td></tr>
+      <tr><td><b>내려받기</b></td><td>파일을 내 컴퓨터에 저장해요. 코랩에서 쓰려면 왼쪽 폴더 아이콘에 끌어다 놓아요.</td></tr>
+      <tr><td><b>GitHub</b></td><td>저장소에서 원본 파일을 봐요. 선생님이 파일을 고칠 때 써요.</td></tr>
+    </table></div>
+  </div>
+</main>
+
+<script>
+(function () {
+  const REPO = "ShinUkhang/ai_life", BR = "main";
+  const KINDS = { sim: "수업 페이지", nb: "코랩 노트북", data: "데이터·영상", game: "게임·활동", hard: "심화", doc: "문서·코드" };
+  // [종류, 제목, 설명, 파일 경로]
+  const UNITS = [
+    { no: "1", title: "AI가 직선을 그리는 법", sub: "머신러닝 · 선형회귀", dir: "01_머신러닝_선형회귀/", challenge: "line", items: [
+      ["sim", "선형회귀 시뮬레이터", "기울기 W와 절편 b를 직접 움직이며 오차가 줄어드는 것을 봐요", "linear_regression_simulator.html"],
+      ["nb", "선형회귀 코랩 노트북", "경사하강법으로 직선을 학습시키는 코드 (수업용)", "colab_linear_regression.ipynb"],
+      ["data", "공부 시간·점수 데이터", "노트북에서 읽는 x, y 데이터 (CSV)", "data.csv"],
+      ["doc", "순수 파이썬 버전 코드", "numpy 없이 기초 문법만으로 쓴 선형회귀. 파이썬 실행기에 붙여 넣어도 돼요", "pure_python_regression.py"],
+      ["doc", "코랩용 코드 (.py)", "코랩 셀에 붙여 넣는 코드. 첫 줄 !pip 때문에 코랩에서만 실행돼요", "colab_linear_regression.py"],
+      ["game", "안개 계곡 탈출", "학습률(보폭)을 조절해 가장 낮은 골짜기를 찾는 게임", "/fog_valley_game.html"],
+      ["hard", "부록: 경사하강법 수식", "미분으로 보는 AI의 학습 원리", "/부록_경사하강법.html"]
+    ] },
+    { no: "2", title: "컴퓨터의 눈", sub: "컴퓨터 비전 · 물체 인식", dir: "02_컴퓨터비전_물체인식/", challenge: "pixel", items: [
+      ["sim", "컴퓨터 비전 시뮬레이터", "픽셀·행렬·테두리 찾기부터 물체 인식까지", "object_detection_simulator.html"],
+      ["nb", "물체 인식 코랩 노트북", "픽셀 수학, 움직임 감지, 차량·보행자 카운터", "실습)_물체_인식.ipynb"],
+      ["sim", "코랩 없이 수업하기 (2일차 백업)", "코랩이 안 열릴 때 브라우저에서 같은 실습을 해요", "/2일차_백업_코랩없이.html"],
+      ["game", "보행자 카운터 코딩 실습", "길거리 보행자를 세는 코드를 직접 완성해요", "/보행자_카운터_코딩실습.html"],
+      ["game", "매직아이 임계값 암호", "임계값을 바꿔 숨은 그림을 찾아요", "/magiceye_threshold.html"],
+      ["data", "보행자 영상", "보행자 카운터 실습용 (mp4)", "pedestrian_walk.mp4"],
+      ["data", "고속도로 차량 영상", "차량 카운터 실습용 (mp4)", "car_highway2.mp4"],
+      ["data", "차량 테스트 영상 (큰 파일 21MB)", "긴 차량 영상. 와이파이에서 내려받아요", "test_car.mp4"],
+      ["data", "실험 결과 영상", "카운터가 동작한 결과 예시", "experiment_result.mp4"],
+      ["data", "행렬 테스트 이미지", "픽셀 행렬 실습용 그림 (png)", "matrix_test.png"],
+      ["doc", "웹캠 버전 코드 (Gradio)", "내 컴퓨터에서 웹캠으로 테두리 찾기. 파이썬 설치가 필요해요", "webcam_gradio.py"]
+    ] },
+    { no: "3", title: "손글씨를 알아보는 AI", sub: "딥러닝 · CNN", dir: "03_CNN_합성곱신경망/", items: [
+      ["sim", "CNN 시뮬레이터", "6×6 픽셀부터 손글씨 1과 2 판별까지 계산 과정을 따라가요", "cnn_classifier_simulator.html"],
+      ["nb", "CNN 계산 과정 코랩 노트북", "합성곱·풀링·판별을 코드로 한 단계씩", "실습)_CNN_계산과정.ipynb"],
+      ["sim", "코랩 없이 수업하기 (3일차 백업)", "코랩이 안 열릴 때 브라우저에서 실습해요", "/3일차_백업_코랩없이.html"],
+      ["game", "나만의 숫자 분류기", "필터를 직접 만들고 가중치를 학습시켜요", "나만의_숫자_분류기.html"],
+      ["hard", "심화: MNIST 0부터 9까지 판별", "진짜 손글씨 데이터로 10개 숫자를 구분하는 모델", "심화)_MNIST_0부터9까지_숫자판별.ipynb"],
+      ["hard", "심화: 모델 속이기 (적대적 예제)", "사람 눈엔 같은데 AI는 틀리는 그림 만들기", "심화)_MNIST_모델_속이기_적대적예제.ipynb"],
+      ["data", "CNN 계산 과정 정리 (엑셀)", "숫자 판별 계산을 표로 따라가는 정리본", "CNN_계산과정_숫자판별_정리본.xlsx"]
+    ] },
+    { no: "4", title: "책을 읽고 답하는 AI 에이전트", sub: "자연어처리 · RAG", dir: "04_자연어처리_AI에이전트/", challenge: "friend", items: [
+      ["sim", "텍스트 에이전트 실습실", "문학·규정집에서 질문과 가장 가까운 문장을 찾아요", "text_agent_simulator.html"],
+      ["nb", "텍스트 에이전트 코랩 노트북", "텍스트 분석, 코사인 유사도, 나만의 에이전트", "실습)_텍스트_에이전트.ipynb"],
+      ["sim", "코랩 없이 수업하기 (4일차 백업)", "코랩이 안 열릴 때 브라우저에서 실습해요", "/4일차_백업_코랩없이.html"],
+      ["game", "MBTI 궁합 계산기", "코사인 유사도를 손으로 계산해 봐요", "/mbti_궁합_코사인유사도.html"],
+      ["data", "「봄봄」 김유정 (텍스트)", "에이전트가 읽을 소설 원문", "봄봄_김유정.txt"]
+    ] },
+    { no: "5", title: "목소리를 숫자로", sub: "음성인식", dir: "05_음성인식_인공지능/", items: [
+      ["sim", "음성인식 수업 교재", "소리의 파형과 음성인식 원리 (인터랙티브)", "음성인식_인공지능_수업교재.html"],
+      ["nb", "① 소리의 파형과 원리", "내 목소리를 그래프로 그려요", "01_음성인식_기초_소리의_파형과_원리.ipynb"],
+      ["nb", "② AI 귀 만들기와 스마트 비서", "Whisper로 말을 글자로 바꾸고 음성 비서를 만들어요", "02_음성인식_실전_AI_귀_만들기와_스마트_비서.ipynb"],
+      ["nb", "실습: 삼각함수로 소리 만들기", "사인파를 합쳐 소리를 만들고 FFT로 분해해요", "실습)_음성인식_인공지능(삼각함수).ipynb"],
+      ["nb", "실습: 소리 비교", "여러 사람의 '사과' 소리 지문을 비교해요", "실습)_음성인식_인공지능(소리비교).ipynb"],
+      ["doc", "교사용 지도안", "차시 운영 방법과 발문 (선생님용)", "음성인식_수업_교사용_지도안.md"]
+    ] },
+    { no: "6", title: "다음 단어를 맞히는 기계", sub: "생성형 AI · 언어 모델", dir: "06_생성형AI_다음단어예측/", items: [
+      ["sim", "다음 단어 실험실", "온도·문맥·시드를 바꾸며 글이 달라지는 이유를 탐구해요", "next_word_lab.html"],
+      ["nb", "다음 단어 언어 모델 노트북", "같은 실험을 코랩에서", "06_다음단어_언어모델.ipynb"]
+    ] },
+    { no: "7", title: "보상으로 배우는 AI", sub: "강화학습 · Q-러닝", dir: "07_강화학습_보상으로배우기/", items: [
+      ["sim", "Q-러닝 실험실", "점수 규칙을 바꾸면 AI의 행동이 어떻게 달라지는지 봐요", "q_learning_lab.html"],
+      ["nb", "Q-러닝 미로 탈출 노트북", "같은 실험을 코랩에서", "07_Q러닝_미로탈출.ipynb"]
+    ] },
+    { no: "8", title: "AI는 공정할까?", sub: "AI 윤리 · 데이터 편향", dir: "08_AI윤리_편향과공정성/", items: [
+      ["sim", "공정성 실험실", "과거 기록의 편향이 AI에 어떻게 남는지 실험해요", "fairness_lab.html"],
+      ["nb", "AI 편향·공정성 실험 노트북", "같은 실험을 코랩에서", "08_AI편향_공정성실험.ipynb"]
+    ] },
+    { no: "Py", py: true, title: "파이썬 기초 6일", sub: "변수부터 미니 프로젝트까지", dir: "python_basic/", items: [
+      ["sim", "과정 목차", "여섯 번의 수업과 과제 폴더 안내", "index.html"],
+      ["sim", "1일차 · Python 첫걸음", "변수, 자료형, 입출력", "day1.html"], ["nb", "1일차 코랩 노트북", "그날 코드가 모두 담긴 노트북", "colab/day1.ipynb"],
+      ["sim", "2일차 · 조건문과 반복문", "if, for, while", "day2.html"], ["nb", "2일차 코랩 노트북", "그날 코드가 모두 담긴 노트북", "colab/day2.ipynb"],
+      ["sim", "3일차 · 자료구조와 함수", "리스트, 딕셔너리, 함수", "day3.html"], ["nb", "3일차 코랩 노트북", "그날 코드가 모두 담긴 노트북", "colab/day3.ipynb"],
+      ["sim", "4일차 · 파일과 모듈", "파일, 모듈, 예외 처리", "day4.html"], ["nb", "4일차 코랩 노트북", "그날 코드가 모두 담긴 노트북", "colab/day4.ipynb"],
+      ["sim", "5일차 · 데이터 시각화", "그래프, 통계, CSV, pandas", "day5.html"], ["nb", "5일차 코랩 노트북", "그날 코드가 모두 담긴 노트북", "colab/day5.ipynb"],
+      ["sim", "6일차 · 미니 프로젝트", "기획, 코딩, 발표", "day6.html"], ["nb", "6일차 코랩 노트북", "그날 코드가 모두 담긴 노트북", "colab/day6.ipynb"]
+    ] },
+    { no: "+", py: true, title: "도구와 추가 자료", sub: "실행기 · 심화 과제 · 그 밖의 자료", dir: "", items: [
+      ["game", "심화 과제 도전실", "기초 문법만으로 한 단계씩 푸는 심화·추가 과제 10개", "challenge.html"],
+      ["doc", "심화 과제 보고서 양식 (1쪽)", "한글이나 워드에서 열어 한 쪽으로 정리하는 양식", "assets/challenge_report.docx"],
+      ["doc", "보고서 양식 인쇄용 PDF", "손으로 쓸 때 인쇄해서 써요", "assets/challenge_report.pdf"],
+      ["sim", "파이썬 비상 실행기", "코랩이 안 될 때, 로그인 없이 코드를 실행해요", "python_backup.html"],
+      ["game", "기하: 이차곡선과 접선", "2학년 기하 수행평가용 GeoGebra 실습", "기하_이차곡선_접선.html"]
+    ] }
+  ];
+
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const enc = (p) => p.split("/").map(encodeURIComponent).join("/");
+  const all = [];
+  UNITS.forEach((u) => u.items.forEach((it) => {
+    const path = it[3].startsWith("/") ? it[3].slice(1) : u.dir + it[3];
+    all.push({ u, kind: it[0], title: it[1], desc: it[2], path, ext: path.split(".").pop().toLowerCase() });
+  }));
+  document.getElementById("countTag").textContent = `자료 ${all.length}개`;
+
+  let kind = "", q = "";
+  const kindsEl = document.getElementById("kinds");
+  kindsEl.innerHTML = `<button class="kind" data-k="" aria-pressed="true">전체</button>` + Object.entries(KINDS).map(([k, v]) => `<button class="kind" data-k="${k}" aria-pressed="false">${v} ${all.filter((a) => a.kind === k).length}</button>`).join("");
+  kindsEl.querySelectorAll(".kind").forEach((b) => (b.onclick = () => { kind = b.dataset.k; kindsEl.querySelectorAll(".kind").forEach((x) => x.setAttribute("aria-pressed", x === b)); render(); }));
+  document.getElementById("q").addEventListener("input", (e) => { q = e.target.value.trim().toLowerCase(); render(); });
+
+  function actions(a) {
+    const href = enc(a.path), gh = `https://github.com/${REPO}/blob/${BR}/${enc(a.path)}`, name = a.path.split("/").pop();
+    const b = [];
+    if (a.ext === "html") b.push(`<a class="btn btn-primary btn-sm" href="${href}">열기</a>`);
+    else if (a.ext === "ipynb") { b.push(`<a class="btn btn-colab btn-sm" target="_blank" rel="noopener" href="https://colab.research.google.com/github/${REPO}/blob/${BR}/${enc(a.path)}">코랩에서 열기</a>`); b.push(`<a class="btn btn-ghost btn-sm" href="${href}" download="${esc(name)}">내려받기</a>`); }
+    else if (["mp4", "png", "pdf", "txt"].includes(a.ext)) { b.push(`<a class="btn btn-primary btn-sm" target="_blank" rel="noopener" href="${href}">열기</a>`); b.push(`<a class="btn btn-ghost btn-sm" href="${href}" download="${esc(name)}">내려받기</a>`); }
+    else if (a.ext === "md") b.push(`<a class="btn btn-primary btn-sm" target="_blank" rel="noopener" href="${gh}">읽기</a>`);
+    else b.push(`<a class="btn btn-primary btn-sm" href="${href}" download="${esc(a.path.endsWith("challenge_report.docx") ? "심화과제_보고서_양식.docx" : name)}">내려받기</a>`);
+    b.push(`<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="${gh}">GitHub</a>`);
+    return b.join("");
+  }
+  function render() {
+    let html = "", shown = 0;
+    UNITS.forEach((u) => {
+      const items = all.filter((a) => a.u === u && (!kind || a.kind === kind) && (!q || (a.title + a.desc + a.path + u.title + u.sub + KINDS[a.kind] + (u.py ? "" : u.no + "차시")).toLowerCase().includes(q)));
+      if (!items.length) return;
+      shown += items.length;
+      html += `<div class="unit-h"><div class="num ${u.py ? "py" : ""}">${u.no}</div><div><h2>${esc(u.title)}</h2><p>${u.py ? "" : u.no + "차시 · "}${esc(u.sub)}</p></div>${u.challenge ? `<a class="btn btn-run btn-sm" href="challenge.html#${u.challenge}">이 차시 심화 과제</a>` : ""}</div>`;
+      html += `<div class="mats">${items.map((a) => `<div class="mat"><span class="k ${a.kind}">${KINDS[a.kind]}</span><div><b>${esc(a.title)}</b><span class="desc">${esc(a.desc)}</span><div class="file">${esc(a.path)}</div></div><div class="acts">${actions(a)}</div></div>`).join("")}</div>`;
+    });
+    document.getElementById("list").innerHTML = html || `<div class="empty"><b>찾는 자료가 없어요</b>다른 낱말로 찾아보거나 '전체'를 눌러요.</div>`;
+  }
+  render();
+})();
+</script>
+</body>
+</html>

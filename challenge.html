@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>심화 과제 도전실 | AI Life</title>
+<meta name="description" content="파이썬 기초를 마친 학생이 한 단계씩 생각하며 푸는 심화·추가 과제. 오류 미리 검사, 단계별 자동 확인, 보고서 양식과 제출 안내.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ai.css">
+<link rel="stylesheet" href="assets/challenge.css">
+<style>
+  .container { max-width: 1160px; }
+  .narrow { max-width: 960px; margin-inline: auto; }
+  .work-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 16px; align-items: start; }
+  @media (max-width: 980px) { .work-grid { grid-template-columns: minmax(0, 1fr); } }
+  .how { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+  .how > div { padding: 14px 16px; border-right: 1px solid var(--line); }
+  .how > div:last-child { border-right: 0; }
+  .how .no { font-family: var(--f-code); font-weight: 800; font-size: 13px; color: var(--ink-3); }
+  .how b { display: block; font-size: 15.5px; }
+  .how p { margin: 2px 0 0; font-size: 13px; color: var(--ink-2); }
+  @media (max-width: 860px) { .how { grid-template-columns: 1fr 1fr; } .how > div { border-bottom: 1px solid var(--line); } }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+  <a class="brand" href="index.html"><span class="brand-mark">AI</span><span><b>AI Life</b><small>심화 과제 도전실</small></span></a>
+  <span class="spacer"></span>
+  <a class="btn btn-ghost btn-sm" href="materials.html">실습 자료실</a>
+  <a class="btn btn-ghost btn-sm" href="python_basic/index.html">파이썬 기초</a>
+  <a class="btn btn-run btn-sm" id="topSubmit" target="_blank" rel="noopener" href="#">제출 폴더</a>
+</div></header>
+
+<main class="container">
+  <!-- ───────── 과제 고르기 ───────── -->
+  <section id="vPick">
+    <div class="narrow">
+      <div class="lesson-head" data-mark="+1">
+        <div class="eyebrow"><span>심화 · 추가 과제</span><span>파이썬 기초를 마친 사람</span><span>브라우저에서 바로</span></div>
+        <h1>심화 과제 도전실</h1>
+        <p>하고 싶은 과제를 하나 골라요. 큰 문제를 작은 단계로 나눠 두었으니, 쉬워 보여도 한 단계씩 생각을 적으며 풀어요. 막히면 오류 검사와 힌트가 도와줘요.</p>
+      </div>
+      <div class="how" aria-label="과제를 푸는 순서">
+        <div><span class="no">1</span><b>문제 읽기</b><p>내 말로 다시 써요</p></div>
+        <div><span class="no">2</span><b>손으로 먼저</b><p>작은 예를 직접 계산해요</p></div>
+        <div><span class="no">3</span><b>한 단계씩 코드</b><p>단계마다 자동으로 확인해요</p></div>
+        <div><span class="no">4</span><b>돌아보기</b><p>막힌 곳과 배운 점을 적어요</p></div>
+        <div><span class="no">5</span><b>제출</b><p>기록 파일과 보고서를 올려요</p></div>
+      </div>
+      <div class="me-row">
+        <label class="field"><span>학번</span><input class="inp" id="stuId" inputmode="numeric" autocomplete="off" placeholder="20517"></label>
+        <label class="field"><span>이름</span><input class="inp" id="stuName" autocomplete="off" placeholder="김파이"></label>
+        <p>적은 내용과 코드는 이 컴퓨터의 브라우저에만 저장돼요. 다른 컴퓨터에서 이어서 하려면 기록 파일을 내려받아 두세요.</p>
+      </div>
+      <div id="pickList"></div>
+    </div>
+  </section>
+
+  <!-- ───────── 과제 풀기 ───────── -->
+  <section id="vWork" hidden>
+    <div class="back"><button class="btn btn-ghost btn-sm" id="backBtn">← 과제 목록</button></div>
+
+    <div class="narrow">
+      <div class="lesson-head" id="wHead"></div>
+
+      <div class="card" id="cRead">
+        <h2>1. 문제 읽기</h2>
+        <p class="story" id="wStory"></p>
+        <div id="wSampleBox"><div class="sample-cap">완성하면 이렇게 나와요</div><div class="sample" id="wSample"></div></div>
+        <div class="sample-cap">막히면 다시 볼 자료</div>
+        <div class="refs" id="wRefs"></div>
+        <label class="field" style="margin-top:16px"><span id="restateLabel">이 문제를 내 말로 다시 써 보세요 (무엇을 받아서, 무엇을 보여 주나요?)</span><textarea id="restate" placeholder="예) 비밀번호를 입력받아서, 길이와 숫자 포함 여부를 검사해 안전한지 알려 준다."></textarea></label>
+      </div>
+
+      <div class="card" id="cHand">
+        <h2>2. 손으로 먼저</h2>
+        <p>코드를 쓰기 전에, 작은 예를 머리와 손으로 직접 풀어 봐요. 컴퓨터에게 시킬 일을 내가 먼저 해 보는 거예요.</p>
+        <div class="step"><b id="handQ"></b>
+          <div class="hand-row"><input class="inp" id="handA" autocomplete="off" aria-label="내 답"><button class="btn btn-primary btn-sm" id="handBtn">확인</button><button class="btn btn-ghost btn-sm" id="handSkip" hidden>풀이 보고 넘어가기</button></div>
+          <div id="handV"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="cCode">
+      <h2>3. 한 단계씩 코드 쓰기</h2>
+      <div class="lock-msg" id="codeLock">먼저 위의 '문제를 내 말로 쓰기'(10자 이상)와 '손으로 먼저'를 끝내면 열려요.</div>
+      <div class="work-grid">
+        <div>
+          <div class="stairs" id="stairs"></div>
+          <div class="notice" style="margin:0"><b>이렇게 해 보세요.</b> 한 단계의 목표만 보고 코드를 조금 쓴 뒤 ▶ 실행으로 확인해요. 오류가 나면 '오류 검사'를 눌러 어느 줄이 문제인지 먼저 찾아봐요. 다 되면 '이 단계 확인'을 눌러요.</div>
+        </div>
+        <div class="ide">
+          <div class="ide-bar">
+            <span class="fname" id="fname">main.py</span>
+            <span class="status" id="pyStatus">파이썬 준비 중…</span>
+            <button class="btn btn-ghost btn-sm" id="resetBtn">처음 코드로</button>
+            <button class="btn btn-ghost btn-sm" id="lintBtn">오류 검사</button>
+            <button class="btn btn-run btn-sm" id="runBtn">▶ 실행</button>
+          </div>
+          <div id="edHost"></div>
+          <div class="lint" id="lint" hidden></div>
+          <div class="io">
+            <div class="stdin"><div class="lab-s">입력값 · input()에 넣을 값을 한 줄에 하나씩</div><textarea id="stdin" spellcheck="false" aria-label="입력값"></textarea></div>
+            <div><div class="lab-s">실행 결과</div><div class="out" id="out" aria-live="polite"><span class="dim">▶ 실행을 누르면 결과가 여기에 나와요. (Ctrl+Enter)</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="narrow">
+      <div class="card" id="cDone">
+        <h2>4. 돌아보고 제출하기</h2>
+        <div class="lock-msg" id="doneLock">모든 단계를 통과하면 열려요.</div>
+        <div class="pred-grid">
+          <label class="field"><span><i>1</i>가장 중요한 줄과 그 이유</span><textarea id="rKey" placeholder="예) 7번째 줄. 숫자를 찾았다는 사실을 변수에 기억해 두기 때문에"></textarea></label>
+          <label class="field"><span><i>2</i>막혔던 곳과 해결한 방법</span><textarea id="rStuck" placeholder="예) NameError가 났는데, 변수 이름 철자가 달라서였다"></textarea></label>
+          <label class="field"><span><i>3</i>새로 알게 된 것</span><textarea id="rLearn" placeholder="예) and를 쓰면 두 조건을 한 번에 검사할 수 있다"></textarea></label>
+        </div>
+        <div class="step" style="margin-top:14px"><b>더 해 보기 (선택)</b><p id="wExtend" style="margin:4px 0 0"></p></div>
+        <div class="deliver">
+          <div><b>① 기록 파일 내려받기</b><p>적은 생각, 단계별 확인 결과, 만난 오류, 코드가 한 파일에 담겨요.</p><button class="btn btn-primary btn-sm" id="dlBtn">기록 파일(.txt) 내려받기</button></div>
+          <div><b>② 1쪽 보고서 쓰기</b><p>양식을 내려받아 한글(또는 워드)에서 열고 한 쪽으로 정리해요.</p><a class="btn btn-ghost btn-sm" href="assets/challenge_report.docx" download="심화과제_보고서_양식.docx">보고서 양식 내려받기</a><a class="btn btn-ghost btn-sm" href="assets/challenge_report.pdf" target="_blank" rel="noopener">인쇄용 PDF 보기</a></div>
+          <div><b>③ 제출 폴더에 올리기</b><p>파일 이름은 <code>학번 이름</code>으로 시작해요. 기록 파일과 보고서를 함께 올려요.</p><a class="btn btn-submit btn-sm" id="submitLink" target="_blank" rel="noopener" href="#">제출 폴더 열기</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="toast" role="status"></div>
+
+<script src="assets/challenges.js"></script>
+<script src="assets/challenge.js"></script>
+<script>
+(function () {
+  const $ = (s) => document.querySelector(s), $$ = (s) => Array.from(document.querySelectorAll(s));
+  const esc = PC.esc;
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem("ailife:challenge:" + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem("ailife:challenge:" + k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const toast = (msg, kind) => { const d = document.createElement("div"); d.className = kind || ""; d.textContent = msg; $("#toast").appendChild(d); setTimeout(() => d.remove(), 2800); };
+  const SUBMIT = window.CHALLENGE_SUBMIT_URL;
+  $("#topSubmit").href = SUBMIT; $("#submitLink").href = SUBMIT;
+
+  /* 학번·이름 */
+  const who = store.get("who", { id: "", name: "" });
+  $("#stuId").value = who.id; $("#stuName").value = who.name;
+  ["#stuId", "#stuName"].forEach((s) => $(s).addEventListener("input", () => { who.id = $("#stuId").value.trim(); who.name = $("#stuName").value.trim(); store.set("who", who); }));
+
+  const blank = (c) => ({ code: c.starter, stdin: "", restate: "", handTries: 0, handOk: false, handSkipped: false, think: {}, stepOk: {}, stepResult: {}, hints: {}, open: 0, reflect: {}, log: { runs: 0, errors: {}, lints: 0, checks: 0, pasted: 0, activeSec: 0, startedAt: null, finishedAt: null } });
+  const load = (c) => Object.assign(blank(c), store.get("c:" + c.id, {}));
+  const doneCount = (c, st) => c.steps.filter((_, i) => st.stepOk[i]).length;
+
+  /* ───── 과제 고르기 ───── */
+  function renderPick() {
+    const card = (c) => {
+      const st = load(c), n = doneCount(c, st), started = st.log.startedAt;
+      const tag = n === c.steps.length ? '<span class="tag good">모든 단계 통과</span>' : started ? `<span class="tag yellow">${n}/${c.steps.length}단계 · 이어서 하기</span>` : "";
+      return `<button class="pick ${c.free ? "free" : ""}" data-c="${c.id}"><b>${esc(c.title)}</b><span class="one">${esc(c.one)}</span><span class="meta"><span class="tag blue">${esc(c.basis)}</span><span class="tag">${c.steps.length}단계</span>${tag}</span></button>`;
+    };
+    let h = "";
+    CHALLENGE_LEVELS.forEach((lv) => {
+      h += `<div class="lv-h"><span class="stars">${"★".repeat(lv.level)}</span><b>${lv.name}</b><span>${lv.desc}</span></div><div class="picks">${CHALLENGES.filter((c) => c.level === lv.level).map(card).join("")}</div>`;
+    });
+    h += `<div class="lv-h"><span class="stars">?</span><b>내가 정하기</b><span>만들고 싶은 것이 있다면</span></div><div class="picks">${CHALLENGES.filter((c) => c.free).map(card).join("")}</div>`;
+    $("#pickList").innerHTML = h;
+    $$("#pickList .pick").forEach((b) => (b.onclick = () => open(CHALLENGES.find((c) => c.id === b.dataset.c))));
+  }
+
+  /* ───── 과제 풀기 ───── */
+  let cur = null, S = null, ed = null, timer = null;
+  const save = () => { if (cur) store.set("c:" + cur.id, S); };
+
+  function open(c) {
+    cur = c; S = load(c);
+    if (!S.log.startedAt) S.log.startedAt = new Date().toISOString();
+    $("#vPick").hidden = true; $("#vWork").hidden = false; window.scrollTo(0, 0);
+    try { history.replaceState(null, "", "#" + c.id); } catch (e) {}
+    const lv = CHALLENGE_LEVELS.find((l) => l.level === c.level);
+    $("#wHead").dataset.mark = c.free ? "?" : "★".repeat(c.level);
+    $("#wHead").innerHTML = `<div class="eyebrow"><span>${lv ? lv.name : "내가 정하기"}</span><span>${esc(c.basis)}</span><span>${c.steps.length}단계</span></div><h1>${esc(c.title)}</h1><p>${esc(c.one)}</p>`;
+    $("#wStory").textContent = c.story;
+    $("#wSampleBox").hidden = !c.sample; $("#wSample").textContent = c.sample || "";
+    $("#wRefs").innerHTML = c.refs.map((r) => `<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="${esc(r.href)}">${esc(r.label)}</a>`).join("");
+    $("#wExtend").textContent = c.extend;
+    $("#fname").textContent = c.id + ".py";
+    $("#restateLabel").textContent = c.free ? "어떤 프로그램을 만들 건가요? (주제, 무엇을 받아서 무엇을 보여 주는지)" : "이 문제를 내 말로 다시 써 보세요 (무엇을 받아서, 무엇을 보여 주나요?)";
+    $("#restate").value = S.restate;
+    $("#cHand").hidden = !c.hand;
+    if (c.hand) { $("#handQ").textContent = c.hand.q; $("#handA").value = ""; renderHand(); }
+    ["rKey", "rStuck", "rLearn"].forEach((k) => ($("#" + k).value = S.reflect[k] || ""));
+    $("#stdin").value = S.stdin;
+    $("#lint").hidden = true;
+    $("#out").innerHTML = '<span class="dim">▶ 실행을 누르면 결과가 여기에 나와요. (Ctrl+Enter)</span>';
+    ed = PC.editor($("#edHost"), { minHeight: 240, onChange: (v) => { S.code = v; save(); }, onRun: run, label: "파이썬 코드" });
+    ed.value = S.code;
+    ed.el.addEventListener("paste", (e) => { const t = (e.clipboardData && e.clipboardData.getData("text")) || ""; S.log.pasted += t.length; save(); });
+    renderStairs(); gates();
+    PC.bootRunner().catch(() => {});
+    clearInterval(timer);
+    timer = setInterval(() => { if (!document.hidden && document.hasFocus()) { S.log.activeSec += 5; save(); } }, 5000);
+  }
+  $("#backBtn").onclick = () => { save(); clearInterval(timer); cur = null; $("#vWork").hidden = true; $("#vPick").hidden = false; try { history.replaceState(null, "", location.pathname); } catch (e) {} renderPick(); window.scrollTo(0, 0); };
+
+  $("#restate").addEventListener("input", (e) => { S.restate = e.target.value; save(); gates(); });
+  $("#stdin").addEventListener("input", (e) => { S.stdin = e.target.value; save(); });
+  ["rKey", "rStuck", "rLearn"].forEach((k) => $("#" + k).addEventListener("input", (e) => { S.reflect[k] = e.target.value; save(); }));
+
+  /* 손으로 먼저 */
+  const norm = (s) => String(s).trim().toLowerCase().replace(/[\s,원개점명일칸글자]/g, "");
+  function renderHand() {
+    const h = cur.hand;
+    if (S.handOk) $("#handV").innerHTML = `<div class="verdict ok"><b>${S.handSkipped ? "풀이" : "맞았어요!"}</b> ${esc(h.why)}</div>`;
+    else if (S.handTries) $("#handV").innerHTML = `<div class="verdict no"><b>다시 생각해 봐요.</b> 종이에 하나씩 적어 가며 계산해 보세요. (${S.handTries}번 시도)</div>`;
+    else $("#handV").innerHTML = "";
+    $("#handSkip").hidden = S.handOk || S.handTries < 3;
+    $("#handBtn").disabled = S.handOk; $("#handA").disabled = S.handOk;
+    if (S.handOk && !S.handSkipped) $("#handA").value = h.answer[0];
+  }
+  function checkHand() {
+    const v = norm($("#handA").value); if (!v) return;
+    S.handTries++;
+    if (cur.hand.answer.some((a) => norm(a) === v)) S.handOk = true;
+    save(); renderHand(); gates();
+  }
+  $("#handBtn").onclick = checkHand;
+  $("#handA").addEventListener("keydown", (e) => { if (e.key === "Enter") checkHand(); });
+  $("#handSkip").onclick = () => { S.handOk = true; S.handSkipped = true; save(); renderHand(); gates(); };
+
+  function gates() {
+    const ready = S.restate.replace(/\s/g, "").length >= 10 && (!cur.hand || S.handOk);
+    $("#cCode").classList.toggle("locked", !ready); $("#codeLock").hidden = ready;
+    const all = doneCount(cur, S) === cur.steps.length;
+    $("#cDone").classList.toggle("locked", !all); $("#doneLock").hidden = all;
+    if (all && !S.log.finishedAt) { S.log.finishedAt = new Date().toISOString(); save(); }
+  }
+
+  /* 단계 */
+  function renderStairs() {
+    const firstOpen = cur.steps.findIndex((_, i) => !S.stepOk[i]);
+    $("#stairs").innerHTML = cur.steps.map((st, i) => {
+      const done = !!S.stepOk[i], now = i === firstOpen, wait = !done && !now;
+      const openIt = S.open === i && !wait;
+      const res = S.stepResult[i];
+      return `<div class="stair ${done ? "done" : now ? "now" : "wait"}" data-i="${i}">
+        <button class="stair-h" ${wait ? "disabled" : ""} aria-expanded="${openIt}"><span class="numbered">${done ? "✓" : i + 1}</span><b>${esc(st.title)}</b><span class="tag ${done ? "good" : now ? "yellow" : ""}">${done ? "통과" : now ? "지금 할 단계" : "앞 단계 먼저"}</span></button>
+        ${openIt ? `<div class="stair-b">
+          <p class="goal"><b>목표</b> · ${esc(st.goal)}</p>
+          <label class="field"><span>코드를 쓰기 전에 생각해 보기 · ${esc(st.think)}</span><textarea data-think="${i}" placeholder="짧게라도 내 생각을 적어요">${esc(S.think[i] || "")}</textarea></label>
+          <details class="tip" data-hint="${i}" ${S.hints[i] ? "open" : ""}><summary>힌트 보기 (먼저 2분만 더 생각해 봐요)</summary><div>${esc(st.hint)}</div></details>
+          <div class="stair-acts"><button class="btn btn-primary btn-sm" data-check="${i}">이 단계 확인</button><span class="msg" data-msg="${i}"></span></div>
+          ${res ? `<div class="checks">${res.map((r) => `<div class="check ${r.ok ? "ok" : "no"}"><i>${r.ok ? "✓" : "!"}</i><div>${r.code ? '<span class="muted">[코드]</span> ' : ""}${esc(r.name)}${!r.ok && r.msg ? `<small>${esc(r.msg)}</small>` : ""}</div></div>`).join("")}</div>` : ""}
+        </div>` : ""}
+      </div>`;
+    }).join("") + `<div class="progress">${cur.steps.map((_, i) => `<i class="${S.stepOk[i] ? "on" : ""}"></i>`).join("")}<span>${doneCount(cur, S)}/${cur.steps.length}단계 통과</span></div>`;
+    $$("#stairs .stair-h").forEach((b) => (b.onclick = () => { const i = Number(b.parentElement.dataset.i); S.open = S.open === i ? -1 : i; save(); renderStairs(); }));
+    $$("[data-think]").forEach((t) => t.addEventListener("input", () => { S.think[t.dataset.think] = t.value; save(); }));
+    $$("[data-hint]").forEach((d) => d.addEventListener("toggle", () => { if (d.open && !S.hints[d.dataset.hint]) { S.hints[d.dataset.hint] = true; save(); } }));
+    $$("[data-check]").forEach((b) => (b.onclick = () => checkStep(Number(b.dataset.check), b)));
+  }
+
+  async function checkStep(i, btn) {
+    const st = cur.steps[i], msg = document.querySelector(`[data-msg="${i}"]`);
+    if ((S.think[i] || "").replace(/\s/g, "").length < 5) { msg.textContent = "먼저 위 '생각해 보기' 칸에 내 생각을 5자 이상 적어 주세요."; msg.style.color = "var(--bad)"; document.querySelector(`[data-think="${i}"]`).focus(); return; }
+    btn.disabled = true; msg.style.color = ""; msg.textContent = "확인하는 중…";
+    showLint(true);
+    const r = await PC.runStep(st, ed.value, $("#stdin").value);
+    S.log.checks++; S.stepResult[i] = r.items;
+    const was = S.stepOk[i];
+    S.stepOk[i] = r.passed;
+    // 뒤 단계가 통과했었는데 앞 단계가 깨지면 그대로 두되, 지금 단계만 갱신
+    if (r.passed && !was) { toast(i + 1 < cur.steps.length ? `${i + 1}단계 통과! 다음 단계로 가요.` : "모든 단계를 통과했어요! 돌아보기를 적고 제출해요.", "good"); S.open = i + 1 < cur.steps.length ? i + 1 : i; }
+    save(); renderStairs(); gates();
+    if (!r.passed) { const m = document.querySelector(`[data-msg="${i}"]`); if (m) { m.textContent = "아직이에요. 아래에서 ! 표시된 항목을 하나씩 고쳐 봐요."; m.style.color = "var(--bad)"; } }
+  }
+
+  /* 실행 · 오류 검사 */
+  PC.onRunnerStatus((s) => {
+    const el = $("#pyStatus");
+    if (s === "ready") { el.textContent = "파이썬 준비 완료"; el.className = "status ready"; }
+    else if (s === "loading") { el.textContent = "파이썬 준비 중… (처음엔 20초쯤)"; el.className = "status"; }
+    else { el.textContent = "실행기를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해요."; el.className = "status"; }
+  });
+  function showLint(quiet) {
+    const issues = PC.lint(ed.value), box = $("#lint");
+    if (!quiet) { S.log.lints++; save(); }
+    if (!issues.length) { if (quiet) { box.hidden = true; return issues; } box.hidden = false; box.innerHTML = '<span class="lint-ok">✓ 미리 찾을 수 있는 실수는 없어요. ▶ 실행해서 결과를 확인해요.</span>'; return issues; }
+    box.hidden = false;
+    box.innerHTML = issues.map((x) => `<button class="lint-item ${x.level}" data-line="${x.line}"><span>${x.line}번째 줄</span><div>${esc(x.msg)}</div></button>`).join("");
+    box.querySelectorAll("[data-line]").forEach((b) => (b.onclick = () => goLine(Number(b.dataset.line))));
+    return issues;
+  }
+  function goLine(n) {
+    const lines = ed.value.split("\n"); let pos = 0;
+    for (let i = 0; i < n - 1 && i < lines.length; i++) pos += lines[i].length + 1;
+    ed.el.focus(); ed.el.setSelectionRange(pos, pos + (lines[n - 1] || "").length); ed.markError(n);
+  }
+  $("#lintBtn").onclick = () => showLint(false);
+  async function run() {
+    $("#runBtn").disabled = true;
+    $("#out").innerHTML = '<span class="dim">실행 중…</span>';
+    const r = await PC.run(ed.value, $("#stdin").value);
+    S.log.runs++;
+    let html = esc(r.out || "");
+    if (r.etype) {
+      const name = r.etype === "EOFError" && r.emsg === "__NEED_INPUT__" ? "입력값 부족" : r.etype;
+      S.log.errors[name] = (S.log.errors[name] || 0) + 1;
+      html += `<span class="e">${esc(PC.errLine(r))}</span><span class="tip">${esc(PC.explain(r))}</span>`;
+      if (r.eline) ed.markError(r.eline);
+      showLint(true);
+    } else $("#lint").hidden = true;
+    save();
+    $("#out").innerHTML = html || '<span class="dim">(출력 없음 — print()로 결과를 보여 주세요)</span>';
+    $("#runBtn").disabled = false;
+  }
+  $("#runBtn").onclick = run;
+  let resetArmed = false;
+  $("#resetBtn").onclick = () => {
+    if (!resetArmed) { resetArmed = true; $("#resetBtn").textContent = "정말요? 한 번 더"; setTimeout(() => { resetArmed = false; $("#resetBtn").textContent = "처음 코드로"; }, 3000); return; }
+    resetArmed = false; $("#resetBtn").textContent = "처음 코드로"; ed.value = cur.starter; S.code = cur.starter; save();
+  };
+
+  /* 기록 파일 */
+  function sheet() {
+    const L = S.log, min = Math.max(1, Math.round(L.activeSec / 60));
+    const errs = Object.entries(L.errors).map(([k, v]) => `${k} ${v}회`).join(", ") || "없음";
+    let t = `[AI Life 심화 과제 기록]\n과제: ${cur.title}\n학번: ${who.id}   이름: ${who.name}   날짜: ${new Date().toLocaleDateString("ko-KR")}\n` + "=".repeat(52) + "\n";
+    t += `\n■ 1. 문제를 내 말로\n${S.restate.trim() || "(비어 있음)"}\n`;
+    if (cur.hand) t += `\n■ 2. 손으로 먼저\n질문: ${cur.hand.q}\n결과: ${S.handOk ? (S.handSkipped ? `풀이를 보고 넘어감 (${S.handTries}번 시도)` : `${S.handTries}번 만에 맞힘`) : "아직 못 풂"}\n`;
+    t += `\n■ 3. 단계별 풀이\n`;
+    cur.steps.forEach((st, i) => {
+      t += `\n[${i + 1}단계] ${st.title} — ${S.stepOk[i] ? "통과" : "미통과"}${S.hints[i] ? " (힌트 봄)" : ""}\n  생각: ${(S.think[i] || "(비어 있음)").trim()}\n`;
+      (S.stepResult[i] || []).forEach((r) => { t += `  ${r.ok ? "✓" : "✗"} ${r.name}${!r.ok && r.msg ? " → " + r.msg : ""}\n`; });
+    });
+    t += `\n■ 4. 돌아보기\n- 가장 중요한 줄과 이유: ${(S.reflect.rKey || "(비어 있음)").trim()}\n- 막혔던 곳과 해결: ${(S.reflect.rStuck || "(비어 있음)").trim()}\n- 새로 알게 된 것: ${(S.reflect.rLearn || "(비어 있음)").trim()}\n`;
+    t += `\n■ 과정 기록 (자동)\n- 과제에 쓴 시간: 약 ${min}분\n- 실행 ${L.runs}회 · 단계 확인 ${L.checks}회 · 오류 검사 ${L.lints}회\n- 만난 오류: ${errs}\n- 힌트를 본 단계: ${Object.keys(S.hints).map((k) => Number(k) + 1).join(", ") || "없음"}\n- 붙여 넣은 글자 수: ${L.pasted}자 (코드 전체 ${S.code.length}자)\n`;
+    t += `\n■ 내 코드\n${"-".repeat(52)}\n${S.code}\n${"-".repeat(52)}\n`;
+    return t;
+  }
+  $("#dlBtn").onclick = () => {
+    if (!who.id || !who.name) { toast("과제 목록 화면에서 학번과 이름을 먼저 적어 주세요.", "bad"); return; }
+    const miss = ["rKey", "rStuck", "rLearn"].filter((k) => (S.reflect[k] || "").replace(/\s/g, "").length < 5);
+    if (miss.length) { toast("돌아보기 세 칸을 모두 5자 이상 적어 주세요.", "bad"); $("#" + miss[0]).focus(); return; }
+    const blob = new Blob(["﻿" + sheet()], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = `${who.id} ${who.name}_심화_${cur.title}.txt`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    toast("기록 파일을 내려받았어요. 제출 폴더에 올려 주세요.", "good");
+  };
+
+  window.addEventListener("beforeunload", save);
+  renderPick();
+  const hash = decodeURIComponent(location.hash.slice(1));
+  const direct = CHALLENGES.find((c) => c.id === hash);
+  if (direct) open(direct);
+  window.addEventListener("hashchange", () => {
+    const c = CHALLENGES.find((x) => x.id === decodeURIComponent(location.hash.slice(1)));
+    if (c && (!cur || cur.id !== c.id)) { save(); open(c); }
+  });
+})();
+</script>
+</body>
+</html>
