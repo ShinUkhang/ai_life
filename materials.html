@@ -121,11 +121,15 @@
     ] },
     { no: "+", py: true, title: "도구와 추가 자료", sub: "실행기 · 심화 과제 · 그 밖의 자료", dir: "", items: [
       ["game", "심화 과제 도전실", "기초 문법만으로 한 단계씩 푸는 심화·추가 과제 10개", "challenge.html"],
-      ["doc", "심화 과제 보고서 양식 (1쪽)", "한글이나 워드에서 열어 한 쪽으로 정리하는 양식", "assets/challenge_report.docx"],
+      ["doc", "심화 과제 보고서 양식 · 한글 (1쪽)", "한글에서 열어 한 쪽으로 정리하는 양식 (.hwp)", "assets/challenge_report.hwp"],
+      ["doc", "심화 과제 보고서 양식 · 워드 (1쪽)", "워드나 구글 문서에서 열 때 (.docx)", "assets/challenge_report.docx"],
       ["doc", "보고서 양식 인쇄용 PDF", "손으로 쓸 때 인쇄해서 써요", "assets/challenge_report.pdf"],
       ["doc", "보고서 작성 예시 1 · 경사하강법", "직선을 스스로 찾는 학습을 기초 문법으로 만들고 쓴 1쪽 보고서 예시 (1차시)", "assets/examples/보고서예시_1_경사하강법.pdf"],
+      ["doc", "보고서 작성 예시 1 · 경사하강법 (한글)", "같은 예시를 한글 파일로", "assets/examples/보고서예시_1_경사하강법.hwp"],
       ["doc", "보고서 작성 예시 2 · CNN 합성곱", "세로선 필터로 숫자 1의 특징을 찾은 1쪽 보고서 예시 (3차시)", "assets/examples/보고서예시_2_CNN합성곱.pdf"],
+      ["doc", "보고서 작성 예시 2 · CNN 합성곱 (한글)", "같은 예시를 한글 파일로", "assets/examples/보고서예시_2_CNN합성곱.hwp"],
       ["doc", "보고서 작성 예시 3 · 목소리 푸리에", "섞인 소리를 주파수별로 나눈 1쪽 보고서 예시 (5차시)", "assets/examples/보고서예시_3_목소리_푸리에.pdf"],
+      ["doc", "보고서 작성 예시 3 · 목소리 푸리에 (한글)", "같은 예시를 한글 파일로", "assets/examples/보고서예시_3_목소리_푸리에.hwp"],
       ["sim", "파이썬 비상 실행기", "코랩이 안 될 때, 로그인 없이 코드를 실행해요", "python_backup.html"],
       ["game", "기하: 이차곡선과 접선", "2학년 기하 수행평가용 GeoGebra 실습", "기하_이차곡선_접선.html"]
     ] }
@@ -153,7 +157,7 @@
     else if (a.ext === "ipynb") { b.push(`<a class="btn btn-colab btn-sm" target="_blank" rel="noopener" href="https://colab.research.google.com/github/${REPO}/blob/${BR}/${enc(a.path)}">코랩에서 열기</a>`); b.push(`<a class="btn btn-ghost btn-sm" href="${href}" download="${esc(name)}">내려받기</a>`); }
     else if (["mp4", "png", "pdf", "txt"].includes(a.ext)) { b.push(`<a class="btn btn-primary btn-sm" target="_blank" rel="noopener" href="${href}">열기</a>`); b.push(`<a class="btn btn-ghost btn-sm" href="${href}" download="${esc(name)}">내려받기</a>`); }
     else if (a.ext === "md") b.push(`<a class="btn btn-primary btn-sm" target="_blank" rel="noopener" href="${gh}">읽기</a>`);
-    else b.push(`<a class="btn btn-primary btn-sm" href="${href}" download="${esc(a.path.endsWith("challenge_report.docx") ? "심화과제_보고서_양식.docx" : name)}">내려받기</a>`);
+    else b.push(`<a class="btn btn-primary btn-sm" href="${href}" download="${esc(/challenge_report\.(docx|hwp)$/.test(a.path) ? "심화과제_보고서_양식." + a.ext : name)}">내려받기</a>`);
     b.push(`<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="${gh}">GitHub</a>`);
     return b.join("");
   }

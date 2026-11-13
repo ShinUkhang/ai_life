@@ -150,3 +150,10 @@
 #toast div { background: var(--ink); color: var(--bg); padding: 11px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; }
 #toast div.bad { background: var(--bad); color: #fff; }
 #toast div.good { background: var(--good); color: #fff; }
+
+/* 준비물 띠 */
+.kit { display: grid; grid-template-columns: repeat(3, minmax(0, auto)); justify-content: start; gap: 10px 26px; background: var(--yellow-soft); border-radius: 16px; padding: 14px 18px; margin-bottom: 14px; }
+.kit b { display: block; font-size: 13.5px; color: var(--yellow-ink); margin-bottom: 6px; }
+.kit .row { display: flex; gap: 6px; flex-wrap: wrap; }
+@media (max-width: 860px) { .kit { grid-template-columns: minmax(0, 1fr); } }
+.lv-h { scroll-margin-top: 70px; }

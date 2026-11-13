@@ -49,6 +49,11 @@
         <div><span class="no">4</span><b>돌아보기</b><p>막힌 곳과 배운 점을 적어요</p></div>
         <div><span class="no">5</span><b>제출</b><p>기록 파일과 보고서를 올려요</p></div>
       </div>
+      <div class="kit" aria-label="보고서 준비물">
+        <div><b>보고서 양식</b><div class="row"><a class="btn btn-run btn-sm" href="assets/challenge_report.hwp" download="심화과제_보고서_양식.hwp">한글 (.hwp)</a><a class="btn btn-ghost btn-sm" href="assets/challenge_report.docx" download="심화과제_보고서_양식.docx">워드 (.docx)</a><a class="btn btn-ghost btn-sm" href="assets/challenge_report.pdf" target="_blank" rel="noopener">인쇄용 PDF</a></div></div>
+        <div><b>작성 예시</b><div class="row"><a class="btn btn-ghost btn-sm" href="assets/examples/보고서예시_1_경사하강법.pdf" target="_blank" rel="noopener">경사하강법</a><a class="btn btn-ghost btn-sm" href="assets/examples/보고서예시_2_CNN합성곱.pdf" target="_blank" rel="noopener">CNN 합성곱</a><a class="btn btn-ghost btn-sm" href="assets/examples/보고서예시_3_목소리_푸리에.pdf" target="_blank" rel="noopener">목소리 푸리에</a></div></div>
+        <div><b>올리기</b><div class="row"><a class="btn btn-submit btn-sm" id="kitSubmit" target="_blank" rel="noopener" href="#">📤 제출 폴더</a></div></div>
+      </div>
       <div class="me-row">
         <label class="field"><span>학번</span><input class="inp" id="stuId" inputmode="numeric" autocomplete="off" placeholder="20517"></label>
         <label class="field"><span>이름</span><input class="inp" id="stuName" autocomplete="off" placeholder="김파이"></label>
@@ -122,7 +127,7 @@
         <div class="step" style="margin-top:14px"><b>더 해 보기 (선택)</b><p id="wExtend" style="margin:4px 0 0"></p></div>
         <div class="deliver">
           <div><b>① 기록 파일 내려받기</b><p>적은 생각, 단계별 확인 결과, 만난 오류, 코드가 한 파일에 담겨요.</p><button class="btn btn-primary btn-sm" id="dlBtn">기록 파일(.txt) 내려받기</button></div>
-          <div><b>② 1쪽 보고서 쓰기</b><p>양식을 내려받아 한글(또는 워드)에서 열고 한 쪽으로 정리해요.</p><a class="btn btn-ghost btn-sm" href="assets/challenge_report.docx" download="심화과제_보고서_양식.docx">보고서 양식 내려받기</a><a class="btn btn-ghost btn-sm" href="assets/challenge_report.pdf" target="_blank" rel="noopener">인쇄용 PDF 보기</a><p style="margin-top:4px"><b style="font-size:13.5px">작성 예시</b> · 이 정도 분량과 말투로 써요</p><a class="btn btn-ghost btn-sm" href="assets/examples/보고서예시_1_경사하강법.pdf" target="_blank" rel="noopener">예시 1 · 경사하강법</a><a class="btn btn-ghost btn-sm" href="assets/examples/보고서예시_2_CNN합성곱.pdf" target="_blank" rel="noopener">예시 2 · CNN 합성곱</a><a class="btn btn-ghost btn-sm" href="assets/examples/보고서예시_3_목소리_푸리에.pdf" target="_blank" rel="noopener">예시 3 · 목소리 푸리에</a></div>
+          <div><b>② 1쪽 보고서 쓰기</b><p>양식을 내려받아 한글(또는 워드)에서 열고 한 쪽으로 정리해요.</p><a class="btn btn-run btn-sm" href="assets/challenge_report.hwp" download="심화과제_보고서_양식.hwp">한글 양식 (.hwp)</a><a class="btn btn-ghost btn-sm" href="assets/challenge_report.docx" download="심화과제_보고서_양식.docx">워드 양식 (.docx)</a><a class="btn btn-ghost btn-sm" href="assets/challenge_report.pdf" target="_blank" rel="noopener">인쇄용 PDF 보기</a><p style="margin-top:4px"><b style="font-size:13.5px">작성 예시</b> · 이 정도 분량과 말투로 써요</p><a class="btn btn-ghost btn-sm" href="assets/examples/보고서예시_1_경사하강법.pdf" target="_blank" rel="noopener">예시 1 · 경사하강법</a><a class="btn btn-ghost btn-sm" href="assets/examples/보고서예시_2_CNN합성곱.pdf" target="_blank" rel="noopener">예시 2 · CNN 합성곱</a><a class="btn btn-ghost btn-sm" href="assets/examples/보고서예시_3_목소리_푸리에.pdf" target="_blank" rel="noopener">예시 3 · 목소리 푸리에</a></div>
           <div><b>③ 제출 폴더에 올리기</b><p>파일 이름은 <code>학번 이름</code>으로 시작해요. 기록 파일과 보고서를 함께 올려요.</p><a class="btn btn-submit btn-sm" id="submitLink" target="_blank" rel="noopener" href="#">제출 폴더 열기</a></div>
         </div>
       </div>
@@ -143,7 +148,7 @@
   };
   const toast = (msg, kind) => { const d = document.createElement("div"); d.className = kind || ""; d.textContent = msg; $("#toast").appendChild(d); setTimeout(() => d.remove(), 2800); };
   const SUBMIT = window.CHALLENGE_SUBMIT_URL;
-  $("#topSubmit").href = SUBMIT; $("#submitLink").href = SUBMIT;
+  $("#topSubmit").href = SUBMIT; $("#submitLink").href = SUBMIT; $("#kitSubmit").href = SUBMIT;
 
   /* 학번·이름 */
   const who = store.get("who", { id: "", name: "" });
@@ -163,9 +168,9 @@
     };
     let h = "";
     CHALLENGE_LEVELS.forEach((lv) => {
-      h += `<div class="lv-h"><span class="stars">${"★".repeat(lv.level)}</span><b>${lv.name}</b><span>${lv.desc}</span></div><div class="picks">${CHALLENGES.filter((c) => c.level === lv.level).map(card).join("")}</div>`;
+      h += `<div class="lv-h" id="lv${lv.level}"><span class="stars">${"★".repeat(lv.level)}</span><b>${lv.name}</b><span>${lv.desc}</span></div><div class="picks">${CHALLENGES.filter((c) => c.level === lv.level).map(card).join("")}</div>`;
     });
-    h += `<div class="lv-h"><span class="stars">?</span><b>내가 정하기</b><span>만들고 싶은 것이 있다면</span></div><div class="picks">${CHALLENGES.filter((c) => c.free).map(card).join("")}</div>`;
+    h += `<div class="lv-h" id="free"><span class="stars">?</span><b>내가 정하기</b><span>만들고 싶은 것이 있다면</span></div><div class="picks">${CHALLENGES.filter((c) => c.free).map(card).join("")}</div>`;
     $("#pickList").innerHTML = h;
     $$("#pickList .pick").forEach((b) => (b.onclick = () => open(CHALLENGES.find((c) => c.id === b.dataset.c))));
   }
@@ -357,6 +362,7 @@
   const hash = decodeURIComponent(location.hash.slice(1));
   const direct = CHALLENGES.find((c) => c.id === hash);
   if (direct) open(direct);
+  else if (/^(lv\d|free)$/.test(hash)) setTimeout(() => { const el = document.getElementById(hash); if (el) el.scrollIntoView({ block: "start" }); }, 50);
   window.addEventListener("hashchange", () => {
     const c = CHALLENGES.find((x) => x.id === decodeURIComponent(location.hash.slice(1)));
     if (c && (!cur || cur.id !== c.id)) { save(); open(c); }
